@@ -1,0 +1,298 @@
+{
+	"info": {
+		"_postman_id": "b0a9bac3-bb04-4bc0-941e-1b7efee11263",
+		"name": "Go REST API",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "6676730",
+		"_collection_link": "https://rs-apps.postman.co/workspace/rs-apps-Workspace~7bb64049-3795-451d-8052-3c5e1206a29a/collection/6676730-b0a9bac3-bb04-4bc0-941e-1b7efee11263?action=share&creator=6676730&source=collection_link"
+	},
+	"item": [
+		{
+			"name": "AuthService",
+			"item": [
+				{
+					"name": "SignUp",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"username\":\"{{$randomFirstName}}\",\n    \"email\": \"{{$randomEmail}}\",\n    \"password\": \"VeryG00dPass!\",\n    \"passwordConfirm\": \"VeryG00dPass!\"\n}\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{go_srv_addr}}:{{go_srv_http_port}}/auth/signup",
+							"host": [
+								"{{go_srv_addr}}"
+							],
+							"port": "{{go_srv_http_port}}",
+							"path": [
+								"auth",
+								"signup"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "SignIn",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"username\": \"user1\",\n    \"password\":\"password\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{go_srv_addr}}:{{go_srv_http_port}}/auth/signin",
+							"host": [
+								"{{go_srv_addr}}"
+							],
+							"port": "{{go_srv_http_port}}",
+							"path": [
+								"auth",
+								"signin"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Verify",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{go_srv_addr}}:{{go_srv_http_port}}/auth/verify/JwvOsmXxHqcd",
+							"host": [
+								"{{go_srv_addr}}"
+							],
+							"port": "{{go_srv_http_port}}",
+							"path": [
+								"auth",
+								"verify",
+								"JwvOsmXxHqcd"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Activation code",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"Markus_Gutmann@yahoo.com\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{go_srv_addr}}:{{go_srv_http_port}}/auth/code",
+							"host": [
+								"{{go_srv_addr}}"
+							],
+							"port": "{{go_srv_http_port}}",
+							"path": [
+								"auth",
+								"code"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "UserService",
+			"item": [
+				{
+					"name": "User {id}",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2ODc4MDQ3NDUsImlhdCI6MTY4NzgwMTE0NSwibmJmIjoxNjg3ODAxMTQ1LCJzdWIiOnsiSUQiOjEsIlVzZXJuYW1lIjoiIn19.XiIVr29tpfPbRPzXWu2_Ic-mKzK0D77AQ9RGpJrZFuY7Mekb20q1giupIDALMBpBzq4RXby-5IfJrd2u-HSGsg",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{go_srv_addr}}:{{go_srv_http_port}}/user",
+							"host": [
+								"{{go_srv_addr}}"
+							],
+							"port": "{{go_srv_http_port}}",
+							"path": [
+								"user"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "change password",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2ODc4MTE5MjcsImlhdCI6MTY4NzgwODMyNywibmJmIjoxNjg3ODA4MzI3LCJzdWIiOnsiSUQiOjEsIlVzZXJuYW1lIjoiIn19.jWZV9_McIE1Nd6eenObzIiaYhv7p-iKQoEV59j9aZUXr35DDoJ8_W1uDkumd-u7eosqX3aaVLhqqzONr0q2CYg",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"id\": 1,\n    \"oldPassword\": \"password\",\n    \"password\": \"password\",\n    \"passwordConfirm\": \"password\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{go_srv_addr}}:{{go_srv_http_port}}/user/change_password",
+							"host": [
+								"{{go_srv_addr}}"
+							],
+							"port": "{{go_srv_http_port}}",
+							"path": [
+								"user",
+								"change_password"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Health",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{go_srv_addr}}:{{go_srv_http_port}}/health",
+					"host": [
+						"{{go_srv_addr}}"
+					],
+					"port": "{{go_srv_http_port}}",
+					"path": [
+						"health"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "pprof",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{go_srv_addr}}:{{go_srv_http_port}}/debug/pprof/heap",
+					"host": [
+						"{{go_srv_addr}}"
+					],
+					"port": "{{go_srv_http_port}}",
+					"path": [
+						"debug",
+						"pprof",
+						"heap"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Swagger",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{go_srv_addr}}:{{go_srv_http_port}}/swagger/index.html",
+					"host": [
+						"{{go_srv_addr}}"
+					],
+					"port": "{{go_srv_http_port}}",
+					"path": [
+						"swagger",
+						"index.html"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"auth": {
+		"type": "basic",
+		"basic": [
+			{
+				"key": "password",
+				"value": "{{basic_auth_p}}",
+				"type": "string"
+			},
+			{
+				"key": "username",
+				"value": "{{basic_auth_u}}",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	]
+}

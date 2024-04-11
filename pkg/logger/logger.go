@@ -8,30 +8,25 @@ import (
 	"strings"
 	"time"
 
+	"go.opentelemetry.io/otel/trace"
+
+	"github.com/newrelic/go-agent/v3/newrelic"
+
 	"github.com/rs/zerolog"
 )
 
 type Logger struct {
-	logger *zerolog.Logger
+	logger      *zerolog.Logger
+	nrLoggerApp *newrelic.Application
 }
 
-func New(isDebug bool) *Logger {
-	logLevel := zerolog.InfoLevel
-	if isDebug {
-		logLevel = zerolog.TraceLevel
-	}
-
-	zerolog.SetGlobalLevel(logLevel)
-	logger := zerolog.New(os.Stderr).With().Timestamp().Logger()
-
-	return &Logger{logger: &logger}
+type Config struct {
+	LogLevel string `mapstructure:"level"`
+	DevMode  bool   `mapstructure:"devMode"`
 }
 
-func NewConsole(isDebug bool) *Logger {
+func NewConsole() *Logger {
 	logLevel := zerolog.InfoLevel
-	if isDebug {
-		logLevel = zerolog.TraceLevel
-	}
 
 	zerolog.SetGlobalLevel(logLevel)
 	output := zerolog.ConsoleWriter{Out: os.Stdout, TimeFormat: time.RFC3339}
@@ -51,7 +46,17 @@ func NewConsole(isDebug bool) *Logger {
 
 	logger := zerolog.New(output).With().Timestamp().Logger()
 
-	return &Logger{logger: &logger}
+	app, _ := newrelic.NewApplication(
+		newrelic.ConfigAppName("interview-srv"),
+		newrelic.ConfigLicense("asd"),
+		newrelic.ConfigAppLogDecoratingEnabled(true),
+		newrelic.ConfigAppLogForwardingEnabled(false),
+		func(config *newrelic.Config) {
+			config.Enabled = true
+		},
+	)
+
+	return &Logger{logger: &logger, nrLoggerApp: app}
 }
 
 func (l *Logger) Output(w io.Writer) zerolog.Logger {
@@ -93,6 +98,9 @@ func (l *Logger) Info() *zerolog.Event {
 func (l *Logger) Warn() *zerolog.Event {
 	return l.logger.Warn()
 }
+func (l *Logger) WithTracing(span trace.Span) *zerolog.Event {
+	return l.logger.Error()
+}
 
 func (l *Logger) Error() *zerolog.Event {
 	return l.logger.Error()
@@ -124,4 +132,8 @@ func (l *Logger) Printf(format string, v ...interface{}) {
 
 func (l *Logger) Ctx(ctx context.Context) *Logger {
 	return &Logger{logger: zerolog.Ctx(ctx)}
+}
+
+func (l *Logger) Println(v ...interface{}) {
+	l.Printf("%+v\n", v...)
 }

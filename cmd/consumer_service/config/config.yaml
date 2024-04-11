@@ -1,0 +1,26 @@
+serviceName: consumer_service
+app:
+  env: dev
+  debug: true
+logger:
+  level: debug
+  devMode: false
+  encoder: json
+jaeger:
+  enable: true
+  serviceName: auth_service
+  hostPort: "http://otel_collector:14278/api/traces"
+  logSpans: false
+email:
+  host: mailpit
+  port: 1025
+  from: "interview@example.com"
+rabbitmq:
+  addr: "rabbitmq:5672"
+  username: interview
+  password: interview
+  vhost: interview
+  exchange: 
+    name: interview
+    type: direct
+    durable: true

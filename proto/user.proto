@@ -1,34 +1,78 @@
-syntax="proto3";
+syntax = "proto3";
 
-package pb;
-option go_package = "github.com/RafalSalwa/interview-app-srv/pb";
+package intrvproto;
+option go_package = "github.com/RafalSalwa/interview-app-srv/intrvproto";
 
 import "google/protobuf/timestamp.proto";
 
 message User {
-  string id = 1;
-  string name = 2;
-  string email = 3;
-  enum role {
-    user = 0;
-    admin = 1;
-  }
-  google.protobuf.Timestamp created_at = 4;
-  google.protobuf.Timestamp updated_at = 5;
+    int64 id = 1;
+    string username = 2;
+    string email = 3;
+    google.protobuf.Timestamp created_at = 4;
+}
+message GetUserSignInRequest {
+    int64 id = 1;
+    string username = 2;
+    string email = 3;
+    string password = 4;
+}
+
+message UserDetails {
+    int64 Id = 1;
+    string Username = 2;
+    string Firstname = 3;
+    string Lastname = 4;
+    string Email = 5;
+    string VerificationCode = 6;
+    string RolesJson = 7;
+    string Roles = 8;
+    string Role = 9;
+    string AccessToken = 10;
+    string RefreshToken = 11;
+    bool Verified = 12;
+    bool Active = 13;
+    google.protobuf.Timestamp CreatedAt = 14;
+    google.protobuf.Timestamp LastLogin = 15;
+}
+message GetUserRequest {
+    int64 id = 1;
+    string email = 2;
+    string verificationCode = 3;
+    string token = 4;
+    string refreshToken = 5;
+}
+
+message GetUsersRequest {
+    repeated GetUserRequest users = 1;
 }
 
 message GenericResponse {
-  string status = 1;
-  string message = 2;
+    string status = 1;
+    string message = 2;
 }
 
-// The request containing the user ID.
-message GetUserRequest {
-  string user_id = 1;
-}
+message UserResponse {User user = 1;}
 
-// The response containing the user's details.
 message GetUserResponse {
-  string name = 1;
-  string email = 2;
+    string username = 1;
+    string email = 2;
 }
+
+message GetUsersResponse {
+    repeated GetUserResponse users = 1;
+    string email = 2;
+}
+
+message ChangePasswordRequest {
+    int64 Id = 1;
+    string Password = 2;
+}
+
+message ChangePasswordResponse{
+    string status = 1;
+}
+
+message VerificationCode{string code = 1;}
+message VerifyUserRequest {string code = 1;}
+message VerificationResponse {bool success = 1;}

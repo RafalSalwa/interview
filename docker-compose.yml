@@ -1,102 +1,269 @@
 version: '3.9'
 services:
-  app:
-    container_name: app
-    build: .
-    env_file: .env
+  gateway:
+    container_name: gateway
+    build:
+      context: .
+      dockerfile: ./.docker/api_gateway/Dockerfile
+      args:
+        APP_ENV: dev
+        APP_NAME: gateway  
+    environment:
+      APP_ENV: dev
+      APP_NAME: gateway
     ports:
-      - "8081:8081"
-      - "8082:8082"
-#    command: [ "sh", "-c", "/interview/bin/migrate && /interview/bin/api" ]
+      - "8011:8011"
+      - "8012:8012"
+    volumes:
+      - ./:/interview
+      - ./build/keys/server.crt:/etc/ssl/certs/server.crt
+      - ./build/keys/server.key:/etc/ssl/private/server.key
+#    depends_on:
+#      - jaeger
+#      - auth_service
+#      - user_service
+    networks:
+      interview-net:
+        aliases:
+          - igateway
+  auth_service:
+    container_name: auth_service
+    build:
+      context: ./
+      dockerfile: ./.docker/auth_service/Dockerfile
+    environment:
+      APP_ENV: dev
+    ports:
+      - "8021:8021"
+      - "8022:8022"
     volumes:
       - ./:/interview
     depends_on:
       mysql:
         condition: service_healthy
-      postgres:
+      mongo:
+        condition: service_started
+      cache:
+        condition: service_started
+      jaeger:
+        condition: service_started
+      rabbitmq:
         condition: service_healthy
     networks:
-      interview_net:
-        ipv4_address: 172.28.1.2
+      interview-net:
         aliases:
-          - iapi
-
+          - iauth_service
+  user_service:
+    container_name: user_service
+    build:
+      context: ./
+      dockerfile: ./.docker/user_service/Dockerfile
+    environment:
+      APP_ENV: dev
+    ports:
+      - "8031:8031"
+      - "8032:8032"
+    volumes:
+      - ./:/interview
+    depends_on:
+      mysql:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+    networks:
+      interview-net:
+        aliases:
+          - iuser_service
+  consumer_service:
+    container_name: consumer_service
+    build:
+      context: ./
+      dockerfile: ./.docker/consumer_service/Dockerfile
+    environment:
+      APP_ENV: dev
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+    volumes:
+      - ./:/interview
+    networks:
+      interview-net:
+        aliases:
+          - iconsumer_service
+#  tester_service:
+#    container_name: tester_service
+#    build:
+#      context: ./
+#      dockerfile: ./.docker/tester_service/Dockerfile
+#    environment:
+#      APP_ENV: dev
+#    volumes:
+#      - ./:/interview
+#    networks:
+#      interview-net:
+#        aliases:
+#          - itester_service
   mysql:
     container_name: mysql
     image: mysql
-    env_file: .env
     volumes:
       - ./build/init_db.sql:/docker-entrypoint-initdb.d/init.sql
     environment:
-      MYSQL_DATABASE: "${MYSQL_NAME}"
+      MYSQL_DATABASE: "interview"
       MYSQL_USER: "interview"
-      MYSQL_PASSWORD: "${MYSQL_PASSWORD}"
-      MYSQL_ROOT_PASSWORD: "${MYSQL_PASSWORD}"
-      MYSQL_TCP_PORT: "${MYSQL_PORT}"
+      MYSQL_PASSWORD: "interview"
+      MYSQL_ROOT_PASSWORD: "interview"
+      MYSQL_TCP_PORT: 6033
     ports:
-      - "${MYSQL_PORT}:${MYSQL_PORT}"
-    expose:
-      - "${MYSQL_PORT}"
+      - "6033:6033"
     healthcheck:
       test: mysqladmin ping -h 127.0.0.1 -u $$MYSQL_USER --password=$$MYSQL_PASSWORD
       start_period: 5s
       interval: 5s
       timeout: 5s
-      retries: 55
+      retries: 3
     networks:
-      interview_net:
-        ipv4_address: 172.28.1.3
+      interview-net:
         aliases:
           - imysql
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    container_name: rabbitmq
+    environment:
+      - RABBITMQ_DEFAULT_USER=interview
+      - RABBITMQ_DEFAULT_PASS=interview
+      - RABBITMQ_DEFAULT_VHOST=interview
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+      - "15692:15692"
+    healthcheck:
+      test: rabbitmq-diagnostics -q ping
+      interval: 20s
+      timeout: 10s
+      retries: 5
+    volumes:
+      - ./.docker/rabbitmq/rabbitmq.conf:/etc/rabbitmq/rabbitmq.config:ro
+      - ./.docker/rabbitmq/definitions.json:/etc/rabbitmq/definitions.json:ro
+    networks:
+      interview-net:
+        aliases:
+          - irabbitmq
+          
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: prometheus
+    ports:
+      - "9090:9090"
+    command:
+      - --config.file=/etc/prometheus/prometheus.yml
+    volumes:
+      - ./.docker/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+    healthcheck:
+      test: [ "CMD", "wget", "http://localhost:9090" ]
+      interval: 10s
+      timeout: 15s
+      retries: 10
+    networks:
+      interview-net:
+        aliases:
+          - iprometheus
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    volumes:
+      - ./.docker/grafana/grafana.ini:/etc/grafana/grafana.ini
+      - ./.docker/grafana/datasource.yml:/etc/grafana/provisioning/datasources/datasource.yaml
+      - 'grafana_storage:/var/lib/grafana'
+    environment:
+      - GF_AUTH_ANONYMOUS_ENABLED=true
+      - GF_AUTH_ANONYMOUS_ORG_ROLE=Admin
+      - GF_AUTH_DISABLE_LOGIN_FORM=true
+    ports:
+      - 3000:3000
+    healthcheck:
+      test: [ "CMD-SHELL", "curl -f localhost:3000/api/health && echo 'ready'" ]
+      interval: 10s
+      retries: 30
+    networks:
+      interview-net:
+        aliases:
+          - igrafana
+  jaeger:
+    image: jaegertracing/all-in-one:latest
+    container_name: jaeger
+    environment:
+      METRICS_STORAGE_TYPE: prometheus
+      PROMETHEUS_SERVER_URL: "http://prometheus:9090"
+      PROMETHEUS_QUERY_SUPPORT_SPANMETRICS_CONNECTOR: "true"
+      PROMETHEUS_QUERY_NAMESPACE: span_metrics
+      PROMETHEUS_QUERY_DURATION_UNIT: s
+    ports:
+      - "16686:16686"
+    networks:
+      interview-net:
+        aliases:
+          - ijaeger
+  otel_collector:
+    image: otel/opentelemetry-collector-contrib:0.80.0
+    container_name: otel_collector
+    volumes:
+      - ./.docker/otel/otel-collector-config.yml:/etc/otelcol/otel-collector-config.yml
+    command: --config /etc/otelcol/otel-collector-config.yml
+    depends_on:
+      - jaeger
+    logging:
+      options:
+        max-size: "10m"
+        max-file: "3"
+    networks:
+      interview-net:
+        aliases:
+          - iotel_collector
+  mongo:
+    image: mongo
+    container_name: mongo
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: interview
+      MONGO_INITDB_ROOT_PASSWORD: interview
+    networks:
+      interview-net:
+        aliases:
+          - imongo
 
   cache:
     container_name: cache
-    image: redis:6.2-alpine
-    restart: always
+    image: redis:7-alpine
     ports:
       - '6379:6379'
-    command: redis-server --save 20 1 --loglevel warning --requirepass interview
+    command: redis-server --save 60 1 --loglevel warning --appendonly yes --requirepass GCAHwF0kz59p9FpP
     volumes:
       - cache:/data
     networks:
-      interview_net:
-        ipv4_address: 172.28.1.5
+      interview-net:
         aliases:
           - icache
 
-  postgres:
-    container_name: postgres
-    image: postgres
-    user: postgres
-    volumes:
-      - pg-data:/var/lib/postgresql/data
-    environment:
-      POSTGRES_USER: 'interview'
-      POSTGRES_PASSWORD: 'interview'
-      POSTGRES_DB: 'interview'
-      POSTGRES_HOST_AUTH_METHOD: trust
+  mailhog:
+    image: mailhog/mailhog
+    container_name: mailhog
     ports:
-      - 5432:5432
-    healthcheck:
-      test: [ "CMD-SHELL", "pg_isready -h localhost -U interview -d interview" ]
-      start_period: 5s
-      interval: 5s
-      timeout: 5s
-      retries: 55
+      - "21025:1025" # smtp server
+      - "28025:8025" # web ui
     networks:
-      interview_net:
-        ipv4_address: 172.28.1.6
+      interview-net:
         aliases:
-          - ipostgress
-
+          - imailhog
 volumes:
   cache:
     driver: local
   pg-data:
-
+  grafana_storage: {}
+  
 networks:
-  interview_net:
-    ipam:
-      driver: default
-      config:
-        - subnet: 172.28.1.0/24
+  interview-net:
+    name: interview-net
+    driver: bridge
+    enable_ipv6: false

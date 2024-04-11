@@ -1,0 +1,23 @@
+serviceName: tester_service
+app:
+  env: dev
+  debug: true
+http:
+  addr: 0.0.0.0:8011
+auth:
+  method: basic
+  apiKey: CBusCNJihmsv6fGwyPUJzPwDPhnxsSJLEBGSHOPtSKmiW72IZpMobs4on5NPnoiY
+  bearerToken: AAAAAAAAAAAAAAAAAAAAAMLheAAAAAAA0%2BuSeid%2BULvsea4JtiGRiSDSJSI%3DEUifiRBkKG5E2XzMDjRfl76ZC9Ub0wnz4XsNiRVBChTYbJcE3F
+  basic:
+    username: interview
+    password: interview
+logger:
+  level: debug
+  devMode: false
+  encoder: json
+jaeger:
+  enable: true
+  serviceName: tester_service
+  env: dev
+  Addr: "http://otel_collector:14278/api/traces"
+  logSpans: true

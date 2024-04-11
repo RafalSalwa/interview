@@ -1,4 +1,5 @@
 definitions:
+  httpErrors
     NotFoundError:
         properties:
             code:
@@ -101,40 +102,10 @@ definitions:
         type: object
         x-go-package: github.com/RafalSalwa/interview-app-srv/pkg/models
 paths:
-    /user:
-        get:
-            description: Get user details
-            operationId: getUser
-            responses:
-                "200":
-                    description: User
-                    schema:
-                        $ref: '#/definitions/User'
-                "401":
-                    description: NotFoundError
-                    schema:
-                        $ref: '#/definitions/NotFoundError'
-            security:
-                - apiKey:
-                    - '[]'
+    /auth/signup:
         post:
-            description: Edit use data
-            operationId: getUser
-            responses:
-                "200":
-                    description: User
-                    schema:
-                        $ref: '#/definitions/User'
-                "401":
-                    description: NotFoundError
-                    schema:
-                        $ref: '#/definitions/NotFoundError'
-            security:
-                - apiKey:
-                    - '[]'
-        put:
-            description: Edit use data
-            operationId: getUser
+            description: Create new Account
+            operationId: Create Account
             responses:
                 "200":
                     description: User

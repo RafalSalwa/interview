@@ -1,15 +1,13 @@
 syntax = "proto3";
 
-package pb;
-option go_package = "github.com/RafalSalwa/interview-app-srv/pb";
+package intrvproto;
+option go_package = "github.com/RafalSalwa/interview-app-srv/intrvproto";
 
-import "rpc_signup.proto";
-import "user.proto";
-
+import "rpc_signin.proto";
 
 service AuthService {
-  rpc SignUpUser(SignUpUserInput) returns (GenericResponse) {}
-  rpc VerifyEmail(VerifyEmailRequest) returns (GenericResponse) {}
+    rpc SignUpUser(SignUpUserInput) returns (SignUpUserResponse) {}
+    rpc SignInUser(SignInUserInput) returns (SignInUserResponse) {}
+    rpc SignInByCode(SignInByCodeUserInput) returns (SignInUserResponse) {}
+    rpc GetVerificationKey(VerificationCodeRequest) returns (VerificationCodeResponse) {}
 }
-
-message VerifyEmailRequest { string verificationCode = 1; }

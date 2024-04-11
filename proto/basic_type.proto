@@ -1,0 +1,12 @@
+syntax = "proto3";
+
+package intrvproto;
+option go_package = "github.com/RafalSalwa/interview-app-srv/intrvproto";
+
+message BoolValue {
+bool value = 1;
+}
+
+message StringValue {
+string value = 1;
+}

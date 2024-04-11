@@ -1,0 +1,320 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "description": "Interview API with usage of REST,gRPC,MySQL,Redis,mongo,AMQP. <br/> <br/> Current authorize settings is: <strong>Basic Auth</strong> with <strong>interview/interview</strong> parameters",
+        "title": "Go Interview REST API",
+        "contact": {
+            "name": "RafalSalwa",
+            "url": "https://github.com/RafalSalwa"
+        },
+        "version": "1.0"
+    },
+    "paths": {
+        "/auth/signup": {
+            "post": {
+                "description": "Create account",
+                "tags": [
+                    "Auth"
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/SignUpRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "content": {
+                            "application/json": {
+                                "example": {
+                                    "status": "created"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request",
+                        "content": {
+                            "application/json": {
+                                "example": {
+                                    "code": 400,
+                                    "reason": "bad request",
+                                    "message": "details"
+                                }
+                            }
+                        }
+                    },
+                    "409": {
+                        "description": "User already exists",
+                        "content": {
+                            "application/json": {
+                                "example": {
+                                    "code": 409,
+                                    "reason": "bad request",
+                                    "message": "User with such credentials already exists"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/auth/signin": {
+            "post": {
+                "description": "Log In account",
+                "tags": [
+                    "Auth"
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/SignInRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "example": {
+                                    "user": {
+                                        "username": "user1",
+                                        "token": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2OTA0NjMxNDMsImlhdCI6MTY5MDQ1OTU0MywibmJmIjoxNjkwNDU5NTQzLCJzdWIiOnsiSUQiOjEsIlVzZXJuYW1lIjoiIn19.Ly1E6KnOmRyCeRd1VhctkNUZs882rR7buG37XHPMqaGIERmYsN2y2nF5QQNyUtkTtV9Agfc10onhX8dSw1eSRg",
+                                        "refresh_token": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2OTA0ODExNDMsImlhdCI6MTY5MDQ1OTU0MywibmJmIjoxNjkwNDU5NTQzLCJzdWIiOnsiSUQiOjEsIlVzZXJuYW1lIjoiIn19.D3UfrFazNMV6al1Jgz6WGyq9g_NGZpGijTH2YrBMhUHyellXBQgBmt5GtHfDJlcuPdM2cajyhPRJ7pdYf_0Z8Q",
+                                        "created_at": "0001-01-01T00:00:00Z",
+                                        "updated_at": "0001-01-01T00:00:00Z",
+                                        "last_login": "0001-01-01T00:00:00Z",
+                                        "deleted_at": "0001-01-01T00:00:00Z"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request",
+                        "content": {
+                            "application/json": {
+                                "example": {
+                                    "code": 400,
+                                    "reason": "bad request",
+                                    "message": "Key: 'LoginUserRequest.Password' Error:Field validation for 'Password' failed on the 'required' tag"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "User not found or activated",
+                        "content": {
+                            "application/json": {
+                                "example": {
+                                    "code": 404,
+                                    "message": "Not found"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/auth/verify/{code}": {
+            "get": {
+                "description": "Verification for account used in DOI process. This code can be obtained from email. \n <br/> psst... check mailhog at this server and port :8025 :)",
+                "tags": [
+                    "Auth"
+                ],
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "code",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "description": "verification code obtained from email."
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "example": {
+                                    "status": "ok"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "example": {
+                                    "code": 404,
+                                    "message": "Not found"
+                                }
+                            }
+                        }
+                    },
+                    "409": {
+                        "description": "Conflict",
+                        "content": {
+                            "application/json": {
+                                "example": {
+                                    "code": 409,
+                                    "reason": "Conflict",
+                                    "message": "user already activated"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/auth/code": {
+            "post": {
+                "description": "get code for created user <br/>(workaround in case mailhog wont be working)",
+                "tags": [
+                    "Auth"
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/LogInRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "example": {
+                                    "status": "ok"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "example": {
+                                    "code": 404,
+                                    "message": "Not found"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/user": {
+            "get": {
+                "description": "Log In account via jwt token from previous endpoints",
+                "tags": [
+                    "User"
+                ],
+                "security": [
+                    {
+                        "BearerAuth":[]
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "example": {
+                                    "user": {
+                                        "id": 256,
+                                        "username": "rafal@interview.com"
+                                      }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "security": [
+        {
+            "basicAuth": [],
+            "ApiKeyAuth": [],
+            "BearerAuth": []
+        }
+    ],
+    "components": {
+        "securitySchemes": {
+            "basicAuth": {
+                "type": "http",
+                "scheme": "basic"
+            },
+            "ApiKeyAuth": {
+                "type": "apiKey",
+                "in": "header",
+                "name": "X-API-KEY"
+            },
+            "BearerAuth": {
+                "type": "http",
+                "description": "JWT Authorization header",
+                "scheme": "bearer",
+                "bearerFormat": "JWT"
+            }
+        },
+        "schemas": {
+            "SignUpRequest": {
+                "properties": {
+                    "email": {
+                        "type": "string",
+                        "example": "rafal@interview.com"
+                    },
+                    "password": {
+                        "type": "string",
+                        "example": "VeryG00dPass!"
+                    },
+                    "passwordConfirm": {
+                        "type": "string",
+                        "example": "VeryG00dPass!"
+                    }
+                }
+            },
+            "SignInRequest": {
+                "properties": {
+                    "username": {
+                        "type": "string",
+                        "example": "rafal@interview.com"
+                    },
+                    "password": {
+                        "type": "string",
+                        "example": "VeryG00dPass!"
+                    }
+                }
+            },
+            "LogInRequest": {
+                "properties": {
+                    "email": {
+                        "type": "string",
+                        "example": "rafal@interview.com"
+                    },
+                    "password": {
+                        "type": "string",
+                        "example": "VeryG00dPass!"
+                    }
+                }
+            }
+        }
+    }
+}

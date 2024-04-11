@@ -1,0 +1,51 @@
+version: '3.9'
+
+services:
+  rabbit1:
+    image: rabbitmq:3-management-alpine
+    hostname: rabbit1
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+      - "25672:25672"
+    volumes:
+      - ./rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf
+      - ./.erlang.cookie:/var/lib/rabbitmq/.erlang.cookie
+    networks:
+      interview-net:
+        aliases:
+          - irabbit1
+
+  rabbit2:
+    image: rabbitmq:3-management-alpine
+    hostname: rabbit2
+    depends_on:
+      - rabbitmq1
+    ports:
+      - "5673:5672"
+      - "15673:15672"
+      - "25673:25672"
+    volumes:
+      - ./rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf
+      - ./.erlang.cookie:/var/lib/rabbitmq/.erlang.cookie
+    networks:
+      interview-net:
+        aliases:
+          - irabbit2
+
+  rabbit3:
+    image: rabbitmq:3-management-alpine
+    hostname: rabbit3
+    depends_on:
+      - rabbitmq1
+    ports:
+      - "5674:5672"
+      - "15674:15672"
+      - "25674:25672"
+    volumes:
+      - ./rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf
+      - ./.erlang.cookie:/var/lib/rabbitmq/.erlang.cookie
+    networks:
+      interview-net:
+        aliases:
+          - irabbit3

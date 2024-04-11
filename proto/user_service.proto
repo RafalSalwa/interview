@@ -1,0 +1,18 @@
+syntax = "proto3";
+
+package intrvproto;
+option go_package = "github.com/RafalSalwa/interview-app-srv/intrvproto";
+
+import "user.proto";
+import "basic_type.proto";
+
+service UserService {
+    rpc CheckUserExists(StringValue) returns (BoolValue) {}
+    rpc GetUserById(GetUserRequest) returns (UserDetails) {}
+    rpc GetUserDetails(GetUserRequest) returns (UserDetails) {}
+    rpc VerifyUser(VerifyUserRequest) returns (VerificationResponse) {}
+    rpc ChangePassword(ChangePasswordRequest) returns (ChangePasswordResponse) {}
+    rpc GetUser(GetUserSignInRequest) returns (UserDetails) {}
+    rpc GetUserByCode(VerificationCode) returns (UserDetails) {}
+    rpc GetUserByToken(GetUserRequest) returns (UserDetails) {}
+}

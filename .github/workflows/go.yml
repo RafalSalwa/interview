@@ -1,72 +1,58 @@
-# This workflow will build a golang project
-# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-go
-
-name: Go
+name: Repo checks
 
 on:
-  push:
-    branches: [ "master" ]
-  pull_request:
-    branches: [ "master" ]
+  workflow_dispatch:
+    inputs:
+      logLevel:
+        description: 'Log level'
+        required: true
+        default: 'warning'
+        type: choice
+        options:
+          - info
+          - warning
+          - debug
+      tags:
+        description: 'Test scenario tags'
+        required: false
+        type: boolean
+      env:
+        description: 'Environment to run tests against'
+        type: environment
+        required: true
 
 jobs:
-
-  golangci-lint:
-    name: runner / golangci-lint
-    runs-on: ubuntu-latest
-    steps:
-      - name: Check out code into the Go module directory
-        uses: actions/checkout@v3
-      - name: golangci-lint
-        uses: reviewdog/action-golangci-lint@v2
-
-  yamllint:
-    name: runner / yamllint
-    runs-on: ubuntu-latest
+  build:
+    runs-on: self-hosted
     steps:
       - uses: actions/checkout@v3
-      - uses: reviewdog/action-yamllint@v1
+
+      - name: Set up Go
+        uses: actions/setup-go@v4
         with:
-          fail_on_error: true
-          reporter: github-pr-review
-          yamllint_flags: '-d "{extends: default, rules: {truthy: disable}}" .'
+          go-version: '1.21'
 
-  check-dependencies:
-    name: runner / check-dependencies
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-go@v2
-      - name: WriteGoList
-        run: go list -json -m all > go.list
-      - name: Nancy
-        uses: sonatype-nexus-community/nancy-github-action@main
-        continue-on-error: true
+      - name: Install dependencies
+        run: go mod download
 
+      - name: Build
+        run: go build -o gateway ./cmd/gateway/main.go
+
+      - name: Test
+        run: make test_unit
+      - name: Upload coverage reports to Codecov
+        uses: codecov/codecov-action@v3
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+      - name: Upload Go test results
+        uses: actions/upload-artifact@v3
+        with:
+          name: Go-results
+          path: TestResults.json
   test:
-    name: runner / tests
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     steps:
-    - name: Set up Go
-      uses: actions/setup-go@v3
-      with:
-        go-version: 1.20
-
-    - name: Checkout code
-      uses: actions/checkout@v3
-
-    - name: go mod package cache
-      uses: actions/cache@v3
-      with:
-        path: |
-          ~/.cache/go-build
-          ~/go/pkg/mod
-        key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
-        restore-keys: |
-          ${{ runner.os }}-go-
-
-    - name: Build
-      run: go build -o server ./cmd/server/main.go
-
-    - name: Test
-      run: make tests
+      - name: Upload coverage reports to Codecov
+        uses: codecov/codecov-action@v3
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}

@@ -1,0 +1,123 @@
+{
+    "rabbit_version": "3.12.0",
+    "rabbitmq_version": "3.12.0",
+    "product_name": "RabbitMQ",
+    "product_version": "3.12.0",
+    "users": [
+        {
+            "name": "interview",
+            "password_hash": "KrXb8pexI3M+NDWKcQ73aq7vXLED8QNt02ZNrg5yBL/lAyJW",
+            "hashing_algorithm": "rabbit_password_hashing_sha256",
+            "tags": [
+                "administrator"
+            ],
+            "limits": {}
+        }
+    ],
+    "vhosts": [
+        {
+            "name": "interview"
+        }
+    ],
+    "permissions": [
+        {
+            "user": "interview",
+            "vhost": "interview",
+            "configure": ".*",
+            "write": ".*",
+            "read": ".*"
+        }
+    ],
+    "topic_permissions": [],
+    "parameters": [],
+    "global_parameters": [
+        {
+            "name": "internal_cluster_id",
+            "value": "rabbitmq-cluster-id-YX8FUcJ_Tru1TfugtWJfDQ"
+        }
+    ],
+    "policies": [],
+    "queues": [
+        {
+            "name": "logs-topic",
+            "vhost": "interview",
+            "durable": true,
+            "auto_delete": false,
+            "arguments": {}
+        },
+        {
+            "name": "dead",
+            "vhost": "interview",
+            "durable": true,
+            "auto_delete": false,
+            "arguments": {
+                "x-dead-letter-exchange": "ex_interview",
+                "x-message-ttl": 60000
+            }
+        },
+        {
+            "name": "interview",
+            "vhost": "interview",
+            "durable": true,
+            "auto_delete": false,
+            "arguments": {
+                "x-dead-letter-exchange": "ex_dlx"
+            }
+        }
+    ],
+    "exchanges": [
+        {
+            "name": "ex_logs",
+            "vhost": "interview",
+            "type": "topic",
+            "durable": true,
+            "auto_delete": false,
+            "internal": false,
+            "arguments": {}
+        },
+        {
+            "name": "ex_interview",
+            "vhost": "interview",
+            "type": "direct",
+            "durable": true,
+            "auto_delete": false,
+            "internal": false,
+            "arguments": {}
+        },
+        {
+            "name": "ex_dlx",
+            "vhost": "interview",
+            "type": "fanout",
+            "durable": true,
+            "auto_delete": false,
+            "internal": false,
+            "arguments": {}
+        }
+    ],
+    "bindings": [
+        {
+            "source": "ex_dlx",
+            "vhost": "interview",
+            "destination": "dead",
+            "destination_type": "queue",
+            "routing_key": "",
+            "arguments": {}
+        },
+        {
+            "source": "ex_logs",
+            "vhost": "interview",
+            "destination": "logs-topic",
+            "destination_type": "queue",
+            "routing_key": "foo.#",
+            "arguments": {}
+        },
+        {
+            "source": "ex_interview",
+            "vhost": "interview",
+            "destination": "interview",
+            "destination_type": "queue",
+            "routing_key": "interview",
+            "arguments": {}
+        }
+    ]
+}

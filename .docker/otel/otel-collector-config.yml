@@ -1,0 +1,45 @@
+receivers:
+  jaeger:
+    protocols:
+      thrift_http:
+        endpoint: "0.0.0.0:14278"
+        
+  otlp:
+    protocols:
+      grpc:
+        endpoint: "0.0.0.0:4317"
+      http:
+        endpoint: "0.0.0.0:4318"
+              
+exporters:
+  prometheus:
+    endpoint: "0.0.0.0:8889"
+    enable_open_metrics: true
+    resource_to_telemetry_conversion:
+      enabled: true
+  logging:
+  otlp:
+    endpoint: jaeger:4317
+    tls:
+      insecure: true
+
+connectors:
+  spanmetrics:
+    namespace: span.metrics
+  
+processors:
+  batch:
+  spanmetrics:
+    metrics_exporter: prometheus
+
+service:
+  pipelines:
+    traces:
+      receivers: [otlp, jaeger]
+      processors: [batch]
+      exporters: [spanmetrics, otlp]
+
+    metrics:
+      receivers: [ otlp, spanmetrics]
+      processors: [ batch ]
+      exporters: [prometheus]

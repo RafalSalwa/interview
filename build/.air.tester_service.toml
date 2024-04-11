@@ -1,0 +1,34 @@
+# Config file for [Air](https://github.com/cosmtrek/air) in TOML format
+root = "."
+tmp_dir = "tmp"
+
+[build]
+cmd = "go build -gcflags \"all=-N -l\" -o tester_service ./cmd/tester_service/main.go"
+bin = "./tester_service"
+log = "./tmp/air_tester_service_errors.log"
+
+include_dir = ["cmd/tester_service"]
+include_ext = ["go", "yaml", "tpl", "tmpl", "html"]
+exclude_dir = ["assets", "tmp", "vendor", "swagger"]
+follow_symlink = true
+exclude_regex = ["_test\\.go"]
+
+delay = 100 # ms
+kill_delay = 0 # ms
+stop_on_error = true
+send_interrupt = false
+rerun = true
+rerun_delay = 200
+
+[log]
+time = true
+main_only = false
+
+[color]
+main = "magenta"
+watcher = "cyan"
+build = "yellow"
+runner = "green"
+
+[misc]
+clean_on_exit = true
