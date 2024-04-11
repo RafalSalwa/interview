@@ -3,6 +3,7 @@ package rpc
 import (
 	"context"
 	"errors"
+
 	"github.com/RafalSalwa/interview-app-srv/pkg/encdec"
 	"github.com/RafalSalwa/interview-app-srv/pkg/models"
 	"github.com/RafalSalwa/interview-app-srv/pkg/tracing"
@@ -95,7 +96,7 @@ func (a *Auth) SignUpUser(ctx context.Context, req *pb.SignUpUserInput) (*pb.Sig
 func (a *Auth) GetVerificationKey(
 	ctx context.Context,
 	in *pb.VerificationCodeRequest) (*pb.VerificationCodeResponse, error) {
-	ur, err := a.authService.GetVerificationKey(ctx, in.Email)
+	ur, err := a.authService.GetVerificationKey(ctx, in.GetEmail())
 	if err != nil {
 		a.logger.Error().Err(err).Msg("rpc:service:getkey")
 		if err.Error() == "record not found" {

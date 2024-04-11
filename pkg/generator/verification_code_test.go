@@ -4,10 +4,11 @@ package generator
 
 import (
 	"errors"
-	"github.com/stretchr/testify/assert"
 	"io"
 	"regexp"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestVerificationCode(t *testing.T) {

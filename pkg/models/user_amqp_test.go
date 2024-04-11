@@ -1,8 +1,9 @@
 package models
 
 import (
-	"github.com/stretchr/testify/assert"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestUserDBModel_AMQP(t *testing.T) {
@@ -14,5 +15,4 @@ func TestUserDBModel_AMQP(t *testing.T) {
 	}
 	m := um.AMQP()
 	assert.NotEmpty(t, m)
-
 }

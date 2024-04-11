@@ -31,6 +31,7 @@ var SwaggerInfo = &swag.Spec{
 	LeftDelim:        "{{",
 	RightDelim:       "}}",
 }
+
 func init() {
 	swag.Register(SwaggerInfo.InstanceName(), SwaggerInfo)
 }

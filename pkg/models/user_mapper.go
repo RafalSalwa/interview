@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+
 	"github.com/RafalSalwa/interview-app-srv/pkg/encdec"
 	"github.com/RafalSalwa/interview-app-srv/pkg/hashing"
 	"github.com/RafalSalwa/interview-app-srv/pkg/jwt"
@@ -66,8 +67,8 @@ func (r *UserResponse) AssignTokenPair(tp *jwt.TokenPair) {
 }
 
 func (r *UserResponse) FromProtoSignIn(pbu *intrvproto.SignInUserResponse) {
-	r.AccessToken = pbu.AccessToken
-	r.RefreshToken = pbu.RefreshToken
+	r.AccessToken = pbu.GetAccessToken()
+	r.RefreshToken = pbu.GetRefreshToken()
 }
 func (r *UserResponse) FromProtoSignUp(pbu *intrvproto.SignUpUserResponse) error {
 	r.Username = pbu.GetUsername()
@@ -79,8 +80,8 @@ func (r *UserResponse) FromProtoSignUp(pbu *intrvproto.SignUpUserResponse) error
 
 func (r *UserResponse) FromProtoUserResponse(pu *intrvproto.UserResponse) error {
 	err := copier.Copy(r, &pu)
-	r.Id = pu.User.Id
-	r.Username = pu.User.Username
+	r.Id = pu.GetUser().GetId()
+	r.Username = pu.GetUser().GetUsername()
 
 	if err != nil {
 		return fmt.Errorf("from response to db error: %w", err)

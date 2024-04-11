@@ -127,19 +127,6 @@ func (s *SQLServiceImpl) LoginUser(u *models.SignInUserRequest) (*models.UserRes
 		return nil, err
 	}
 
-	// roles, err := phpserialize.Decode(user.RolesJson)
-
-	if err != nil {
-		return nil, err
-	}
-
-	// v, ok := roles.(map[interface{}]interface{})
-	// if ok {
-	//	for _, s := range v {
-	//		user.Roles = append(user.Roles, fmt.Sprintf("%v", s))
-	//	}
-	//}
-
 	return &user, nil
 }
 

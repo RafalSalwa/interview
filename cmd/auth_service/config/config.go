@@ -2,6 +2,7 @@ package config
 
 import (
 	"errors"
+
 	"github.com/RafalSalwa/interview-app-srv/pkg/email"
 	"github.com/RafalSalwa/interview-app-srv/pkg/env"
 	"github.com/RafalSalwa/interview-app-srv/pkg/grpc"

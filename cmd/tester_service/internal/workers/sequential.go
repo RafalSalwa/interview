@@ -5,14 +5,15 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"github.com/RafalSalwa/interview-app-srv/cmd/tester_service/config"
-	"github.com/RafalSalwa/interview-app-srv/pkg/generator"
-	"github.com/RafalSalwa/interview-app-srv/pkg/models"
-	"github.com/fatih/color"
 	"io"
 	"log"
 	"net/http"
 	"time"
+
+	"github.com/RafalSalwa/interview-app-srv/cmd/tester_service/config"
+	"github.com/RafalSalwa/interview-app-srv/pkg/generator"
+	"github.com/RafalSalwa/interview-app-srv/pkg/models"
+	"github.com/fatih/color"
 )
 
 type Sequential struct {
@@ -50,7 +51,6 @@ func (s Sequential) Run() {
 }
 
 func (s Sequential) signUp(user *testUser) {
-
 	newUser := &models.SignUpUserRequest{
 		Email:           user.Email,
 		Password:        user.Password,
@@ -88,7 +88,6 @@ func (s Sequential) signUp(user *testUser) {
 		fmt.Println(color.GreenString("OK"))
 	}
 	resp.Body.Close()
-
 }
 
 func (s Sequential) getVerificationCode(user *testUser) {
@@ -174,7 +173,6 @@ func (s Sequential) activateUser(user *testUser) {
 }
 
 func (s Sequential) signIn(user *testUser) {
-
 	credentials := &models.SignInUserRequest{
 		Email:    user.Email,
 		Password: user.Password,

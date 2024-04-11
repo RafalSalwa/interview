@@ -4,13 +4,14 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"strconv"
+
 	"github.com/RafalSalwa/interview-app-srv/pkg/encdec"
 	"github.com/RafalSalwa/interview-app-srv/pkg/hashing"
 	"github.com/RafalSalwa/interview-app-srv/pkg/tracing"
 	"go.opentelemetry.io/otel"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
-	"strconv"
 
 	"github.com/RafalSalwa/interview-app-srv/cmd/user_service/config"
 	"github.com/RafalSalwa/interview-app-srv/cmd/user_service/internal/repository"
@@ -41,7 +42,6 @@ type UserService interface {
 }
 
 func NewUserService(ctx context.Context, cfg *config.Config, log *logger.Logger) UserServiceImpl {
-
 	userRepository, errR := repository.NewUserRepository(ctx, cfg.App.RepositoryType, cfg)
 	if errR != nil {
 		log.Error().Err(errR).Msg("user:service:new")

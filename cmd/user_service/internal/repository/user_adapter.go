@@ -4,8 +4,9 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"go.opentelemetry.io/otel"
 	"time"
+
+	"go.opentelemetry.io/otel"
 
 	"github.com/RafalSalwa/interview-app-srv/pkg/models"
 
@@ -18,7 +19,7 @@ type UserAdapter struct {
 }
 
 func (r *UserAdapter) Save(ctx context.Context, user *models.UserDBModel) error {
-	//TODO implement me
+	// TODO implement me
 	panic("implement me")
 }
 

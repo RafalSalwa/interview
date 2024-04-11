@@ -2,6 +2,7 @@ package repository
 
 import (
 	"context"
+
 	"github.com/RafalSalwa/interview-app-srv/pkg/logger"
 	"github.com/RafalSalwa/interview-app-srv/pkg/models"
 	"github.com/go-redis/redis/v8"
@@ -17,7 +18,7 @@ type RedisAdapter struct {
 }
 
 func (r RedisAdapter) Exists(ctx context.Context, udb *models.UserDBModel) bool {
-	//TODO implement me
+	// TODO implement me
 	panic("implement me")
 }
 
@@ -26,17 +27,17 @@ func newRedisUserRepository(client *redis.UniversalClient) UserRepository {
 }
 
 func (r RedisAdapter) Update(ctx context.Context, user models.UserDBModel) error {
-	//TODO implement me
+	// TODO implement me
 	panic("implement me")
 }
 
 func (r RedisAdapter) Save(ctx context.Context, user *models.UserDBModel) error {
-	//TODO implement me
+	// TODO implement me
 	panic("implement me")
 }
 
 func (r RedisAdapter) FindAll(ctx context.Context, user *models.UserDBModel) ([]models.UserDBModel, error) {
-	//TODO implement me
+	// TODO implement me
 	panic("implement me")
 }
 
