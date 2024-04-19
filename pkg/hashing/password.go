@@ -12,7 +12,7 @@ type MismatchError struct {
 }
 
 func (m MismatchError) Error() string {
-	return "boom"
+	return m.error
 }
 
 type ValidationError struct {

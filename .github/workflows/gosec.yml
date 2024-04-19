@@ -2,7 +2,6 @@ name: Run Gosec
 on:
   push:
     branches:
-      - master
   pull_request:
     branches:
       - master
@@ -18,3 +17,7 @@ jobs:
         uses: securego/gosec@master
         with:
           args: ./...
+      - name: reviewdog
+        uses: reviewdog/action-setup@v1
+        with:
+          reviewdog_version: latest

@@ -2,15 +2,15 @@ package services
 
 import (
 	"context"
-	"errors"
 	"fmt"
+	"strconv"
+
 	"github.com/RafalSalwa/interview-app-srv/pkg/encdec"
 	"github.com/RafalSalwa/interview-app-srv/pkg/hashing"
 	"github.com/RafalSalwa/interview-app-srv/pkg/tracing"
 	"go.opentelemetry.io/otel"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
-	"strconv"
 
 	"github.com/RafalSalwa/interview-app-srv/cmd/user_service/config"
 	"github.com/RafalSalwa/interview-app-srv/cmd/user_service/internal/repository"
@@ -41,7 +41,6 @@ type UserService interface {
 }
 
 func NewUserService(ctx context.Context, cfg *config.Config, log *logger.Logger) UserServiceImpl {
-
 	userRepository, errR := repository.NewUserRepository(ctx, cfg.App.RepositoryType, cfg)
 	if errR != nil {
 		log.Error().Err(errR).Msg("user:service:new")
@@ -124,7 +123,7 @@ func (s *UserServiceImpl) StoreVerificationData(ctx context.Context, vCode strin
 		return err
 	}
 	if udb == nil {
-		errUser := errors.New(fmt.Sprintf("user not found. user with verification code %s was not found", vCode))
+		errUser := fmt.Errorf("user not found. user with verification code %s was not found", vCode)
 		tracing.RecordError(span, errUser)
 		return errUser
 	}

@@ -3,6 +3,7 @@ package workers
 import (
 	"context"
 	"fmt"
+
 	"github.com/RafalSalwa/interview-app-srv/cmd/tester_service/config"
 )
 

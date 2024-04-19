@@ -5,6 +5,10 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"io"
+	"log"
+	"net/http"
+
 	"github.com/RafalSalwa/interview-app-srv/cmd/tester_service/config"
 	"github.com/RafalSalwa/interview-app-srv/pkg/generator"
 	"github.com/RafalSalwa/interview-app-srv/pkg/models"
@@ -12,9 +16,6 @@ import (
 	"github.com/fatih/color"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
-	"io"
-	"log"
-	"net/http"
 )
 
 const numChannels = 4
@@ -27,7 +28,6 @@ func NewDaisyChain(cfg *config.Config) WorkerRunner {
 	return &DaisyChain{
 		cfg: cfg,
 	}
-
 }
 
 func (s DaisyChain) Run() {
@@ -43,7 +43,6 @@ func (s DaisyChain) Run() {
 	}
 
 	leftmost <- s.dcCreateUser(ctx, s.cfg)
-
 }
 func worker(ctx context.Context, in <-chan testUser, out chan<- testUser, task string) {
 	inUser := <-in

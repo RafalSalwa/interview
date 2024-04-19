@@ -3,9 +3,9 @@ package repository
 import (
 	"context"
 	"errors"
-	"fmt"
-	"go.opentelemetry.io/otel"
 	"time"
+
+	"go.opentelemetry.io/otel"
 
 	"github.com/RafalSalwa/interview-app-srv/pkg/models"
 
@@ -18,7 +18,7 @@ type UserAdapter struct {
 }
 
 func (r *UserAdapter) Save(ctx context.Context, user *models.UserDBModel) error {
-	//TODO implement me
+	// TODO implement me
 	panic("implement me")
 }
 
@@ -35,14 +35,13 @@ func (r *UserAdapter) Update(ctx context.Context, user *models.UserDBModel) erro
 }
 
 func (r *UserAdapter) FindOne(ctx context.Context, user *models.UserDBModel) (*models.UserDBModel, error) {
-	ctx, span := otel.GetTracerProvider().Tracer("repository").Start(ctx, "Repository/FindOne")
+	_, span := otel.GetTracerProvider().Tracer("repository").Start(ctx, "Repository/FindOne")
 	defer span.End()
 
 	if err := r.DB.Where(&user).Limit(1).Find(&user).Error; err != nil {
 		return nil, err
 	}
-	fmt.Printf("FindOne: %+v\n", user)
-	fmt.Println("id", user.Id, "email", user.Email, "validation", user.Email == "" || user.Id == 0)
+
 	if user.Email == "" || user.Id == 0 {
 		return nil, nil
 	}
@@ -64,7 +63,7 @@ func (r *UserAdapter) ChangePassword(ctx context.Context, userid int64, password
 }
 
 func (r *UserAdapter) Load(ctx context.Context, user *models.UserDBModel) (*models.UserDBModel, error) {
-	ctx, span := otel.GetTracerProvider().Tracer("repository").Start(ctx, "Repository/Load")
+	_, span := otel.GetTracerProvider().Tracer("repository").Start(ctx, "Repository/Load")
 	defer span.End()
 
 	if err := r.DB.Where(&user).Limit(1).Find(&user).Error; err != nil {

@@ -28,7 +28,7 @@ type UserSQLService interface {
 	CreateUser(user *models.SignUpUserRequest) (*models.UserResponse, error)
 }
 
-func (s SQLServiceImpl) GetByCode(code string) (*models.UserDBModel, error) {
+func (s *SQLServiceImpl) GetByCode(code string) (*models.UserDBModel, error) {
 	user := &models.UserDBModel{}
 
 	row := s.db.QueryRow("SELECT id,verification_code FROM `user` WHERE verification_code = ?", code)
@@ -36,6 +36,7 @@ func (s SQLServiceImpl) GetByCode(code string) (*models.UserDBModel, error) {
 		&user.VerificationCode)
 
 	if err == sql.ErrNoRows {
+		s.logger.Error().Err(err).Msg("User not found")
 		return nil, nil
 	}
 

@@ -5,15 +5,16 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"io"
+	"log"
+	"net/http"
+	"time"
+
 	"github.com/RafalSalwa/interview-app-srv/cmd/tester_service/config"
 	"github.com/RafalSalwa/interview-app-srv/cmd/tester_service/internal/workers"
 	"github.com/RafalSalwa/interview-app-srv/pkg/generator"
 	"github.com/RafalSalwa/interview-app-srv/pkg/logger"
 	"github.com/RafalSalwa/interview-app-srv/pkg/models"
-	"io"
-	"log"
-	"net/http"
-	"time"
 )
 
 const (
