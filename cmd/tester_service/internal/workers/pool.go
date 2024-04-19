@@ -1,8 +1,9 @@
 package workers
 
 import (
-	"github.com/RafalSalwa/interview-app-srv/cmd/tester_service/config"
 	"net/http"
+
+	"github.com/RafalSalwa/interview-app-srv/cmd/tester_service/config"
 )
 
 type Pool struct {

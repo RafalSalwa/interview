@@ -59,6 +59,10 @@ func RespondBadRequest(w http.ResponseWriter, msg string) {
 	Respond(w, http.StatusBadRequest, responseBody)
 }
 
+func RespondString(w http.ResponseWriter, msg string) {
+	Respond(w, http.StatusOK, []byte(msg))
+}
+
 func Respond(w http.ResponseWriter, statusCode int, responseBody []byte) {
 	setHTTPHeaders(w, statusCode)
 	_, _ = w.Write(responseBody)

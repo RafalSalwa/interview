@@ -5,14 +5,15 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"github.com/RafalSalwa/interview-app-srv/cmd/tester_service/config"
-	"github.com/RafalSalwa/interview-app-srv/pkg/generator"
-	"github.com/RafalSalwa/interview-app-srv/pkg/models"
-	"github.com/fatih/color"
 	"io"
 	"log"
 	"net/http"
 	"time"
+
+	"github.com/RafalSalwa/interview-app-srv/cmd/tester_service/config"
+	"github.com/RafalSalwa/interview-app-srv/pkg/generator"
+	"github.com/RafalSalwa/interview-app-srv/pkg/models"
+	"github.com/fatih/color"
 )
 
 type Sequential struct {
@@ -50,7 +51,6 @@ func (s Sequential) Run() {
 }
 
 func (s Sequential) signUp(user *testUser) {
-
 	newUser := &models.SignUpUserRequest{
 		Email:           user.Email,
 		Password:        user.Password,
@@ -59,7 +59,7 @@ func (s Sequential) signUp(user *testUser) {
 
 	marshaled, err := json.Marshal(newUser)
 	if err != nil {
-		log.Fatal("impossible to marshall: %+v\n", err)
+		log.Printf("impossible to marshall: %+v\n", err)
 	}
 
 	client := &http.Client{}
@@ -87,8 +87,10 @@ func (s Sequential) signUp(user *testUser) {
 	} else {
 		fmt.Println(color.GreenString("OK"))
 	}
-	resp.Body.Close()
-
+	err = resp.Body.Close()
+	if err != nil {
+		fmt.Println("req do err: ", err)
+	}
 }
 
 func (s Sequential) getVerificationCode(user *testUser) {
@@ -136,7 +138,7 @@ func (s Sequential) getVerificationCode(user *testUser) {
 	}
 	user.ValidationCode = tgt.User.Token
 	fmt.Println(tgt.User.Token)
-	resp.Body.Close()
+	err = resp.Body.Close()
 	if err != nil {
 		fmt.Println(err)
 		return
@@ -157,7 +159,7 @@ func (s Sequential) activateUser(user *testUser) {
 		fmt.Println("/auth/verify/", err)
 		return
 	}
-	resp.Body.Close()
+
 	if resp.StatusCode != 200 {
 		fmt.Println("Err ")
 		fmt.Printf("%s req :\n", URL)
@@ -171,10 +173,14 @@ func (s Sequential) activateUser(user *testUser) {
 		fmt.Println("verify err:", err)
 		return
 	}
+	err = resp.Body.Close()
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
 }
 
 func (s Sequential) signIn(user *testUser) {
-
 	credentials := &models.SignInUserRequest{
 		Email:    user.Email,
 		Password: user.Password,
@@ -210,6 +216,10 @@ func (s Sequential) signIn(user *testUser) {
 	if err != nil {
 		fmt.Println("ReadAll err: ", err)
 	}
-	resp.Body.Close()
+	err = resp.Body.Close()
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
 	fmt.Println("Token: ", string(respBody))
 }

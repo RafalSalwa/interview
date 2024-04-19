@@ -1,13 +1,13 @@
 package email
 
 import (
-    "bytes"
-    "log"
-    "os"
-    "path/filepath"
-    "text/template"
+	"bytes"
+	"log"
+	"os"
+	"path/filepath"
+	"text/template"
 
-    mail "github.com/xhit/go-simple-mail/v2"
+	mail "github.com/xhit/go-simple-mail/v2"
 )
 
 type Config struct {
@@ -78,6 +78,9 @@ func (c *Client) SendVerificationEmail(data UserEmailData) error {
 		SetBodyData(mail.TextHTML, body.Bytes())
 
 	con, err := c.client.Connect()
+	if err != nil {
+		return err
+	}
 	defer func(con *mail.SMTPClient) error {
 		err = con.Close()
 		if err != nil {
@@ -88,6 +91,7 @@ func (c *Client) SendVerificationEmail(data UserEmailData) error {
 	if err != nil {
 		return err
 	}
+
 	err = m.Send(con)
 	if err != nil {
 		return err

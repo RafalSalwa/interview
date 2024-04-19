@@ -3,12 +3,12 @@
 build:
 	docker compose up --build -d
 up:
-	docker compose up -d --force-recreate && docker compose logs -f gateway auth_service user_service consumer_service
+	docker compose up -d --force-recreate && docker compose logs -f gateway auth_service user_service consumer_service crypton_service
 compose-down:
 	docker compose down --remove-orphans
 
 logs_follow:
-	docker compose logs -f gateway auth_service user_service consumer_service
+	docker compose logs -f gateway auth_service user_service consumer_service crypton_service
 
 .PHONY: tester
 tester:
@@ -26,6 +26,13 @@ lint:
 
 check_sec:
 	gosec ./...
+
+static_analysis:
+	goimports
+	errcheck ./...
+	gofmt -s
+	go vet ./...
+	staticcheck ./...
 
 .PHONY: proto
 proto:

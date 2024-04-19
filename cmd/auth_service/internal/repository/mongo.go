@@ -3,6 +3,8 @@ package repository
 import (
 	"context"
 	"errors"
+	"time"
+
 	"github.com/RafalSalwa/interview-app-srv/pkg/models"
 	apiMongo "github.com/RafalSalwa/interview-app-srv/pkg/mongo"
 	"go.mongodb.org/mongo-driver/bson"
@@ -10,7 +12,6 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/codes"
-	"time"
 )
 
 type MongoAdapter struct {
@@ -46,7 +47,7 @@ func (m MongoAdapter) Exists(ctx context.Context, udb *models.UserDBModel) bool 
 }
 
 func (m MongoAdapter) Update(ctx context.Context, user models.UserDBModel) error {
-	//TODO mongo implement me
+	// TODO mongo implement me
 	panic("mongo Update implement me")
 }
 
@@ -67,7 +68,7 @@ func (m MongoAdapter) Save(ctx context.Context, user *models.UserDBModel) error 
 }
 
 func (m MongoAdapter) FindAll(ctx context.Context, user *models.UserDBModel) ([]models.UserDBModel, error) {
-	//TODO mongo implement me
+	// TODO mongo implement me
 	panic("mongo FindAll implement me")
 }
 
