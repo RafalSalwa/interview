@@ -134,9 +134,6 @@ func (a authHandler) SignUpUser() http.HandlerFunc {
 		ctx, span := otel.GetTracerProvider().Tracer("Handler").Start(r.Context(), "Handler/SignUpUser")
 		defer span.End()
 
-		//bytedata, _ := ioutil.ReadAll(r.Body)
-		//fmt.Println(string(bytedata))
-
 		if err := validate.UserInput(r, &reqUser); err != nil {
 			tracing.RecordError(span, err)
 			a.logger.Error().Err(err).Msg("SignUpUser: decode")

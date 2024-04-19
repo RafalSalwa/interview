@@ -1,6 +1,11 @@
 ## Golang monorepo with REST, gRPC, CQRS, opentelemetry, gorillaMUX, swag, mailhog and rabbitMQ 
 #### based on docker containers, docker compose, Makefile 
 
+[![Go Report Card](https://goreportcard.com/badge/github.com/RafalSalwa/interview-app-srv)](https://goreportcard.com/report/github.com/RafalSalwa/interview-app-srv)
+[![CII Best Practices](https://bestpractices.coreinfrastructure.org/projects/7285/badge)](https://bestpractices.coreinfrastructure.org/projects/7285)
+[![CircleCI](https://dl.circleci.com/status-badge/img/gh/RafalSalwa/interview-app-srv/tree/master.svg?style=svg)](https://dl.circleci.com/status-badge/redirect/gh/RafalSalwa/interview-app-srv/tree/master)
+[![Go](https://github.com/RafalSalwa/interview-app-srv/actions/workflows/go.yml/badge.svg)](https://github.com/RafalSalwa/interview-app-srv/actions/workflows/go.yml)
+
 [![codecov](https://codecov.io/gh/RafalSalwa/interview-srv-go/graph/badge.svg?token=T0DZIOYDR8)](https://codecov.io/gh/RafalSalwa/interview-srv-go)
 [![CircleCI](https://dl.circleci.com/status-badge/img/gh/RafalSalwa/interview-srv-go/tree/master.svg?style=svg)](https://dl.circleci.com/status-badge/redirect/gh/RafalSalwa/interview-srv-go/tree/master)
 [![Go package](https://github.com/RafalSalwa/interview-srv-go/actions/workflows/go.yml/badge.svg)](https://github.com/RafalSalwa/interview-srv-go/actions/workflows/go.yml)

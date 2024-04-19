@@ -1,17 +1,18 @@
 package router
 
 import (
-    "io"
-    "log"
-    "net/http"
-    "os"
+	"io"
+	"log"
+	"net/http"
+	"os"
 
-    "github.com/RafalSalwa/interview-app-srv/docs"
-    "github.com/RafalSalwa/interview-app-srv/pkg/http/middlewares"
-    "github.com/RafalSalwa/interview-app-srv/pkg/logger"
-    "github.com/gorilla/mux"
-    "github.com/prometheus/client_golang/prometheus/promhttp"
-    httpSwagger "github.com/swaggo/http-swagger/v2"
+	"github.com/RafalSalwa/interview-app-srv/pkg/http/middlewares"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
+
+	"github.com/RafalSalwa/interview-app-srv/docs"
+	"github.com/RafalSalwa/interview-app-srv/pkg/logger"
+	"github.com/gorilla/mux"
+	httpSwagger "github.com/swaggo/http-swagger/v2"
 )
 
 func NewHTTPRouter(l *logger.Logger) *mux.Router {
@@ -46,5 +47,9 @@ func setupSwagger(r *mux.Router) {
 	bytesJSON, _ := io.ReadAll(jsonFile)
 	docs.SwaggerInfo.SwaggerTemplate = string(bytesJSON)
 
-	r.PathPrefix("/swagger/").Handler(httpSwagger.WrapHandler).Methods(http.MethodGet)
+	r.PathPrefix("/docs/").Handler(httpSwagger.WrapHandler).Methods(http.MethodGet)
+
+	r.Path("/").Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		http.Redirect(w, r, "/docs/index.html", http.StatusSeeOther)
+	})).Methods(http.MethodGet)
 }
