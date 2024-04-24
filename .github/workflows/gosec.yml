@@ -6,7 +6,8 @@ on:
     branches:
       - master
 jobs:
-  tests:
+  gosec:
+    name: "gosec"
     runs-on: ubuntu-latest
     env:
       GO111MODULE: on
@@ -17,7 +18,3 @@ jobs:
         uses: securego/gosec@master
         with:
           args: ./...
-      - name: reviewdog
-        uses: reviewdog/action-setup@v1
-        with:
-          reviewdog_version: latest
