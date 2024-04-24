@@ -3,10 +3,11 @@ package config
 import (
 	"errors"
 	"fmt"
+	"os"
+
 	"github.com/RafalSalwa/interview-app-srv/pkg/http/auth"
 	"github.com/RafalSalwa/interview-app-srv/pkg/logger"
 	"github.com/spf13/viper"
-	"os"
 )
 
 var configPath string

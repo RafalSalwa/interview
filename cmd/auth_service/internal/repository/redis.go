@@ -3,9 +3,15 @@ package repository
 import (
 	"context"
 
+	"github.com/RafalSalwa/interview-app-srv/pkg/logger"
 	"github.com/RafalSalwa/interview-app-srv/pkg/models"
 	"github.com/go-redis/redis/v8"
 )
+
+type RedisRepository struct {
+	log         *logger.Logger
+	redisClient redis.UniversalClient
+}
 
 type RedisAdapter struct {
 	DB *redis.UniversalClient

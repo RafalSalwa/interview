@@ -2,6 +2,7 @@ package query
 
 import (
 	"context"
+
 	"go.opentelemetry.io/otel"
 
 	intrvproto "github.com/RafalSalwa/interview-app-srv/proto/grpc"

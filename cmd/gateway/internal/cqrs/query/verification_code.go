@@ -27,7 +27,7 @@ func (h VerificationCodeHandler) Handle(ctx context.Context, email string) (mode
 		return models.UserResponse{}, err
 	}
 	u := models.UserResponse{
-		VerificationCode: resp.Code,
+		VerificationCode: resp.GetCode(),
 	}
 	return u, nil
 }

@@ -3,9 +3,10 @@ package handlers
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/RafalSalwa/interview-app-srv/pkg/encdec"
 	"log"
 	"net/mail"
+
+	"github.com/RafalSalwa/interview-app-srv/pkg/encdec"
 
 	"github.com/RafalSalwa/interview-app-srv/cmd/consumer_service/config"
 	"github.com/RafalSalwa/interview-app-srv/pkg/email"

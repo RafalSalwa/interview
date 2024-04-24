@@ -78,7 +78,7 @@ linters-settings:
       - func
     disable-dec-order-check: false
     disable-init-func-first-check: false
-    disable-dec-num-check: true
+    disable-dec-num-check: false
 
   errcheck:
     check-type-assertions: false

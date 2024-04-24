@@ -2,7 +2,6 @@ package services
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/RafalSalwa/interview-app-srv/pkg/encdec"
 	"github.com/RafalSalwa/interview-app-srv/pkg/tracing"
@@ -97,7 +96,6 @@ func (a *AuthServiceImpl) SignInUser(ctx context.Context, reqUser *models.SignIn
 		Verified: true,
 		Active:   true,
 	}
-	fmt.Printf("SignInUser: %+v\n %s\n", udb, reqUser.Email)
 	udb, err := a.repository.FindOne(ctx, udb)
 	if err != nil {
 		tracing.RecordError(span, err)
