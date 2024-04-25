@@ -71,7 +71,7 @@
 
 - ### Tester service
   - workers pool service that constantly creates users from registration, activation and signIn for JWT Tokens
-  - optional daisy chain pattern for concurrency controll
+  - optional daisy chain pattern for concurrency control
   
 
 ## Build
