@@ -3,6 +3,7 @@ name: "Code QL scanning"
 on:
   push:
   pull_request:
+    branches: [ "1.x" ]
   schedule:
     - cron: '0 10 * * 6'
 
