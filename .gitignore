@@ -58,6 +58,7 @@ go.work
 /auth_service
 /client
 /consumer_service
+.scannerwork/
 coverage.html
 coverage.json
 go_vet.json
