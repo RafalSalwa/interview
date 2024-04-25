@@ -27,6 +27,7 @@ func (p *Publisher) Disconnect() error {
 	select {
 	case <-notifDone:
 	case <-ctxDone.Done():
+		cancelDone()
 		return errors.New("failed to close rabbitmq connection")
 	}
 	cancelDone()
