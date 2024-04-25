@@ -5,11 +5,11 @@ import (
 	"errors"
 	"time"
 
-	"github.com/RafalSalwa/interview-app-srv/pkg/hashing"
+	"github.com/RafalSalwa/auth-api/pkg/hashing"
 	"go.opentelemetry.io/otel"
 	otelcodes "go.opentelemetry.io/otel/codes"
 
-	"github.com/RafalSalwa/interview-app-srv/pkg/models"
+	"github.com/RafalSalwa/auth-api/pkg/models"
 	"gorm.io/gorm"
 )
 

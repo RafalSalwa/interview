@@ -4,8 +4,8 @@ import (
 	"context"
 	"errors"
 
-	"github.com/RafalSalwa/interview-app-srv/pkg/models"
-	apiMongo "github.com/RafalSalwa/interview-app-srv/pkg/mongo"
+	"github.com/RafalSalwa/auth-api/pkg/models"
+	apiMongo "github.com/RafalSalwa/auth-api/pkg/mongo"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"

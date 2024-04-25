@@ -78,7 +78,7 @@ check_static:
 	staticcheck ./...
 check_callvis:
 	#go install github.com/ofabry/go-callvis@latest
-	go-callvis github.com/RafalSalwa/interview-app-srv/cmd/gateway
+	go-callvis github.com/RafalSalwa/auth-api/cmd/gateway
 check_goreporter:
 	#go get -u github.com/360EntSecGroup-Skylar/goreporter
 	

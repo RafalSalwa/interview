@@ -1,13 +1,13 @@
 package config
 
 import (
-	"github.com/RafalSalwa/interview-app-srv/pkg/csrf"
-	"github.com/RafalSalwa/interview-app-srv/pkg/env"
-	"github.com/RafalSalwa/interview-app-srv/pkg/http"
-	"github.com/RafalSalwa/interview-app-srv/pkg/http/auth"
-	"github.com/RafalSalwa/interview-app-srv/pkg/logger"
-	"github.com/RafalSalwa/interview-app-srv/pkg/probes"
-	"github.com/RafalSalwa/interview-app-srv/pkg/tracing"
+	"github.com/RafalSalwa/auth-api/pkg/csrf"
+	"github.com/RafalSalwa/auth-api/pkg/env"
+	"github.com/RafalSalwa/auth-api/pkg/http"
+	"github.com/RafalSalwa/auth-api/pkg/http/auth"
+	"github.com/RafalSalwa/auth-api/pkg/logger"
+	"github.com/RafalSalwa/auth-api/pkg/probes"
+	"github.com/RafalSalwa/auth-api/pkg/tracing"
 	"github.com/spf13/viper"
 )
 

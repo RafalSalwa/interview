@@ -8,12 +8,12 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/RafalSalwa/interview-app-srv/cmd/gateway/config"
-	"github.com/RafalSalwa/interview-app-srv/cmd/gateway/internal/cqrs"
-	"github.com/RafalSalwa/interview-app-srv/cmd/gateway/internal/handler"
-	"github.com/RafalSalwa/interview-app-srv/cmd/gateway/internal/router"
-	"github.com/RafalSalwa/interview-app-srv/cmd/gateway/internal/server"
-	"github.com/RafalSalwa/interview-app-srv/pkg/logger"
+	"github.com/RafalSalwa/auth-api/cmd/gateway/config"
+	"github.com/RafalSalwa/auth-api/cmd/gateway/internal/cqrs"
+	"github.com/RafalSalwa/auth-api/cmd/gateway/internal/handler"
+	"github.com/RafalSalwa/auth-api/cmd/gateway/internal/router"
+	"github.com/RafalSalwa/auth-api/cmd/gateway/internal/server"
+	"github.com/RafalSalwa/auth-api/pkg/logger"
 	"github.com/fatih/color"
 	"github.com/pkg/profile"
 )

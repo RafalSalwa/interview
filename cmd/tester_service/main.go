@@ -10,11 +10,11 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/RafalSalwa/interview-app-srv/cmd/tester_service/config"
-	"github.com/RafalSalwa/interview-app-srv/cmd/tester_service/internal/workers"
-	"github.com/RafalSalwa/interview-app-srv/pkg/generator"
-	"github.com/RafalSalwa/interview-app-srv/pkg/logger"
-	"github.com/RafalSalwa/interview-app-srv/pkg/models"
+	"github.com/RafalSalwa/auth-api/cmd/tester_service/config"
+	"github.com/RafalSalwa/auth-api/cmd/tester_service/internal/workers"
+	"github.com/RafalSalwa/auth-api/pkg/generator"
+	"github.com/RafalSalwa/auth-api/pkg/logger"
+	"github.com/RafalSalwa/auth-api/pkg/models"
 )
 
 const (

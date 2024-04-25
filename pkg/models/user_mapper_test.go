@@ -3,8 +3,8 @@
 package models
 
 import (
-	"github.com/RafalSalwa/interview-app-srv/pkg/jwt"
-	intrvproto "github.com/RafalSalwa/interview-app-srv/proto/grpc"
+	"github.com/RafalSalwa/auth-api/pkg/jwt"
+	intrvproto "github.com/RafalSalwa/auth-api/proto/grpc"
 	"github.com/stretchr/testify/assert"
 	"testing"
 	"time"

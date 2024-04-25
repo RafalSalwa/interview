@@ -3,7 +3,7 @@ package command
 import (
 	"context"
 
-	intrvproto "github.com/RafalSalwa/interview-app-srv/proto/grpc"
+	intrvproto "github.com/RafalSalwa/auth-api/proto/grpc"
 )
 
 type VerifyCode struct {

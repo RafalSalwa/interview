@@ -6,9 +6,9 @@ import (
 	"net/http"
 	"os"
 
-	"github.com/RafalSalwa/interview-app-srv/docs"
-	"github.com/RafalSalwa/interview-app-srv/pkg/http/middlewares"
-	"github.com/RafalSalwa/interview-app-srv/pkg/logger"
+	"github.com/RafalSalwa/auth-api/docs"
+	"github.com/RafalSalwa/auth-api/pkg/http/middlewares"
+	"github.com/RafalSalwa/auth-api/pkg/logger"
 	"github.com/gorilla/mux"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	httpSwagger "github.com/swaggo/http-swagger/v2"

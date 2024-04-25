@@ -2,8 +2,9 @@ package query
 
 import (
 	"context"
-	"github.com/RafalSalwa/interview-app-srv/pkg/models"
-	intrvproto "github.com/RafalSalwa/interview-app-srv/proto/grpc"
+
+	"github.com/RafalSalwa/auth-api/pkg/models"
+	intrvproto "github.com/RafalSalwa/auth-api/proto/grpc"
 )
 
 type GetUserByCodeHandler struct {

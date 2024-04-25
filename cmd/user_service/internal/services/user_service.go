@@ -5,19 +5,19 @@ import (
 	"fmt"
 	"strconv"
 
-	"github.com/RafalSalwa/interview-app-srv/pkg/encdec"
-	"github.com/RafalSalwa/interview-app-srv/pkg/hashing"
-	"github.com/RafalSalwa/interview-app-srv/pkg/tracing"
+	"github.com/RafalSalwa/auth-api/pkg/encdec"
+	"github.com/RafalSalwa/auth-api/pkg/hashing"
+	"github.com/RafalSalwa/auth-api/pkg/tracing"
 	"go.opentelemetry.io/otel"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
-	"github.com/RafalSalwa/interview-app-srv/cmd/user_service/config"
-	"github.com/RafalSalwa/interview-app-srv/cmd/user_service/internal/repository"
-	"github.com/RafalSalwa/interview-app-srv/pkg/jwt"
-	"github.com/RafalSalwa/interview-app-srv/pkg/logger"
-	"github.com/RafalSalwa/interview-app-srv/pkg/models"
-	"github.com/RafalSalwa/interview-app-srv/pkg/rabbitmq"
+	"github.com/RafalSalwa/auth-api/cmd/user_service/config"
+	"github.com/RafalSalwa/auth-api/cmd/user_service/internal/repository"
+	"github.com/RafalSalwa/auth-api/pkg/jwt"
+	"github.com/RafalSalwa/auth-api/pkg/logger"
+	"github.com/RafalSalwa/auth-api/pkg/models"
+	"github.com/RafalSalwa/auth-api/pkg/rabbitmq"
 )
 
 type UserServiceImpl struct {

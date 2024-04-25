@@ -3,9 +3,9 @@ package repository
 import (
 	"context"
 
-	"github.com/RafalSalwa/interview-app-srv/cmd/user_service/config"
-	"github.com/RafalSalwa/interview-app-srv/pkg/mongo"
-	"github.com/RafalSalwa/interview-app-srv/pkg/sql"
+	"github.com/RafalSalwa/auth-api/cmd/user_service/config"
+	"github.com/RafalSalwa/auth-api/pkg/mongo"
+	"github.com/RafalSalwa/auth-api/pkg/sql"
 )
 
 const (

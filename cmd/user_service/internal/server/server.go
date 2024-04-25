@@ -7,10 +7,10 @@ import (
 	"os/signal"
 	"syscall"
 
-	"github.com/RafalSalwa/interview-app-srv/cmd/user_service/config"
-	"github.com/RafalSalwa/interview-app-srv/cmd/user_service/internal/services"
-	"github.com/RafalSalwa/interview-app-srv/pkg/logger"
-	"github.com/RafalSalwa/interview-app-srv/pkg/tracing"
+	"github.com/RafalSalwa/auth-api/cmd/user_service/config"
+	"github.com/RafalSalwa/auth-api/cmd/user_service/internal/services"
+	"github.com/RafalSalwa/auth-api/pkg/logger"
+	"github.com/RafalSalwa/auth-api/pkg/tracing"
 	"github.com/go-playground/validator/v10"
 )
 

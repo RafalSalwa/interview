@@ -5,11 +5,11 @@ import (
 	"database/sql"
 	"errors"
 
-	"github.com/RafalSalwa/interview-app-srv/pkg/generator"
-	"github.com/RafalSalwa/interview-app-srv/pkg/hashing"
-	"github.com/RafalSalwa/interview-app-srv/pkg/logger"
-	"github.com/RafalSalwa/interview-app-srv/pkg/models"
-	mySql "github.com/RafalSalwa/interview-app-srv/pkg/sql"
+	"github.com/RafalSalwa/auth-api/pkg/generator"
+	"github.com/RafalSalwa/auth-api/pkg/hashing"
+	"github.com/RafalSalwa/auth-api/pkg/logger"
+	"github.com/RafalSalwa/auth-api/pkg/models"
+	mySql "github.com/RafalSalwa/auth-api/pkg/sql"
 )
 
 type SQLServiceImpl struct {

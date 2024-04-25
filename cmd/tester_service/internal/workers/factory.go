@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/RafalSalwa/interview-app-srv/cmd/tester_service/config"
+	"github.com/RafalSalwa/auth-api/cmd/tester_service/config"
 )
 
 type WorkerRunner interface {

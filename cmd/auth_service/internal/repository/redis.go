@@ -3,8 +3,8 @@ package repository
 import (
 	"context"
 
-	"github.com/RafalSalwa/interview-app-srv/pkg/logger"
-	"github.com/RafalSalwa/interview-app-srv/pkg/models"
+	"github.com/RafalSalwa/auth-api/pkg/logger"
+	"github.com/RafalSalwa/auth-api/pkg/models"
 	"github.com/go-redis/redis/v8"
 )
 

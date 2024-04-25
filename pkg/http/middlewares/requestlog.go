@@ -9,7 +9,7 @@ import (
 
 	"github.com/gorilla/mux"
 
-	"github.com/RafalSalwa/interview-app-srv/pkg/logger"
+	"github.com/RafalSalwa/auth-api/pkg/logger"
 )
 
 func RequestLog(logger *logger.Logger) mux.MiddlewareFunc {

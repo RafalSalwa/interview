@@ -3,8 +3,8 @@ package command
 import (
 	"context"
 
-	"github.com/RafalSalwa/interview-app-srv/pkg/hashing"
-	intrvproto "github.com/RafalSalwa/interview-app-srv/proto/grpc"
+	"github.com/RafalSalwa/auth-api/pkg/hashing"
+	intrvproto "github.com/RafalSalwa/auth-api/proto/grpc"
 )
 
 type ChangePassword struct {

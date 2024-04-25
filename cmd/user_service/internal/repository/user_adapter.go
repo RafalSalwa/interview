@@ -3,11 +3,12 @@ package repository
 import (
 	"context"
 	"errors"
-	"github.com/RafalSalwa/interview-app-srv/pkg/hashing"
-	"github.com/RafalSalwa/interview-app-srv/pkg/models"
+	"time"
+
+	"github.com/RafalSalwa/auth-api/pkg/hashing"
+	"github.com/RafalSalwa/auth-api/pkg/models"
 	"go.opentelemetry.io/otel"
 	"gorm.io/gorm"
-	"time"
 )
 
 type UserAdapter struct {

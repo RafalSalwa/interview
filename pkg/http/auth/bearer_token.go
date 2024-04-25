@@ -4,7 +4,7 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/RafalSalwa/interview-app-srv/pkg/responses"
+	"github.com/RafalSalwa/auth-api/pkg/responses"
 )
 
 type bearerTokenHandler struct {
