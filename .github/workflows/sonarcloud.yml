@@ -25,7 +25,6 @@ jobs:
         uses: golangci/golangci-lint-action@v5
         with:
           version: v1.57
-          args: '--out-format checkstyle > golangci-lint.xml'
       - name: Prepare analysis
         run: |
           make test_unit

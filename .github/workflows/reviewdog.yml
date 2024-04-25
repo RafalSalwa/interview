@@ -64,9 +64,9 @@ jobs:
         run: go install golang.org/x/lint/golint@latest
 
       - name: Setup reviewdog
-        # uses: reviewdog/action-setup@v1
-        run: |
-          go install ./cmd/reviewdog
+        uses: reviewdog/action-setup@v1
+        with:
+          reviewdog_version: latest
 
       - name: Run reviewdog (github-pr-check)
         continue-on-error: true
