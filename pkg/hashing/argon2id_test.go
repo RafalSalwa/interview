@@ -8,10 +8,7 @@ import (
 )
 
 func TestArgon2ID(t *testing.T) {
-	h, err := Argon2ID("password")
-	if err != nil {
-		t.Error("should not return error")
-	}
+	h := Argon2ID("password")
 	assert.Contains(t, h, "$argon2id")
 }
 

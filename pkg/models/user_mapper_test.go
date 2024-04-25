@@ -42,9 +42,8 @@ func initStructs() usersModels {
 		DeletedAt:        &timeNow,
 	}
 	ureq := UserRequest{
-		Id:       uid,
-		Username: username,
-		Email:    email,
+		Id:    uid,
+		Email: email,
 	}
 	udbresp := UserDBResponse{
 		Id:        uid,
