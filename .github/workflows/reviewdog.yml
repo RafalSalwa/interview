@@ -14,7 +14,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - uses: actions/setup-go@v5
+      - uses: WillAbides/setup-go-faster@v1.14.0
         with:
           go-version-file: "go.mod"
 
@@ -22,9 +22,9 @@ jobs:
         run: go install golang.org/x/lint/golint@latest
 
       - name: Setup reviewdog
-        # uses: reviewdog/action-setup@v1
-        run: |
-          go install ./cmd/reviewdog
+        uses: reviewdog/action-setup@v1
+        with:
+          reviewdog_version: latest
 
       - name: Run reviewdog
         env:
@@ -56,7 +56,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - uses: actions/setup-go@v5
+      - uses: WillAbides/setup-go-faster@v1.14.0
         with:
           go-version-file: "go.mod"
 
