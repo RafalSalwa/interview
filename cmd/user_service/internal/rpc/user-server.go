@@ -1,9 +1,9 @@
 package rpc
 
 import (
-	"github.com/RafalSalwa/interview-app-srv/cmd/user_service/internal/services"
-	grpcconfig "github.com/RafalSalwa/interview-app-srv/pkg/grpc"
-	pb "github.com/RafalSalwa/interview-app-srv/proto/grpc"
+	"github.com/RafalSalwa/auth-api/cmd/user_service/internal/services"
+	grpcconfig "github.com/RafalSalwa/auth-api/pkg/grpc"
+	pb "github.com/RafalSalwa/auth-api/proto/grpc"
 )
 
 type UserServer struct {

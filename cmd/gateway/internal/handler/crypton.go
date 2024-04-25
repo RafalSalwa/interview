@@ -3,13 +3,13 @@ package handler
 import (
 	"net/http"
 
-	"github.com/RafalSalwa/interview-app-srv/pkg/encdec"
-	"github.com/RafalSalwa/interview-app-srv/pkg/responses"
+	"github.com/RafalSalwa/auth-api/pkg/encdec"
+	"github.com/RafalSalwa/auth-api/pkg/responses"
 	"go.opentelemetry.io/otel"
 
 	"github.com/gorilla/mux"
 
-	"github.com/RafalSalwa/interview-app-srv/pkg/logger"
+	"github.com/RafalSalwa/auth-api/pkg/logger"
 )
 
 type CryptonHandler interface {

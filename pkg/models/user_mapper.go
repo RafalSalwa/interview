@@ -6,10 +6,10 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/RafalSalwa/interview-app-srv/pkg/encdec"
-	"github.com/RafalSalwa/interview-app-srv/pkg/hashing"
-	"github.com/RafalSalwa/interview-app-srv/pkg/jwt"
-	intrvproto "github.com/RafalSalwa/interview-app-srv/proto/grpc"
+	"github.com/RafalSalwa/auth-api/pkg/encdec"
+	"github.com/RafalSalwa/auth-api/pkg/hashing"
+	"github.com/RafalSalwa/auth-api/pkg/jwt"
+	intrvproto "github.com/RafalSalwa/auth-api/proto/grpc"
 	"github.com/jinzhu/copier"
 )
 

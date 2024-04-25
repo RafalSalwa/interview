@@ -4,8 +4,8 @@ import (
 	"context"
 	"strconv"
 
-	"github.com/RafalSalwa/interview-app-srv/cmd/auth_service/internal/repository"
-	"github.com/RafalSalwa/interview-app-srv/pkg/models"
+	"github.com/RafalSalwa/auth-api/cmd/auth_service/internal/repository"
+	"github.com/RafalSalwa/auth-api/pkg/models"
 )
 
 type UserService interface {

@@ -10,9 +10,9 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/RafalSalwa/interview-app-srv/cmd/consumer_service/config"
-	amqpHandlers "github.com/RafalSalwa/interview-app-srv/cmd/consumer_service/internal/handlers"
-	"github.com/RafalSalwa/interview-app-srv/pkg/rabbitmq"
+	"github.com/RafalSalwa/auth-api/cmd/consumer_service/config"
+	amqpHandlers "github.com/RafalSalwa/auth-api/cmd/consumer_service/internal/handlers"
+	"github.com/RafalSalwa/auth-api/pkg/rabbitmq"
 	amqp "github.com/rabbitmq/amqp091-go"
 )
 

@@ -1,7 +1,7 @@
 syntax = "proto3";
 
 package intrvproto;
-option go_package = "github.com/RafalSalwa/interview-app-srv/intrvproto";
+option go_package = "github.com/RafalSalwa/auth-api/intrvproto";
 
 import "rpc_signin.proto";
 

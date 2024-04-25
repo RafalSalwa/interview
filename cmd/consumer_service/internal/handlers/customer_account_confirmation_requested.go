@@ -6,12 +6,12 @@ import (
 	"log"
 	"net/mail"
 
-	"github.com/RafalSalwa/interview-app-srv/pkg/encdec"
+	"github.com/RafalSalwa/auth-api/pkg/encdec"
 
-	"github.com/RafalSalwa/interview-app-srv/cmd/consumer_service/config"
-	"github.com/RafalSalwa/interview-app-srv/pkg/email"
-	"github.com/RafalSalwa/interview-app-srv/pkg/models"
-	"github.com/RafalSalwa/interview-app-srv/pkg/rabbitmq"
+	"github.com/RafalSalwa/auth-api/cmd/consumer_service/config"
+	"github.com/RafalSalwa/auth-api/pkg/email"
+	"github.com/RafalSalwa/auth-api/pkg/models"
+	"github.com/RafalSalwa/auth-api/pkg/rabbitmq"
 )
 
 func WrapHandleCustomerAccountRequestConfirmEmail(event rabbitmq.Event) error {

@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 
-	"github.com/RafalSalwa/interview-app-srv/pkg/rabbitmq"
+	"github.com/RafalSalwa/auth-api/pkg/rabbitmq"
 )
 
 type CustomerLoggedInEvent struct {

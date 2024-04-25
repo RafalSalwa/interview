@@ -17,7 +17,7 @@ import (
 
 	"gorm.io/plugin/dbresolver"
 
-	"github.com/RafalSalwa/interview-app-srv/pkg/models"
+	"github.com/RafalSalwa/auth-api/pkg/models"
 )
 
 func newUserDBModel(db *gorm.DB, opts ...gen.DOOption) userDBModel {

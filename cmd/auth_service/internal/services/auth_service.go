@@ -3,19 +3,19 @@ package services
 import (
 	"context"
 
-	"github.com/RafalSalwa/interview-app-srv/pkg/encdec"
-	"github.com/RafalSalwa/interview-app-srv/pkg/tracing"
+	"github.com/RafalSalwa/auth-api/pkg/encdec"
+	"github.com/RafalSalwa/auth-api/pkg/tracing"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
-	"github.com/RafalSalwa/interview-app-srv/cmd/auth_service/config"
-	"github.com/RafalSalwa/interview-app-srv/cmd/auth_service/internal/repository"
-	"github.com/RafalSalwa/interview-app-srv/pkg/generator"
-	"github.com/RafalSalwa/interview-app-srv/pkg/hashing"
-	"github.com/RafalSalwa/interview-app-srv/pkg/jwt"
-	"github.com/RafalSalwa/interview-app-srv/pkg/logger"
-	"github.com/RafalSalwa/interview-app-srv/pkg/models"
-	"github.com/RafalSalwa/interview-app-srv/pkg/rabbitmq"
+	"github.com/RafalSalwa/auth-api/cmd/auth_service/config"
+	"github.com/RafalSalwa/auth-api/cmd/auth_service/internal/repository"
+	"github.com/RafalSalwa/auth-api/pkg/generator"
+	"github.com/RafalSalwa/auth-api/pkg/hashing"
+	"github.com/RafalSalwa/auth-api/pkg/jwt"
+	"github.com/RafalSalwa/auth-api/pkg/logger"
+	"github.com/RafalSalwa/auth-api/pkg/models"
+	"github.com/RafalSalwa/auth-api/pkg/rabbitmq"
 	"go.opentelemetry.io/otel"
 )
 

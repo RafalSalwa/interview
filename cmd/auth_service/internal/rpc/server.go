@@ -1,10 +1,10 @@
 package rpc
 
 import (
-	"github.com/RafalSalwa/interview-app-srv/cmd/auth_service/internal/services"
-	grpcconfig "github.com/RafalSalwa/interview-app-srv/pkg/grpc"
-	"github.com/RafalSalwa/interview-app-srv/pkg/logger"
-	pb "github.com/RafalSalwa/interview-app-srv/proto/grpc"
+	"github.com/RafalSalwa/auth-api/cmd/auth_service/internal/services"
+	grpcconfig "github.com/RafalSalwa/auth-api/pkg/grpc"
+	"github.com/RafalSalwa/auth-api/pkg/logger"
+	pb "github.com/RafalSalwa/auth-api/proto/grpc"
 )
 
 type Auth struct {

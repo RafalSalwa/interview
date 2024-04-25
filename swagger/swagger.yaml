@@ -11,7 +11,7 @@ definitions:
                 x-go-name: Message
         type: object
         x-go-name: NotFoundResponse
-        x-go-package: github.com/RafalSalwa/interview-app-srv/api/resource/responses
+        x-go-package: github.com/RafalSalwa/auth-api/api/resource/responses
     User:
         properties:
             AuthToken:
@@ -50,7 +50,7 @@ definitions:
                 type: string
                 x-go-name: Username
         type: object
-        x-go-package: github.com/RafalSalwa/interview-app-srv/pkg/models
+        x-go-package: github.com/RafalSalwa/auth-api/pkg/models
     UserDevice:
         properties:
             brand:
@@ -91,7 +91,7 @@ definitions:
                 type: integer
                 x-go-name: UserId
         type: object
-        x-go-package: github.com/RafalSalwa/interview-app-srv/pkg/models
+        x-go-package: github.com/RafalSalwa/auth-api/pkg/models
     Users:
         properties:
             items:
@@ -100,7 +100,7 @@ definitions:
                 type: array
                 x-go-name: Items
         type: object
-        x-go-package: github.com/RafalSalwa/interview-app-srv/pkg/models
+        x-go-package: github.com/RafalSalwa/auth-api/pkg/models
 paths:
     /auth/signup:
         post:

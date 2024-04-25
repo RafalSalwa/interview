@@ -3,12 +3,12 @@ package cqrs
 import (
 	"context"
 
-	"github.com/RafalSalwa/interview-app-srv/cmd/gateway/config"
-	"github.com/RafalSalwa/interview-app-srv/cmd/gateway/internal/cqrs/command"
-	"github.com/RafalSalwa/interview-app-srv/cmd/gateway/internal/cqrs/query"
-	"github.com/RafalSalwa/interview-app-srv/cmd/gateway/internal/rpc_client"
-	"github.com/RafalSalwa/interview-app-srv/pkg/models"
-	intrvproto "github.com/RafalSalwa/interview-app-srv/proto/grpc"
+	"github.com/RafalSalwa/auth-api/cmd/gateway/config"
+	"github.com/RafalSalwa/auth-api/cmd/gateway/internal/cqrs/command"
+	"github.com/RafalSalwa/auth-api/cmd/gateway/internal/cqrs/query"
+	"github.com/RafalSalwa/auth-api/cmd/gateway/internal/rpc_client"
+	"github.com/RafalSalwa/auth-api/pkg/models"
+	intrvproto "github.com/RafalSalwa/auth-api/proto/grpc"
 )
 
 type Application struct {

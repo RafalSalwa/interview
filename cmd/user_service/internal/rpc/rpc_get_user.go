@@ -4,8 +4,8 @@ import (
 	"context"
 	"errors"
 
-	"github.com/RafalSalwa/interview-app-srv/pkg/models"
-	pb "github.com/RafalSalwa/interview-app-srv/proto/grpc"
+	"github.com/RafalSalwa/auth-api/pkg/models"
+	pb "github.com/RafalSalwa/auth-api/proto/grpc"
 	"github.com/jinzhu/copier"
 	"go.opentelemetry.io/otel"
 	otelcodes "go.opentelemetry.io/otel/codes"

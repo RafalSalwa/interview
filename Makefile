@@ -54,14 +54,16 @@ tester:
 	docker compose up -f docker-compose.tester.yml -d
 
 test_unit:
-	APP_ENV=staging go test -v -cover -coverprofile=cover.out ./pkg/... ./cmd/... -tags=unit
-	go tool cover -html=cover.out -o coverage.html
+	APP_ENV=staging go test -v -cover -coverprofile=coverage.out ./pkg/... ./cmd/... -tags=unit -json > coverage.json
+	go tool cover -html=coverage.out -o coverage.html
 
 test_integration:
 	APP_ENV=staging go test -cover ./cmd/... -tags=integration
 
+vet:
+	go vet ./... -json go_vet.json
 lint:
-	golangci-lint run --enable gosec
+	golangci-lint run --out-format checkstyle > golangci-lint.xml
 
 check_sec:
 	gosec ./...
@@ -73,12 +75,18 @@ static_analysis:
 	go vet ./...
 	staticcheck ./...
 
+.PHONY: sonar_static_analysis
+sonar_static_analysis: test_unit
+	go vet -json ./... > go_vet.json
+	golangci-lint run --out-format checkstyle > golangci-lint.xml
+	sonar-scanner -Dsonar.host.url=${SONAR_HOST} -Dsonar.token=${SONAR_TOKEN}
+
 check_static:
 	#go install honnef.co/go/tools/cmd/staticcheck@latest
 	staticcheck ./...
 check_callvis:
 	#go install github.com/ofabry/go-callvis@latest
-	go-callvis github.com/RafalSalwa/interview-app-srv/cmd/gateway
+	go-callvis github.com/RafalSalwa/auth-api/cmd/gateway
 check_goreporter:
 	#go get -u github.com/360EntSecGroup-Skylar/goreporter
 	

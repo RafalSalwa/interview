@@ -4,10 +4,10 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/RafalSalwa/interview-app-srv/pkg/http/auth"
-	"github.com/RafalSalwa/interview-app-srv/pkg/responses"
+	"github.com/RafalSalwa/auth-api/pkg/http/auth"
+	"github.com/RafalSalwa/auth-api/pkg/responses"
 
-	"github.com/RafalSalwa/interview-app-srv/pkg/jwt"
+	"github.com/RafalSalwa/auth-api/pkg/jwt"
 	"github.com/gorilla/mux"
 )
 

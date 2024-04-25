@@ -25,15 +25,11 @@ func Test_encrypt(t *testing.T) {
 			// encrypt the plaintext
 			ciphertext := Encrypt(tt.args.plaintext)
 
-			t.Logf("ciphertext = %s", ciphertext)
-
 			plaintext, err := Decrypt(ciphertext)
 			if err != nil {
 				t.Errorf("encrypt() error = %v", err)
 				return
 			}
-			t.Logf("plaintext = %s", plaintext)
-			//
 			// compare the initial plaintext with output of previous decrypt function
 			if plaintext != tt.args.plaintext {
 				t.Errorf("plaintext = %v, want %v", plaintext, tt.args.plaintext)

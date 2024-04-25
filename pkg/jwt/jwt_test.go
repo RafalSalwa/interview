@@ -6,8 +6,6 @@ import (
 	"testing"
 	"time"
 
-	"github.com/mitchellh/mapstructure"
-
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -40,14 +38,12 @@ func TestGenerateTokenPair(t *testing.T) {
 	at := tp.AccessToken
 	token, err := ValidateToken(at, c.Access.PublicKey)
 	assert.NoError(t, err)
-	expectedMap := map[string]interface{}{
-		"user_id": 1.0,
-	}
-	exp := &UserClaims{
-		ID: int64(1),
-	}
-	err = mapstructure.Decode(expectedMap, &exp)
-	assert.NoError(t, err)
+	//expectedMap := map[string]interface{}{
+	//	"user_id": 1.0,
+	//}
+	exp := "1"
+	//err = mapstructure.Decode(expectedMap, &exp)
+	//assert.NoError(t, err)
 	assert.Equal(t, exp, token)
 	expiredAt := time.Now()
 	require.WithinDuration(t, issuedAt, expiredAt, time.Second)
@@ -55,7 +51,7 @@ func TestGenerateTokenPair(t *testing.T) {
 
 func TestCreateToken(t *testing.T) {
 	c := initConfig()
-	at, err := CreateToken(c.Access.ExpiresIn, "1", c.Access.PrivateKey)
+	at, err := CreateToken(c.Access.ExpiresIn, 1, c.Access.PrivateKey)
 	assert.NoError(t, err)
 	assert.NotEmpty(t, at)
 	if len(at) < 180 {

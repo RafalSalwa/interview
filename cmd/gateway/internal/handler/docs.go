@@ -3,7 +3,7 @@ package handler
 import (
 	"net/http"
 
-	"github.com/RafalSalwa/interview-app-srv/pkg/logger"
+	"github.com/RafalSalwa/auth-api/pkg/logger"
 	"github.com/gorilla/mux"
 )
 

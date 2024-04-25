@@ -3,7 +3,7 @@
 package config
 
 import (
-	"github.com/RafalSalwa/interview-app-srv/pkg/env"
+	"github.com/RafalSalwa/auth-api/pkg/env"
 	"testing"
 
 	"github.com/stretchr/testify/assert"

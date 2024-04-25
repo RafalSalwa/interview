@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/RafalSalwa/interview-app-srv/pkg/http/auth"
-	"github.com/RafalSalwa/interview-app-srv/pkg/logger"
+	"github.com/RafalSalwa/auth-api/pkg/http/auth"
+	"github.com/RafalSalwa/auth-api/pkg/logger"
 	"github.com/spf13/viper"
 )
 
