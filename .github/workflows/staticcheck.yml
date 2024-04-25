@@ -9,14 +9,14 @@ jobs:
     name: "Static check"
     runs-on: "ubuntu-latest"
     steps:
-    - uses: actions/checkout@v1
+    - name: "Checkout"
+      uses: actions/checkout@v4
       with:
-        fetch-depth: 1
+        fetch-depth: 0
     - uses: WillAbides/setup-go-faster@v1.14.0
       with:
         go-version: "1.22.x"
-    - run: "go test ./..."
-    - run: "go vet ./..."
+    - run: make test_unit
     - uses: dominikh/staticcheck-action@v1
       with:
         version: "latest"
