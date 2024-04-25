@@ -58,3 +58,7 @@ go.work
 /auth_service
 /client
 /consumer_service
+coverage.html
+coverage.json
+go_vet.json
+golangci-lint.xml
