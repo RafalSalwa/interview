@@ -8,16 +8,17 @@ import (
 	"github.com/RafalSalwa/auth-api/pkg/models"
 )
 
-type UserService interface {
-	Load(ctx context.Context, id string) (*models.UserDBModel, error)
-}
+type (
+	UserService interface {
+		Load(ctx context.Context, id string) (*models.UserDBModel, error)
+	}
+	userService struct {
+		repository repository.UserRepository
+	}
+)
 
 func NewORMUserService(repository repository.UserRepository) UserService {
 	return &userService{repository: repository}
-}
-
-type userService struct {
-	repository repository.UserRepository
 }
 
 func (s *userService) Load(ctx context.Context, id string) (*models.UserDBModel, error) {

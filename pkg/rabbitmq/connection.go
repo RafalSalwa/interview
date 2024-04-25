@@ -67,29 +67,5 @@ func (l *Connection) connect() (notify chan *amqp.Error, err error) {
 func (l *Connection) Close(ctx context.Context) (done chan struct{}) {
 	done = make(chan struct{})
 
-	go func() {
-		defer close(done)
-		select { // either waits for the messages to process or timeout from context
-		case <-ctx.Done():
-		}
-		l.closeConnections()
-	}()
 	return
-}
-
-func (l *Connection) closeConnections() {
-	var err error
-	if l.Channel != nil {
-		err = l.Channel.Close()
-		if err != nil {
-			log.Printf("Error closing consumer channel: [%s]\n", err)
-		}
-	}
-
-	if l.Connection != nil {
-		err = l.Connection.Close()
-		if err != nil {
-			log.Printf("Error closing connection: [%s]\n", err)
-		}
-	}
 }

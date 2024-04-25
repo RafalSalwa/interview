@@ -10,16 +10,22 @@ import (
 	mail "github.com/xhit/go-simple-mail/v2"
 )
 
-type Config struct {
-	Host string
-	Port int
-	From string
-}
-
-type Client struct {
-	client      *mail.SMTPServer
-	DefaultFrom string
-}
+type (
+	Config struct {
+		Host string
+		Port int
+		From string
+	}
+	Client struct {
+		client      *mail.SMTPServer
+		DefaultFrom string
+	}
+	UserEmailData struct {
+		Username         string
+		Email            string
+		VerificationCode string
+	}
+)
 
 func NewClient(cfg Config) Client {
 	client := mail.NewSMTPClient()
@@ -30,12 +36,6 @@ func NewClient(cfg Config) Client {
 		DefaultFrom: cfg.From,
 	}
 	return email
-}
-
-type UserEmailData struct {
-	Username         string
-	Email            string
-	VerificationCode string
 }
 
 func ParseTemplateDir(dir string) (*template.Template, error) {

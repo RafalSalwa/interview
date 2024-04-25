@@ -26,7 +26,7 @@ func (m *UserDBModel) FromCreateUserReq(cur SignUpUserRequest, enc ...bool) erro
 	if err != nil {
 		return fmt.Errorf("from create to db model error: %w", err)
 	}
-	if len(enc) > 0 && enc[0] == true {
+	if len(enc) > 0 && enc[0] {
 		m.Email = encdec.Encrypt(cur.Email)
 		m.Password = hashing.Argon2ID(cur.Password)
 	}
@@ -105,7 +105,7 @@ func (m *UserMongoModel) FromDBModel(user *UserDBModel) error {
 	return nil
 }
 
-func (um *UserDBModel) FromMongoUser(um2 UserMongoModel) error {
+func (um *UserDBModel) FromMongoUser(um2 *UserMongoModel) error {
 	err := copier.Copy(um, um2)
 	if err != nil {
 		return err
@@ -120,8 +120,6 @@ func (m *StringInterfaceMap) Scan(src interface{}) error {
 	switch src.(type) {
 	case []uint8:
 		source = []byte(src.([]uint8))
-	case nil:
-		return nil
 	default:
 		return errors.New("incompatible type for StringInterfaceMap")
 	}
@@ -141,5 +139,5 @@ func (m StringInterfaceMap) Value() (driver.Value, error) {
 	if err != nil {
 		return nil, err
 	}
-	return driver.Value([]byte(j)), nil
+	return driver.Value(j), nil
 }

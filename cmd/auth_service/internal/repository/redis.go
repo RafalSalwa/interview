@@ -25,7 +25,7 @@ func newRedisUserRepository(client *redis.UniversalClient) UserRepository {
 	return &RedisAdapter{DB: client}
 }
 
-func (r RedisAdapter) Update(ctx context.Context, user models.UserDBModel) error {
+func (r RedisAdapter) Update(ctx context.Context, user *models.UserDBModel) error {
 	// TODO implement me
 	panic("implement me")
 }

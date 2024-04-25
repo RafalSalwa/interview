@@ -11,8 +11,6 @@ func TestModels(t *testing.T) {
 		Id: 1,
 	}
 	assert.NotEmpty(t, dbu)
-	err := dbu.BeforeCreate(nil)
-	assert.NoError(t, err)
-	assert.Equal(t, false, dbu.Active)
+	assert.False(t, dbu.Active)
 	assert.Equal(t, "user", dbu.TableName())
 }

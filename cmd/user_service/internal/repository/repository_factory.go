@@ -27,7 +27,7 @@ func NewUserRepository(ctx context.Context, dbType string, params *config.Config
 		if err != nil {
 			return nil, err
 		}
-		return newMongoDBUserRepository(mongoClient, params.Mongo), nil
+		return NewMongoDBUserRepository(mongoClient, params.Mongo), nil
 
 	default:
 		panic("Unsupported database type")

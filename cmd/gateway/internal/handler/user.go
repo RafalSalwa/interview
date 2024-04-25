@@ -38,7 +38,7 @@ func NewUserHandler(cqrs *cqrs.Application, l *logger.Logger) UserHandler {
 func (uh userHandler) RegisterRoutes(r *mux.Router, cfg interface{}) {
 	params := cfg.(auth.JWTConfig)
 	s := r.PathPrefix("/user").Subrouter()
-	s.Use(middlewares.ValidateJWTAccessToken(params))
+	s.Use(middlewares.ValidateJWTAccessToken(&params))
 
 	s.Methods(http.MethodGet).Path("").HandlerFunc(uh.GetUserByID())
 	s.Methods(http.MethodPost).Path("/change_password").HandlerFunc(uh.PasswordChange())
@@ -72,7 +72,7 @@ func (uh userHandler) GetUserByID() HandlerFunc {
 			responses.RespondBadRequest(w, err.Error())
 			return
 		}
-		responses.User(w, user)
+		responses.User(w, &user)
 	}
 }
 

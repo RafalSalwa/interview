@@ -8,22 +8,22 @@ import (
 	"strings"
 	"time"
 
-	"go.opentelemetry.io/otel/trace"
-
 	"github.com/newrelic/go-agent/v3/newrelic"
-
 	"github.com/rs/zerolog"
+	"go.opentelemetry.io/otel/trace"
 )
 
-type Logger struct {
-	logger      *zerolog.Logger
-	nrLoggerApp *newrelic.Application
-}
+type (
+	Logger struct {
+		logger      *zerolog.Logger
+		nrLoggerApp *newrelic.Application
+	}
 
-type Config struct {
-	LogLevel string `mapstructure:"level"`
-	DevMode  bool   `mapstructure:"devMode"`
-}
+	Config struct {
+		LogLevel string `mapstructure:"level"`
+		DevMode  bool   `mapstructure:"devMode"`
+	}
+)
 
 func NewConsole() *Logger {
 	logLevel := zerolog.InfoLevel

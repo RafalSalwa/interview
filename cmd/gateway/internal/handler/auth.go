@@ -37,7 +37,7 @@ type authHandler struct {
 
 func (a authHandler) RegisterRoutes(r *mux.Router, cfg interface{}) {
 	params := cfg.(auth.Auth)
-	authorizer, _ := auth.NewAuthorizer(params)
+	authorizer, _ := auth.NewAuthorizer(&params)
 
 	sr := r.PathPrefix("/auth/").Subrouter()
 
@@ -203,7 +203,7 @@ func (a authHandler) GetVerificationCode() http.HandlerFunc {
 			responses.RespondBadRequest(w, err.Error())
 			return
 		}
-		responses.User(w, resp)
+		responses.User(w, &resp)
 	}
 }
 
@@ -245,7 +245,7 @@ func (a authHandler) GetUserByCode() http.HandlerFunc {
 			responses.RespondBadRequest(w, err.Error())
 			return
 		}
-		responses.User(w, user)
+		responses.User(w, &user)
 	}
 }
 

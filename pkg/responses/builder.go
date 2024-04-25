@@ -6,20 +6,22 @@ import (
 	"net/http"
 )
 
-type Builder struct {
-	Response       ErrResponse
-	ResponseWriter http.ResponseWriter
-}
+type (
+	Builder struct {
+		Response       ErrResponse
+		ResponseWriter http.ResponseWriter
+	}
 
-type ErrResponse struct {
-	Code    int    `json:"code"`
-	Reason  string `json:"reason"`
-	Headers map[string]interface{}
-	Message string `json:"message,omitempty"`
-	Error   string `json:"error,omitempty"`
-	Data    data   `json:"data"`
-	Err     error
-}
+	ErrResponse struct {
+		Code    int    `json:"code"`
+		Reason  string `json:"reason"`
+		Headers map[string]interface{}
+		Message string `json:"message,omitempty"`
+		Error   string `json:"error,omitempty"`
+		Data    data   `json:"data"`
+		Err     error
+	}
+)
 
 func NewErrorBuilder() *Builder {
 	return &Builder{

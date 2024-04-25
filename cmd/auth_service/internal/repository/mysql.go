@@ -60,11 +60,11 @@ func (r *UserAdapter) Save(ctx context.Context, user *models.UserDBModel) error 
 	return nil
 }
 
-func (r *UserAdapter) Update(ctx context.Context, user models.UserDBModel) error {
+func (r *UserAdapter) Update(ctx context.Context, user *models.UserDBModel) error {
 	_, span := otel.GetTracerProvider().Tracer("auth-handler").Start(ctx, "Handler SignUpUser")
 	defer span.End()
 
-	res := r.DB.Updates(&user)
+	res := r.DB.Updates(user)
 	if res.Error != nil {
 		return res.Error
 	}

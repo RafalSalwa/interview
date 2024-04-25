@@ -6,8 +6,9 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"log"
 	"net/http"
+
+	"github.com/RafalSalwa/auth-api/pkg/logger"
 
 	"github.com/RafalSalwa/auth-api/cmd/tester_service/config"
 	"github.com/RafalSalwa/auth-api/pkg/generator"
@@ -18,15 +19,17 @@ import (
 	"google.golang.org/grpc/credentials/insecure"
 )
 
-const numChannels = 4
-
 type DaisyChain struct {
-	cfg *config.Config
+	cfg    *config.Config
+	logger *logger.Logger
 }
 
-func NewDaisyChain(cfg *config.Config) WorkerRunner {
+const numChannels = 4
+
+func NewDaisyChain(cfg *config.Config, l *logger.Logger) WorkerRunner {
 	return &DaisyChain{
-		cfg: cfg,
+		cfg:    cfg,
+		logger: l,
 	}
 }
 
@@ -42,7 +45,7 @@ func (s DaisyChain) Run() {
 		go worker(ctx, left, right, tasks[i])
 	}
 
-	leftmost <- s.dcCreateUser(ctx, s.cfg)
+	leftmost <- s.dcCreateUser(ctx)
 }
 func worker(ctx context.Context, in <-chan testUser, out chan<- testUser, task string) {
 	inUser := <-in
@@ -57,7 +60,7 @@ func worker(ctx context.Context, in <-chan testUser, out chan<- testUser, task s
 	out <- outUser
 }
 
-func (s DaisyChain) dcCreateUser(ctx context.Context, cfg *config.Config) testUser {
+func (s DaisyChain) dcCreateUser(ctx context.Context) testUser {
 	pUsername, _ := generator.RandomString(12)
 	email := pUsername + emailDomain
 
@@ -74,32 +77,36 @@ func (s DaisyChain) dcCreateUser(ctx context.Context, cfg *config.Config) testUs
 	}
 	marshaled, err := json.Marshal(newUser)
 	if err != nil {
-		log.Fatalf("impossible to marshall: %s", err)
+		s.logger.Error().Err(err).Msgf("impossible to marshall: %s", err)
 	}
 	client := &http.Client{}
 	URL := fmt.Sprintf("http://%s/auth/signup", s.cfg.HTTP.Addr)
 	// pass the values to the request's body
-	req, err := http.NewRequest("POST", URL, bytes.NewReader(marshaled))
+	req, err := http.NewRequestWithContext(ctx, "POST", URL, bytes.NewReader(marshaled))
 	if err != nil {
-		log.Fatalf("impossible to read all body of response: %s", err)
+		s.logger.Error().Err(err).Msgf("impossible to read all body of response: %s", err)
 	}
 	req.SetBasicAuth(s.cfg.Auth.BasicAuth.Username, s.cfg.Auth.BasicAuth.Password)
 	resp, err := client.Do(req)
 	if err != nil {
-		log.Fatal(err)
+		s.logger.Error().Err(err).Msg("Do err")
 	}
+	defer func(Body io.ReadCloser) {
+		errC := Body.Close()
+		if errC != nil {
+			s.logger.Error().Err(errC).Msg("ReadAll errC")
+		}
+	}(resp.Body)
 	if resp.StatusCode != http.StatusCreated {
-		fmt.Println("Err.")
-
-		fmt.Printf("    %s req body: %s\n", URL, string(marshaled))
-		bodyBytes, err := io.ReadAll(resp.Body)
-		if err != nil {
-			fmt.Printf("impossible to marshall: %s\n", err)
+		s.logger.Error().Msgf("    %s req body: %s\n", URL, string(marshaled))
+		bodyBytes, errIo := io.ReadAll(resp.Body)
+		if errIo != nil {
+			s.logger.Error().Err(errIo).Msgf("impossible to marshall: %s\n", errIo)
 		}
 		bodyString := string(bodyBytes)
-		fmt.Printf("    %s body: %s", URL, bodyString)
+		s.logger.Info().Msgf("    %s body: %s", URL, bodyString)
 	} else {
-		fmt.Println(color.GreenString("OK"))
+		s.logger.Info().Msgf(color.GreenString("OK"))
 	}
 	return user
 }

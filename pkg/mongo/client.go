@@ -16,14 +16,12 @@ type Config struct {
 }
 
 func NewClient(ctx context.Context, cfg Config) (*mongo.Client, error) {
-	client, err := mongo.NewClient(
+	client, err := mongo.Connect(
+		ctx,
 		options.Client().ApplyURI(cfg.Addr).
 			SetAuth(options.Credential{Username: cfg.Username, Password: cfg.Password}))
 
 	if err != nil {
-		return nil, err
-	}
-	if err = client.Connect(ctx); err != nil {
 		return nil, err
 	}
 	if err = client.Ping(ctx, readpref.Primary()); err != nil {

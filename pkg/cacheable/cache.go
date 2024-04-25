@@ -13,24 +13,25 @@ const KeyPrefix = "Cache"
 
 var EmptyCacheError = errors.New("Cachable: No results found")
 
-type Tags []string
-
-type Cache struct {
-	key    string
-	value  string
-	expire time.Duration
-}
-type ICacheable interface {
-	GetKey() string
-	Get() error
-	Set(expire time.Duration) error
-}
-type Cacheable struct {
-	LastUpdated time.Time `json:"last_updated,omitempty"`
-	prefix      string
-	cacheID     string
-	parent      ICacheable
-}
+type (
+	Tags  []string
+	Cache struct {
+		key    string
+		value  string
+		expire time.Duration
+	}
+	ICacheable interface {
+		GetKey() string
+		Get() error
+		Set(expire time.Duration) error
+	}
+	Cacheable struct {
+		LastUpdated time.Time `json:"last_updated,omitempty"`
+		prefix      string
+		cacheID     string
+		parent      ICacheable
+	}
+)
 
 func (tag Tags) key(key string) string {
 	return "redis_tags_" + key

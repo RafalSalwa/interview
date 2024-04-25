@@ -18,26 +18,27 @@ import (
 	"github.com/spf13/viper"
 )
 
-type Config struct {
-	ServiceName string               `mapstructure:"serviceName"`
-	App         App                  `mapstructure:"app"`
-	Logger      *logger.Config       `mapstructure:"logger"`
-	GRPC        grpc.Config          `mapstructure:"grpc"`
-	JWTToken    jwt.JWTConfig        `mapstructure:"jwt"`
-	MySQL       sql.MySQL            `mapstructure:"mysql"`
-	Mongo       mongodb.Config       `mapstructure:"mongo"`
-	Redis       *redis.Config        `mapstructure:"redis"`
-	Rabbit      rabbitmq.Config      `mapstructure:"rabbitmq"`
-	Probes      probes.Config        `mapstructure:"probes"`
-	Jaeger      tracing.JaegerConfig `mapstructure:"jaeger"`
-	Mail        email.Config         `mapstructure:"email"`
-}
-
-type App struct {
-	Env            string `mapstructure:"env"`
-	Debug          bool   `mapstructure:"debug"`
-	RepositoryType string `mapstructure:"repository_type"`
-}
+type (
+	Config struct {
+		ServiceName string               `mapstructure:"serviceName"`
+		App         App                  `mapstructure:"app"`
+		Logger      *logger.Config       `mapstructure:"logger"`
+		GRPC        grpc.Config          `mapstructure:"grpc"`
+		JWTToken    jwt.JWTConfig        `mapstructure:"jwt"`
+		MySQL       sql.MySQL            `mapstructure:"mysql"`
+		Mongo       mongodb.Config       `mapstructure:"mongo"`
+		Redis       *redis.Config        `mapstructure:"redis"`
+		Rabbit      rabbitmq.Config      `mapstructure:"rabbitmq"`
+		Probes      probes.Config        `mapstructure:"probes"`
+		Jaeger      tracing.JaegerConfig `mapstructure:"jaeger"`
+		Mail        email.Config         `mapstructure:"email"`
+	}
+	App struct {
+		Env            string `mapstructure:"env"`
+		Debug          bool   `mapstructure:"debug"`
+		RepositoryType string `mapstructure:"repository_type"`
+	}
+)
 
 func InitConfig() (*Config, error) {
 	cfg := &Config{}

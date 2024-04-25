@@ -2,35 +2,37 @@ package responses
 
 import "net/http"
 
-type Error struct {
-	Location     string `json:"location"`
-	LocationType string `json:"locationType"`
-	Reason       string `json:"reason"`
-	Message      string `json:"message,omitempty"`
-}
-type StatusError struct {
-	Code int
-	Err  error
-}
-type ErrorResponse struct {
-	Code    int32  `json:"code"`
-	Reason  string `json:"reason"`
-	Message string `json:"message,omitempty"`
-	Error   string `json:"error,omitempty"`
-	Data    data   `json:"data"`
-}
+type (
+	Error struct {
+		Location     string `json:"location"`
+		LocationType string `json:"locationType"`
+		Reason       string `json:"reason"`
+		Message      string `json:"message,omitempty"`
+	}
+	StatusError struct {
+		Code int
+		Err  error
+	}
+	ErrorResponse struct {
+		Code    int32  `json:"code"`
+		Reason  string `json:"reason"`
+		Message string `json:"message,omitempty"`
+		Error   string `json:"error,omitempty"`
+		Data    data   `json:"data"`
+	}
 
-// swagger:model NotFoundError
-type NotFoundResponse struct {
-	Code    int32  `json:"code"`
-	Message string `json:"message,omitempty"`
-}
+	// swagger:model NotFoundError
+	NotFoundResponse struct {
+		Code    int32  `json:"code"`
+		Message string `json:"message,omitempty"`
+	}
 
-type UnauthorizedResponse struct {
-	Code    int32  `json:"code"`
-	Message string `json:"message,omitempty"`
-	Error   string `json:"error,omitempty"`
-}
+	UnauthorizedResponse struct {
+		Code    int32  `json:"code"`
+		Message string `json:"message,omitempty"`
+		Error   string `json:"error,omitempty"`
+	}
+)
 
 func NewErrorResponse(statusCode int32, reason, message string) *ErrorResponse {
 	return &ErrorResponse{

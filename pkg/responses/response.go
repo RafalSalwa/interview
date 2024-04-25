@@ -7,14 +7,15 @@ import (
 	"github.com/RafalSalwa/auth-api/pkg/models"
 )
 
-type data struct {
-	Success bool    `json:"success"`
-	Message *string `json:"message"`
-}
-
-type UserResponse struct {
-	*models.UserResponse `json:"user"`
-}
+type (
+	data struct {
+		Success bool    `json:"success"`
+		Message *string `json:"message"`
+	}
+	UserResponse struct {
+		*models.UserResponse `json:"user"`
+	}
+)
 
 func InternalServerError(w http.ResponseWriter) {
 	NewErrorBuilder().
@@ -86,11 +87,11 @@ func RespondCreated(w http.ResponseWriter) {
 	}
 }
 
-func User(w http.ResponseWriter, u models.UserResponse) {
+func User(w http.ResponseWriter, u *models.UserResponse) {
 	if u.LastLogin != nil && u.LastLogin.Unix() == 0 {
 		u.LastLogin = nil
 	}
-	response := &UserResponse{&u}
+	response := &UserResponse{u}
 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
 	js, err := json.MarshalIndent(response, "", "   ")
 	if err != nil {
@@ -117,7 +118,9 @@ func setHTTPHeaders(w http.ResponseWriter, statusCode int) {
 }
 
 func marshalErrorResponse(err interface{}) []byte {
-	body, _ := json.Marshal(err)
-
+	body, err := json.Marshal(err)
+	if err != nil {
+		return []byte("")
+	}
 	return body
 }

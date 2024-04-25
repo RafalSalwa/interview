@@ -9,22 +9,22 @@ import (
 	"github.com/golang-jwt/jwt"
 )
 
-type TokenPair struct {
-	AccessToken  string `mapstructure:"accessToken"`
-	RefreshToken string `mapstructure:"refreshToken"`
-}
-
-type JWTConfig struct {
-	Access  Token `mapstructure:"accessToken"`
-	Refresh Token `mapstructure:"refreshToken"`
-}
-
-type Token struct {
-	PrivateKey string        `mapstructure:"privateKey"`
-	PublicKey  string        `mapstructure:"publicKey"`
-	ExpiresIn  time.Duration `mapstructure:"expiresIn"`
-	MaxAge     int           `mapstructure:"maxAge"`
-}
+type (
+	TokenPair struct {
+		AccessToken  string `mapstructure:"accessToken"`
+		RefreshToken string `mapstructure:"refreshToken"`
+	}
+	JWTConfig struct {
+		Access  Token `mapstructure:"accessToken"`
+		Refresh Token `mapstructure:"refreshToken"`
+	}
+	Token struct {
+		PrivateKey string        `mapstructure:"privateKey"`
+		PublicKey  string        `mapstructure:"publicKey"`
+		ExpiresIn  time.Duration `mapstructure:"expiresIn"`
+		MaxAge     int           `mapstructure:"maxAge"`
+	}
+)
 
 func CreateToken(ttl time.Duration, payload int64, privateKey string) (string, error) {
 	decodedPrivateKey, err := base64.StdEncoding.DecodeString(privateKey)
@@ -77,7 +77,7 @@ func DecodeToken(token, publicKey string) (interface{}, error) {
 	return parsedToken, nil
 }
 
-func ValidateToken(token string, publicKey string) (string, error) {
+func ValidateToken(token, publicKey string) (string, error) {
 	decodedPublicKey, err := base64.StdEncoding.DecodeString(publicKey)
 	if err != nil {
 		return "", fmt.Errorf("could not decode: %w", err)

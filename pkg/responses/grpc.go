@@ -8,6 +8,7 @@ import (
 )
 
 func FromGRPCError(err *status.Status, w http.ResponseWriter) {
+	//exhaustive:ignore
 	switch err.Code() {
 	case grpc_codes.AlreadyExists:
 		RespondConflict(w, err.Message())
