@@ -3,7 +3,7 @@ package services
 import (
 	"context"
 
-	"github.com/RafalSalwa/interview-app-srv/pkg/models"
+	"github.com/RafalSalwa/auth-api/pkg/models"
 )
 
 type AuthService interface {

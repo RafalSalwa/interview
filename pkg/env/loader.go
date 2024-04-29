@@ -19,10 +19,9 @@ func GetConfigPath(suffix string) (string, error) {
 		return fmt.Sprintf("%s/config.%s.yaml", dir, appEnv), nil
 	} else if strings.HasSuffix(dir, "interview") {
 		return fmt.Sprintf("%s/cmd/%s/config/config.%s.yaml", dir, suffix, appEnv), nil
-	} else {
-		splitted := strings.Split(dir, suffix)
-		return fmt.Sprintf("%s/%s/config/config.%s.yaml", splitted[0], suffix, appEnv), nil
 	}
+	splitted := strings.Split(dir, suffix)
+	return fmt.Sprintf("%s/%s/config/config.%s.yaml", splitted[0], suffix, appEnv), nil
 }
 
 func getEnv(key, fallback string) string {

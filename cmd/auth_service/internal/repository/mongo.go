@@ -5,8 +5,8 @@ import (
 	"errors"
 	"time"
 
-	"github.com/RafalSalwa/interview-app-srv/pkg/models"
-	apiMongo "github.com/RafalSalwa/interview-app-srv/pkg/mongo"
+	"github.com/RafalSalwa/auth-api/pkg/models"
+	apiMongo "github.com/RafalSalwa/auth-api/pkg/mongo"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
@@ -28,7 +28,7 @@ func newMongoDBUserRepository(db *mongo.Client, cfg apiMongo.Config) UserReposit
 	}
 }
 
-func (m MongoAdapter) Exists(ctx context.Context, udb *models.UserDBModel) bool {
+func (m *MongoAdapter) Exists(ctx context.Context, udb *models.UserDBModel) bool {
 	ctx, span := otel.GetTracerProvider().Tracer("mongodb").Start(ctx, "Repository/Exists")
 	defer span.End()
 
@@ -46,12 +46,12 @@ func (m MongoAdapter) Exists(ctx context.Context, udb *models.UserDBModel) bool 
 	return true
 }
 
-func (m MongoAdapter) Update(ctx context.Context, user models.UserDBModel) error {
+func (m *MongoAdapter) Update(ctx context.Context, user *models.UserDBModel) error {
 	// TODO mongo implement me
 	panic("mongo Update implement me")
 }
 
-func (m MongoAdapter) Save(ctx context.Context, user *models.UserDBModel) error {
+func (m *MongoAdapter) Save(ctx context.Context, user *models.UserDBModel) error {
 	ctx, span := otel.GetTracerProvider().Tracer("mongodb repository").Start(ctx, "Service SignUpUser")
 	defer span.End()
 
@@ -67,12 +67,12 @@ func (m MongoAdapter) Save(ctx context.Context, user *models.UserDBModel) error 
 	return nil
 }
 
-func (m MongoAdapter) FindAll(ctx context.Context, user *models.UserDBModel) ([]models.UserDBModel, error) {
+func (m *MongoAdapter) FindAll(ctx context.Context, user *models.UserDBModel) ([]models.UserDBModel, error) {
 	// TODO mongo implement me
 	panic("mongo FindAll implement me")
 }
 
-func (m MongoAdapter) FindOne(ctx context.Context, user *models.UserDBModel) (*models.UserDBModel, error) {
+func (m *MongoAdapter) FindOne(ctx context.Context, user *models.UserDBModel) (*models.UserDBModel, error) {
 	ctx, span := otel.GetTracerProvider().Tracer("mongodb").Start(ctx, "Repository/FindOne")
 	defer span.End()
 
@@ -88,23 +88,23 @@ func (m MongoAdapter) FindOne(ctx context.Context, user *models.UserDBModel) (*m
 		span.SetStatus(codes.Error, err.Error())
 		return nil, err
 	}
-	if err := user.FromMongoUser(um); err != nil {
+	if err := user.FromMongoUser(&um); err != nil {
 		return nil, err
 	}
 	return user, nil
 }
 
-func (m MongoAdapter) GetOrCreate(ctx context.Context, id int64) (*models.UserDBModel, error) {
+func (m *MongoAdapter) GetOrCreate(ctx context.Context, id int64) (*models.UserDBModel, error) {
 	// TODO mongo implement me
 	panic("mongo GetOrCreate implement me")
 }
 
-func (m MongoAdapter) Confirm(ctx context.Context, udb *models.UserDBModel) error {
+func (m *MongoAdapter) Confirm(ctx context.Context, udb *models.UserDBModel) error {
 	// TODO mongo implement me
 	panic("mongo Confirm implement me")
 }
 
-func (m MongoAdapter) UpdateLastLogin(ctx context.Context, user *models.UserDBModel) error {
+func (m *MongoAdapter) UpdateLastLogin(ctx context.Context, user *models.UserDBModel) error {
 	ctx, span := otel.GetTracerProvider().Tracer("mongodb").Start(ctx, "Repository/UpdateLastLogin")
 	defer span.End()
 
@@ -124,7 +124,7 @@ func (m MongoAdapter) UpdateLastLogin(ctx context.Context, user *models.UserDBMo
 		span.SetStatus(codes.Error, err.Error())
 		return err
 	}
-	if err := user.FromMongoUser(um); err != nil {
+	if err := user.FromMongoUser(&um); err != nil {
 		return err
 	}
 

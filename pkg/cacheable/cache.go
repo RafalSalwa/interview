@@ -9,28 +9,29 @@ import (
 	"time"
 )
 
+type (
+	Tags  []string
+	Cache struct {
+		key    string
+		value  string
+		expire time.Duration
+	}
+	ICacheable interface {
+		GetKey() string
+		Get() error
+		Set(expire time.Duration) error
+	}
+	Cacheable struct {
+		LastUpdated time.Time `json:"last_updated,omitempty"`
+		prefix      string
+		cacheID     string
+		parent      ICacheable
+	}
+)
+
 const KeyPrefix = "Cache"
 
-var EmptyCacheError = errors.New("Cachable: No results found")
-
-type Tags []string
-
-type Cache struct {
-	key    string
-	value  string
-	expire time.Duration
-}
-type ICacheable interface {
-	GetKey() string
-	Get() error
-	Set(expire time.Duration) error
-}
-type Cacheable struct {
-	LastUpdated time.Time `json:"last_updated,omitempty"`
-	prefix      string
-	cacheID     string
-	parent      ICacheable
-}
+var ErrEmptyCache = errors.New("cachable: No results found")
 
 func (tag Tags) key(key string) string {
 	return "redis_tags_" + key
@@ -55,7 +56,7 @@ func (c *Cacheable) Get(ctx context.Context) error {
 		}
 		return nil
 	}
-	return EmptyCacheError
+	return ErrEmptyCache
 }
 
 func (c *Cacheable) Set(expire time.Duration) error {

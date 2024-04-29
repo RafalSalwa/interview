@@ -1,0 +1,42 @@
+name: "Code QL scanning"
+
+on:
+  push:
+  pull_request:
+    branches: [ "1.x" ]
+  schedule:
+    - cron: '0 10 * * 6'
+
+jobs:
+  CodeQL-Build:
+
+    permissions:
+      actions: read
+      contents: read
+      security-events: write
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      
+      # Initializes the Golang environment for the CodeQL tools.
+      # https://github.com/github/codeql-action/issues/1842#issuecomment-1704398087
+      - name: Install Go
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+      
+      # Initializes the CodeQL tools for scanning.
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v3
+        with:
+          languages: go
+      
+      # Autobuild attempts to build any compiled languages  (C/C++, C#, or Java).
+      # If this step fails, then you should remove it and run the build manually (see below)
+      - name: Autobuild
+        uses: github/codeql-action/autobuild@v3
+
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v3

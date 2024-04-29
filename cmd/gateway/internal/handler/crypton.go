@@ -3,25 +3,26 @@ package handler
 import (
 	"net/http"
 
-	"github.com/RafalSalwa/interview-app-srv/pkg/encdec"
-	"github.com/RafalSalwa/interview-app-srv/pkg/responses"
+	"github.com/RafalSalwa/auth-api/pkg/encdec"
+	"github.com/RafalSalwa/auth-api/pkg/responses"
 	"go.opentelemetry.io/otel"
 
 	"github.com/gorilla/mux"
 
-	"github.com/RafalSalwa/interview-app-srv/pkg/logger"
+	"github.com/RafalSalwa/auth-api/pkg/logger"
 )
 
-type CryptonHandler interface {
-	RouteRegisterer
+type (
+	CryptonHandler interface {
+		RouteRegisterer
 
-	Encrypt() http.HandlerFunc
-	Decrypt() http.HandlerFunc
-}
-
-type cryptonHandler struct {
-	logger *logger.Logger
-}
+		Encrypt() http.HandlerFunc
+		Decrypt() http.HandlerFunc
+	}
+	cryptonHandler struct {
+		logger *logger.Logger
+	}
+)
 
 func (c cryptonHandler) RegisterRoutes(r *mux.Router, cfg interface{}) {
 	r.Methods(http.MethodGet).Path("/encrypt/{message}").HandlerFunc(c.Encrypt())

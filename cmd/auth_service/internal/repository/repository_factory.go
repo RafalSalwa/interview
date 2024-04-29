@@ -3,10 +3,10 @@ package repository
 import (
 	"context"
 
-	"github.com/RafalSalwa/interview-app-srv/cmd/auth_service/config"
-	"github.com/RafalSalwa/interview-app-srv/pkg/mongo"
-	redisClient "github.com/RafalSalwa/interview-app-srv/pkg/redis"
-	"github.com/RafalSalwa/interview-app-srv/pkg/sql"
+	"github.com/RafalSalwa/auth-api/cmd/auth_service/config"
+	"github.com/RafalSalwa/auth-api/pkg/mongo"
+	redisClient "github.com/RafalSalwa/auth-api/pkg/redis"
+	"github.com/RafalSalwa/auth-api/pkg/sql"
 )
 
 const (
@@ -37,7 +37,7 @@ func NewUserRepository(ctx context.Context, dbType string, params *config.Config
 			return nil, err
 		}
 
-		return newRedisUserRepository(&universalRedisClient), nil
+		return newRedisUserRepository(universalRedisClient), nil
 	default:
 		panic("Unsupported database type")
 	}

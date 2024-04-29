@@ -1,18 +1,16 @@
 package handler
 
 import (
-	"fmt"
 	"net/http"
-	"time"
 
-	"github.com/RafalSalwa/interview-app-srv/cmd/gateway/internal/cqrs"
-	"github.com/RafalSalwa/interview-app-srv/cmd/gateway/internal/cqrs/command"
-	"github.com/RafalSalwa/interview-app-srv/pkg/http/auth"
-	"github.com/RafalSalwa/interview-app-srv/pkg/logger"
-	"github.com/RafalSalwa/interview-app-srv/pkg/models"
-	"github.com/RafalSalwa/interview-app-srv/pkg/responses"
-	"github.com/RafalSalwa/interview-app-srv/pkg/tracing"
-	"github.com/RafalSalwa/interview-app-srv/pkg/validate"
+	"github.com/RafalSalwa/auth-api/cmd/gateway/internal/cqrs"
+	"github.com/RafalSalwa/auth-api/cmd/gateway/internal/cqrs/command"
+	"github.com/RafalSalwa/auth-api/pkg/http/auth"
+	"github.com/RafalSalwa/auth-api/pkg/logger"
+	"github.com/RafalSalwa/auth-api/pkg/models"
+	"github.com/RafalSalwa/auth-api/pkg/responses"
+	"github.com/RafalSalwa/auth-api/pkg/tracing"
+	"github.com/RafalSalwa/auth-api/pkg/validate"
 	"github.com/gorilla/mux"
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/codes"
@@ -20,24 +18,25 @@ import (
 	"google.golang.org/grpc/status"
 )
 
-type AuthHandler interface {
-	RouteRegisterer
+type (
+	AuthHandler interface {
+		RouteRegisterer
 
-	SignUpUser() http.HandlerFunc
-	SignInUser() http.HandlerFunc
+		SignUpUser() http.HandlerFunc
+		SignInUser() http.HandlerFunc
 
-	Verify() http.HandlerFunc
-	GetVerificationCode() http.HandlerFunc
-}
-
-type authHandler struct {
-	cqrs   *cqrs.Application
-	logger *logger.Logger
-}
+		Verify() http.HandlerFunc
+		GetVerificationCode() http.HandlerFunc
+	}
+	authHandler struct {
+		cqrs   *cqrs.Application
+		logger *logger.Logger
+	}
+)
 
 func (a authHandler) RegisterRoutes(r *mux.Router, cfg interface{}) {
 	params := cfg.(auth.Auth)
-	authorizer, _ := auth.NewAuthorizer(params)
+	authorizer, _ := auth.NewAuthorizer(&params)
 
 	sr := r.PathPrefix("/auth/").Subrouter()
 
@@ -203,7 +202,7 @@ func (a authHandler) GetVerificationCode() http.HandlerFunc {
 			responses.RespondBadRequest(w, err.Error())
 			return
 		}
-		responses.User(w, resp)
+		responses.User(w, &resp)
 	}
 }
 
@@ -213,8 +212,7 @@ func (a authHandler) GetUserByCode() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx, span := otel.GetTracerProvider().Tracer("user-handler").Start(r.Context(), "GetUserByCode")
 		defer span.End()
-		dt := time.Now()
-		fmt.Println("Current date and time is: ", dt.String())
+
 		vCode = mux.Vars(r)["code"]
 		if vCode == "" {
 			vCode = r.URL.Query().Get("code")
@@ -245,7 +243,7 @@ func (a authHandler) GetUserByCode() http.HandlerFunc {
 			responses.RespondBadRequest(w, err.Error())
 			return
 		}
-		responses.User(w, user)
+		responses.User(w, &user)
 	}
 }
 

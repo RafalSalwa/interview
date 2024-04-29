@@ -5,11 +5,11 @@ package handler
 
 import (
 	"encoding/json"
-	"github.com/RafalSalwa/interview-app-srv/cmd/gateway/config"
-	"github.com/RafalSalwa/interview-app-srv/cmd/gateway/internal/cqrs"
-	"github.com/RafalSalwa/interview-app-srv/pkg/jwt"
-	"github.com/RafalSalwa/interview-app-srv/pkg/logger"
-	"github.com/RafalSalwa/interview-app-srv/pkg/responses"
+	"github.com/RafalSalwa/auth-api/cmd/gateway/config"
+	"github.com/RafalSalwa/auth-api/cmd/gateway/internal/cqrs"
+	"github.com/RafalSalwa/auth-api/pkg/jwt"
+	"github.com/RafalSalwa/auth-api/pkg/logger"
+	"github.com/RafalSalwa/auth-api/pkg/responses"
 	"github.com/stretchr/testify/assert"
 	"net/http"
 	"net/http/httptest"

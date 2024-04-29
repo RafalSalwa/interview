@@ -4,14 +4,14 @@ import (
 	"net"
 	"time"
 
-	"github.com/RafalSalwa/interview-app-srv/pkg/probes"
-	"github.com/RafalSalwa/interview-app-srv/pkg/tracing"
+	"github.com/RafalSalwa/auth-api/pkg/probes"
+	"github.com/RafalSalwa/auth-api/pkg/tracing"
 
-	"github.com/RafalSalwa/interview-app-srv/cmd/auth_service/internal/rpc"
-	"github.com/RafalSalwa/interview-app-srv/cmd/auth_service/internal/services"
-	grpcconfig "github.com/RafalSalwa/interview-app-srv/pkg/grpc"
-	"github.com/RafalSalwa/interview-app-srv/pkg/logger"
-	pb "github.com/RafalSalwa/interview-app-srv/proto/grpc"
+	"github.com/RafalSalwa/auth-api/cmd/auth_service/internal/rpc"
+	"github.com/RafalSalwa/auth-api/cmd/auth_service/internal/services"
+	grpcconfig "github.com/RafalSalwa/auth-api/pkg/grpc"
+	"github.com/RafalSalwa/auth-api/pkg/logger"
+	pb "github.com/RafalSalwa/auth-api/proto/grpc"
 	grpcmiddleware "github.com/grpc-ecosystem/go-grpc-middleware"
 	grpcrecovery "github.com/grpc-ecosystem/go-grpc-middleware/recovery"
 	grpcctxtags "github.com/grpc-ecosystem/go-grpc-middleware/tags"
@@ -22,13 +22,6 @@ import (
 	"google.golang.org/grpc/reflection"
 )
 
-const (
-	maxConnectionIdle = 5
-	gRPCTimeout       = 1
-	maxConnectionAge  = 5
-	gRPCTime          = 10
-)
-
 type GRPC struct {
 	pb.UnimplementedAuthServiceServer
 	config      grpcconfig.Config
@@ -36,6 +29,13 @@ type GRPC struct {
 	logger      *logger.Logger
 	authService services.AuthService
 }
+
+const (
+	maxConnectionIdle = 5
+	gRPCTimeout       = 1
+	maxConnectionAge  = 5
+	gRPCTime          = 10
+)
 
 func NewGrpcServer(
 	config grpcconfig.Config,

@@ -5,8 +5,8 @@ import (
 	"encoding/json"
 	"fmt"
 
-	"github.com/RafalSalwa/interview-app-srv/pkg/logger"
-	"github.com/RafalSalwa/interview-app-srv/pkg/models"
+	"github.com/RafalSalwa/auth-api/pkg/logger"
+	"github.com/RafalSalwa/auth-api/pkg/models"
 	"github.com/go-redis/redis/v8"
 )
 
@@ -15,9 +15,11 @@ type Redis struct {
 	redisClient redis.UniversalClient
 }
 
-func (r Redis) PutUser(ctx context.Context, user models.UserDBModel) error {
+func (r Redis) PutUser(ctx context.Context, user *models.UserDBModel) error {
 	key := fmt.Sprintf("user_%d", user.Id)
-	bytes, err := json.Marshal(user)
+	redisUser := &models.UserRedisModel{}
+	redisUser.FromDbModel(user)
+	bytes, err := json.Marshal(redisUser)
 
 	if err != nil {
 		r.log.Error().Err(err).Msg("redis:user:put:marshal")

@@ -11,6 +11,19 @@ import (
 	"github.com/prometheus/client_golang/prometheus"
 )
 
+type (
+	PrometheusMiddleware struct {
+		request *prometheus.CounterVec
+		latency *prometheus.HistogramVec
+	}
+	responseWriterDelegator struct {
+		http.ResponseWriter
+		status      int
+		written     int64
+		wroteHeader bool
+	}
+)
+
 const (
 	requestName = "http_requests_total"
 	latencyName = "http_request_duration_seconds"
@@ -19,11 +32,6 @@ const (
 var (
 	dflBuckets = []float64{0.3, 1.0, 2.5, 5.0}
 )
-
-type PrometheusMiddleware struct {
-	request *prometheus.CounterVec
-	latency *prometheus.HistogramVec
-}
 
 func NewPrometheusMiddleware() *PrometheusMiddleware {
 	var prometheusMiddleware PrometheusMiddleware
@@ -83,13 +91,6 @@ func (p *PrometheusMiddleware) Prometheus() mux.MiddlewareFunc {
 			).Observe(float64(time.Since(begin)) / float64(time.Second))
 		})
 	}
-}
-
-type responseWriterDelegator struct {
-	http.ResponseWriter
-	status      int
-	written     int64
-	wroteHeader bool
 }
 
 func (r *responseWriterDelegator) WriteHeader(code int) {

@@ -5,10 +5,11 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/RafalSalwa/interview-app-srv/pkg/encdec"
-	"github.com/RafalSalwa/interview-app-srv/pkg/hashing"
-	"github.com/RafalSalwa/interview-app-srv/pkg/jwt"
-	intrvproto "github.com/RafalSalwa/interview-app-srv/proto/grpc"
+
+	"github.com/RafalSalwa/auth-api/pkg/encdec"
+	"github.com/RafalSalwa/auth-api/pkg/hashing"
+	"github.com/RafalSalwa/auth-api/pkg/jwt"
+	intrvproto "github.com/RafalSalwa/auth-api/proto/grpc"
 	"github.com/jinzhu/copier"
 )
 
@@ -25,7 +26,7 @@ func (m *UserDBModel) FromCreateUserReq(cur SignUpUserRequest, enc ...bool) erro
 	if err != nil {
 		return fmt.Errorf("from create to db model error: %w", err)
 	}
-	if len(enc) > 0 && enc[0] == true {
+	if len(enc) > 0 && enc[0] {
 		m.Email = encdec.Encrypt(cur.Email)
 		m.Password = hashing.Argon2ID(cur.Password)
 	}
@@ -66,8 +67,8 @@ func (r *UserResponse) AssignTokenPair(tp *jwt.TokenPair) {
 }
 
 func (r *UserResponse) FromProtoSignIn(pbu *intrvproto.SignInUserResponse) {
-	r.AccessToken = pbu.AccessToken
-	r.RefreshToken = pbu.RefreshToken
+	r.AccessToken = pbu.GetAccessToken()
+	r.RefreshToken = pbu.GetRefreshToken()
 }
 func (r *UserResponse) FromProtoSignUp(pbu *intrvproto.SignUpUserResponse) error {
 	r.Username = pbu.GetUsername()
@@ -79,8 +80,8 @@ func (r *UserResponse) FromProtoSignUp(pbu *intrvproto.SignUpUserResponse) error
 
 func (r *UserResponse) FromProtoUserResponse(pu *intrvproto.UserResponse) error {
 	err := copier.Copy(r, &pu)
-	r.Id = pu.User.Id
-	r.Username = pu.User.Username
+	r.Id = pu.GetUser().GetId()
+	r.Username = pu.GetUser().GetUsername()
 
 	if err != nil {
 		return fmt.Errorf("from response to db error: %w", err)
@@ -104,7 +105,7 @@ func (m *UserMongoModel) FromDBModel(user *UserDBModel) error {
 	return nil
 }
 
-func (um *UserDBModel) FromMongoUser(um2 UserMongoModel) error {
+func (um *UserDBModel) FromMongoUser(um2 *UserMongoModel) error {
 	err := copier.Copy(um, um2)
 	if err != nil {
 		return err
@@ -119,8 +120,6 @@ func (m *StringInterfaceMap) Scan(src interface{}) error {
 	switch src.(type) {
 	case []uint8:
 		source = []byte(src.([]uint8))
-	case nil:
-		return nil
 	default:
 		return errors.New("incompatible type for StringInterfaceMap")
 	}
@@ -140,5 +139,5 @@ func (m StringInterfaceMap) Value() (driver.Value, error) {
 	if err != nil {
 		return nil, err
 	}
-	return driver.Value([]byte(j)), nil
+	return driver.Value(j), nil
 }

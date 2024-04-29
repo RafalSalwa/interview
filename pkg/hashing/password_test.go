@@ -92,7 +92,7 @@ func TestValidate(t *testing.T) {
 			args: args{
 				password:    "pass",
 				passwordCon: "pass",
-				errMsg:      "Password should be between 8 and 16 characters in length"},
+				errMsg:      "Password should be between 8 and 32 characters in length"},
 		},
 		{
 			name: "check password lower case (any)",

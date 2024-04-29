@@ -6,8 +6,9 @@ import (
 	"github.com/gorilla/mux"
 )
 
-type HandlerFunc func(http.ResponseWriter, *http.Request)
-
-type RouteRegisterer interface {
-	RegisterRoutes(r *mux.Router, cfg interface{})
-}
+type (
+	HandlerFunc     func(http.ResponseWriter, *http.Request)
+	RouteRegisterer interface {
+		RegisterRoutes(r *mux.Router, cfg interface{})
+	}
+)

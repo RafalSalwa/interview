@@ -2,15 +2,14 @@ package server
 
 import (
 	"context"
-	"fmt"
 	"os"
 	"os/signal"
 	"syscall"
 
-	"github.com/RafalSalwa/interview-app-srv/cmd/user_service/config"
-	"github.com/RafalSalwa/interview-app-srv/cmd/user_service/internal/services"
-	"github.com/RafalSalwa/interview-app-srv/pkg/logger"
-	"github.com/RafalSalwa/interview-app-srv/pkg/tracing"
+	"github.com/RafalSalwa/auth-api/cmd/user_service/config"
+	"github.com/RafalSalwa/auth-api/cmd/user_service/internal/services"
+	"github.com/RafalSalwa/auth-api/pkg/logger"
+	"github.com/RafalSalwa/auth-api/pkg/tracing"
 	"github.com/go-playground/validator/v10"
 )
 
@@ -40,10 +39,8 @@ func (srv *Server) Run() error {
 		grpcServer.Run(srv.log)
 	}()
 
-	if srv.cfg.Jaeger.Enable {
-		if err := tracing.OTELGRPCProvider(srv.cfg.ServiceName, srv.cfg.Jaeger); err != nil {
-			srv.log.Error().Err(err).Msg("server:jaeger:register")
-		}
+	if err = tracing.OTELGRPCProvider(srv.cfg.ServiceName); err != nil {
+		srv.log.Error().Err(err).Msg("server:jaeger:register")
 	}
 	<-shutdown
 	rejectContext()
@@ -59,10 +56,8 @@ func NewContextCancellableByOsSignals(parent context.Context) context.Context {
 		sig := <-signalChannel
 		switch sig {
 		case os.Interrupt:
-			fmt.Println("Received Interrupt signal")
 			cancel()
 		case syscall.SIGTERM:
-			fmt.Println("Received sigterm signal")
 			cancel()
 		}
 	}()

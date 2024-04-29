@@ -3,9 +3,9 @@ package repository
 import (
 	"context"
 
-	"github.com/RafalSalwa/interview-app-srv/cmd/user_service/config"
-	"github.com/RafalSalwa/interview-app-srv/pkg/mongo"
-	"github.com/RafalSalwa/interview-app-srv/pkg/sql"
+	"github.com/RafalSalwa/auth-api/cmd/user_service/config"
+	"github.com/RafalSalwa/auth-api/pkg/mongo"
+	"github.com/RafalSalwa/auth-api/pkg/sql"
 )
 
 const (
@@ -27,7 +27,7 @@ func NewUserRepository(ctx context.Context, dbType string, params *config.Config
 		if err != nil {
 			return nil, err
 		}
-		return newMongoDBUserRepository(mongoClient, params.Mongo), nil
+		return NewMongoDBUserRepository(mongoClient, params.Mongo), nil
 
 	default:
 		panic("Unsupported database type")

@@ -8,24 +8,38 @@ import (
 	"time"
 )
 
-type logEntry struct {
-	ReceivedTime      time.Time
-	RequestMethod     string
-	RequestURL        string
-	RequestHeaderSize int64
-	RequestBodySize   int64
-	UserAgent         string
-	Referer           string
-	Proto             string
+type (
+	logEntry struct {
+		ReceivedTime      time.Time
+		RequestMethod     string
+		RequestURL        string
+		RequestHeaderSize int64
+		RequestBodySize   int64
+		UserAgent         string
+		Referer           string
+		Proto             string
 
-	RemoteIP string
-	ServerIP string
+		RemoteIP string
+		ServerIP string
 
-	Status             int
-	ResponseHeaderSize int64
-	ResponseBodySize   int64
-	Latency            time.Duration
-}
+		Status             int
+		ResponseHeaderSize int64
+		ResponseBodySize   int64
+		Latency            time.Duration
+	}
+	writeCounter  int64
+	responseStats struct {
+		w     http.ResponseWriter
+		hsize int64
+		wc    writeCounter
+		code  int
+	}
+	readCounterCloser struct {
+		r   io.ReadCloser
+		n   int64
+		err error
+	}
+)
 
 func ipFromHostPort(hp string) string {
 	h, _, err := net.SplitHostPort(hp)
@@ -36,12 +50,6 @@ func ipFromHostPort(hp string) string {
 		return h[1 : len(h)-1]
 	}
 	return h
-}
-
-type readCounterCloser struct {
-	r   io.ReadCloser
-	n   int64
-	err error
 }
 
 func (rcc *readCounterCloser) Read(p []byte) (n int, err error) {
@@ -58,8 +66,6 @@ func (rcc *readCounterCloser) Close() error {
 	return rcc.r.Close()
 }
 
-type writeCounter int64
-
 func (wc *writeCounter) Write(p []byte) (n int, err error) {
 	*wc += writeCounter(len(p))
 	return len(p), nil
@@ -72,13 +78,6 @@ func headerSize(h http.Header) int64 {
 		return 0
 	}
 	return int64(wc) + 2 // for CRLF
-}
-
-type responseStats struct {
-	w     http.ResponseWriter
-	hsize int64
-	wc    writeCounter
-	code  int
 }
 
 func (r *responseStats) Header() http.Header {

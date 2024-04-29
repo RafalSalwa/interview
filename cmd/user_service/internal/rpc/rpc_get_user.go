@@ -3,9 +3,9 @@ package rpc
 import (
 	"context"
 	"errors"
-	"fmt"
-	"github.com/RafalSalwa/interview-app-srv/pkg/models"
-	pb "github.com/RafalSalwa/interview-app-srv/proto/grpc"
+
+	"github.com/RafalSalwa/auth-api/pkg/models"
+	pb "github.com/RafalSalwa/auth-api/proto/grpc"
 	"github.com/jinzhu/copier"
 	"go.opentelemetry.io/otel"
 	otelcodes "go.opentelemetry.io/otel/codes"
@@ -51,7 +51,7 @@ func (us *UserServer) GetUserById(ctx context.Context, req *pb.GetUserRequest) (
 		VerificationCode: udb.VerificationCode,
 		Verified:         udb.Verified,
 		Active:           udb.Active,
-		CreatedAt:        timestamppb.New(udb.CreatedAt.Local()),
+		CreatedAt:        timestamppb.New(udb.CreatedAt),
 	}
 	return res, nil
 }
@@ -84,7 +84,6 @@ func (us *UserServer) GetUserByCode(ctx context.Context, req *pb.VerificationCod
 	if user == nil {
 		return nil, status.Errorf(codes.NotFound, errors.New("user not found or activated").Error())
 	}
-	fmt.Println("user", user)
 	ud := &pb.UserDetails{}
 	err = copier.Copy(ud, user)
 	if err != nil {
@@ -158,7 +157,7 @@ func (us *UserServer) GetUserByToken(ctx context.Context, req *pb.GetUserRequest
 		VerificationCode: udb.VerificationCode,
 		Verified:         udb.Verified,
 		Active:           udb.Active,
-		CreatedAt:        timestamppb.New(udb.CreatedAt.Local()),
+		CreatedAt:        timestamppb.New(udb.CreatedAt),
 	}
 	return res, nil
 }

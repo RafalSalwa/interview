@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 
-	"github.com/RafalSalwa/interview-app-srv/pkg/rabbitmq"
+	"github.com/RafalSalwa/auth-api/pkg/rabbitmq"
 	amqp "github.com/rabbitmq/amqp091-go"
 )
 
@@ -15,22 +15,28 @@ type UserEvent struct {
 	VerificationCode string
 }
 
-func (um *UserDBModel) AMQP() amqp.Publishing {
+func (um *UserDBModel) AMQP() *amqp.Publishing {
 	ue := UserEvent{
 		ID:               um.Id,
 		Username:         um.Username,
 		Email:            um.Email,
 		VerificationCode: um.VerificationCode,
 	}
-	data, _ := json.Marshal(&ue)
+	data, err := json.Marshal(&ue)
+	if err != nil {
+		return nil
+	}
 	event := rabbitmq.Event{
 		Name:       "customer_account_confirmation_requested",
 		ID:         "",
 		SequenceID: "",
 		Content:    string(data),
 	}
-	body, _ := json.Marshal(event)
-	message := amqp.Publishing{
+	body, err := json.Marshal(event)
+	if err != nil {
+		return nil
+	}
+	message := &amqp.Publishing{
 		ContentType: "application/json",
 		Body:        body,
 	}

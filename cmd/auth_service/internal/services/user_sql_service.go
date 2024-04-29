@@ -5,28 +5,29 @@ import (
 	"database/sql"
 	"errors"
 
-	"github.com/RafalSalwa/interview-app-srv/pkg/generator"
-	"github.com/RafalSalwa/interview-app-srv/pkg/hashing"
-	"github.com/RafalSalwa/interview-app-srv/pkg/logger"
-	"github.com/RafalSalwa/interview-app-srv/pkg/models"
-	mySql "github.com/RafalSalwa/interview-app-srv/pkg/sql"
+	"github.com/RafalSalwa/auth-api/pkg/generator"
+	"github.com/RafalSalwa/auth-api/pkg/hashing"
+	"github.com/RafalSalwa/auth-api/pkg/logger"
+	"github.com/RafalSalwa/auth-api/pkg/models"
+	mySql "github.com/RafalSalwa/auth-api/pkg/sql"
 )
 
-type SQLServiceImpl struct {
-	db     *mySql.DB
-	logger *logger.Logger
-}
-
-type UserSQLService interface {
-	GetByID(id int) (user *models.UserDBResponse, err error)
-	GetByCode(code string) (user *models.UserDBModel, err error)
-	UsernameInUse(user *models.SignUpUserRequest) bool
-	StoreVerificationData(user *models.UserDBModel) bool
-	UpdateUser(user *models.UpdateUserRequest) (err error)
-	LoginUser(user *models.SignInUserRequest) (*models.UserResponse, error)
-	UpdateUserPassword(user *models.UpdateUserRequest) (err error)
-	CreateUser(user *models.SignUpUserRequest) (*models.UserResponse, error)
-}
+type (
+	SQLServiceImpl struct {
+		db     *mySql.DB
+		logger *logger.Logger
+	}
+	UserSQLService interface {
+		GetByID(id int) (user *models.UserDBResponse, err error)
+		GetByCode(code string) (user *models.UserDBModel, err error)
+		UsernameInUse(user *models.SignUpUserRequest) bool
+		StoreVerificationData(user *models.UserDBModel) bool
+		UpdateUser(user *models.UpdateUserRequest) (err error)
+		LoginUser(user *models.SignInUserRequest) (*models.UserResponse, error)
+		UpdateUserPassword(user *models.UpdateUserRequest) (err error)
+		CreateUser(user *models.SignUpUserRequest) (*models.UserResponse, error)
+	}
+)
 
 func (s *SQLServiceImpl) GetByCode(code string) (*models.UserDBModel, error) {
 	user := &models.UserDBModel{}
@@ -50,9 +51,10 @@ func (s *SQLServiceImpl) GetByCode(code string) (*models.UserDBModel, error) {
 func (s *SQLServiceImpl) GetByID(id int) (user *models.UserDBResponse, err error) {
 	user = &models.UserDBResponse{}
 
-	row := s.db.QueryRow("SELECT id,username,first_name,last_name,password,is_verified, is_active, created_at FROM `user` WHERE is_active = 1 AND id=?", id)
+	row := s.db.QueryRow("SELECT "+
+		"id,first_name,last_name,password,is_verified, is_active, created_at FROM `user` "+
+		"WHERE is_active = 1 AND id=?", id)
 	err = row.Scan(&user.Id,
-		&user.Username,
 		&user.Firstname,
 		&user.Lastname,
 		&user.Password,
@@ -128,19 +130,6 @@ func (s *SQLServiceImpl) LoginUser(u *models.SignInUserRequest) (*models.UserRes
 		return nil, err
 	}
 
-	// roles, err := phpserialize.Decode(user.RolesJson)
-
-	if err != nil {
-		return nil, err
-	}
-
-	// v, ok := roles.(map[interface{}]interface{})
-	// if ok {
-	//	for _, s := range v {
-	//		user.Roles = append(user.Roles, fmt.Sprintf("%v", s))
-	//	}
-	//}
-
 	return &user, nil
 }
 
@@ -164,7 +153,7 @@ func (s *SQLServiceImpl) CreateUser(newUserRequest *models.SignUpUserRequest) (*
 		return nil, errors.New("create user: username already in use")
 	}
 
-	vcode, err := generator.RandomString(6)
+	vcode, err := generator.AccessCode()
 	if err != nil {
 		return nil, err
 	}
@@ -184,12 +173,8 @@ func (s *SQLServiceImpl) CreateUser(newUserRequest *models.SignUpUserRequest) (*
 	if err != nil {
 		return nil, err
 	}
-	sqlStatement := "INSERT INTO `user` ( " +
-		"`password`, " +
-		"`email`, " +
-		"`verification_code`, " +
-		"`is_verified`," +
-		"`is_active`) VALUES (?,?,?,0,1);"
+	sqlStatement := "INSERT INTO `user` ( " + "`password`, " + "`email`, " + "`verification_code`, " +
+		"`is_verified`," + "`is_active`) VALUES (?,?,?,0,1);"
 	rows, err := tx.ExecContext(ctx,
 		sqlStatement,
 		dbUser.Password,

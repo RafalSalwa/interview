@@ -5,29 +5,34 @@ import (
 	"database/sql"
 	"errors"
 
-	"github.com/RafalSalwa/interview-app-srv/pkg/generator"
-	"github.com/RafalSalwa/interview-app-srv/pkg/hashing"
-	"github.com/RafalSalwa/interview-app-srv/pkg/logger"
+	"github.com/RafalSalwa/auth-api/pkg/generator"
+	"github.com/RafalSalwa/auth-api/pkg/hashing"
+	"github.com/RafalSalwa/auth-api/pkg/logger"
 
-	"github.com/RafalSalwa/interview-app-srv/pkg/models"
-	mySql "github.com/RafalSalwa/interview-app-srv/pkg/sql"
+	"github.com/RafalSalwa/auth-api/pkg/models"
+	mySql "github.com/RafalSalwa/auth-api/pkg/sql"
 )
 
-type SqlServiceImpl struct {
-	db     *mySql.DB
-	logger *logger.Logger
-}
+type (
+	SqlServiceImpl struct {
+		db     *mySql.DB
+		logger *logger.Logger
+	}
+	SQLService interface {
+		GetByID(id int) (user *models.UserDBResponse, err error)
+		GetByCode(code string) (user *models.UserDBModel, err error)
+		UsernameInUse(user *models.SignUpUserRequest) bool
+		StoreVerificationData(user *models.UserDBModel) bool
+		UpdateUser(user *models.UpdateUserRequest) (err error)
+		LoginUser(user *models.SignInUserRequest) (*models.UserResponse, error)
+		UpdateUserPassword(user *models.UpdateUserRequest) (err error)
+		CreateUser(user *models.SignUpUserRequest) (*models.UserResponse, error)
+	}
+)
 
-type SQLService interface {
-	GetByID(id int) (user *models.UserDBResponse, err error)
-	GetByCode(code string) (user *models.UserDBModel, err error)
-	UsernameInUse(user *models.SignUpUserRequest) bool
-	StoreVerificationData(user *models.UserDBModel) bool
-	UpdateUser(user *models.UpdateUserRequest) (err error)
-	LoginUser(user *models.SignInUserRequest) (*models.UserResponse, error)
-	UpdateUserPassword(user *models.UpdateUserRequest) (err error)
-	CreateUser(user *models.SignUpUserRequest) (*models.UserResponse, error)
-}
+const (
+	accessCodeLength = 6
+)
 
 func NewMySQLService(db *mySql.DB, l *logger.Logger) *SqlServiceImpl {
 	return &SqlServiceImpl{db, l}
@@ -177,7 +182,7 @@ func (s *SqlServiceImpl) CreateUser(newUserRequest *models.SignUpUserRequest) (*
 		return nil, errors.New("create user: username already in use")
 	}
 
-	vcode, err := generator.RandomString(6)
+	vcode, err := generator.RandomString(accessCodeLength)
 	if err != nil {
 		return nil, err
 	}
@@ -197,7 +202,8 @@ func (s *SqlServiceImpl) CreateUser(newUserRequest *models.SignUpUserRequest) (*
 	if err != nil {
 		return nil, err
 	}
-	sqlStatement := "INSERT INTO `user` ( `password`, `email`, `verification_code`, `is_verified`,`is_active`) VALUES (?,?,?,0,1);"
+	sqlStatement := "INSERT INTO `user` " +
+		"( `password`, `email`, `verification_code`, `is_verified`,`is_active`) VALUES (?,?,?,0,1);"
 	rows, err := tx.ExecContext(ctx,
 		sqlStatement,
 		dbUser.Password,

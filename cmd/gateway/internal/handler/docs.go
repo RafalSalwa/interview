@@ -3,18 +3,19 @@ package handler
 import (
 	"net/http"
 
-	"github.com/RafalSalwa/interview-app-srv/pkg/logger"
+	"github.com/RafalSalwa/auth-api/pkg/logger"
 	"github.com/gorilla/mux"
 )
 
-type DocsHandler interface {
-	RouteRegisterer
-	Documentation() HandlerFunc
-}
-
-type docsHandler struct {
-	logger *logger.Logger
-}
+type (
+	DocsHandler interface {
+		RouteRegisterer
+		Documentation() HandlerFunc
+	}
+	docsHandler struct {
+		logger *logger.Logger
+	}
+)
 
 func (d docsHandler) Documentation() HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {

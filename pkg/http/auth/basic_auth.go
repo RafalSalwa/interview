@@ -33,7 +33,7 @@ func (a *basicAuth) Middleware(h http.HandlerFunc) http.HandlerFunc {
 	}
 }
 
-func newBasicAuthMiddleware(username string, password string) *basicAuth {
+func newBasicAuthMiddleware(username, password string) *basicAuth {
 	return &basicAuth{
 		username: username,
 		password: password,

@@ -3,35 +3,36 @@ package config
 import (
 	"errors"
 	"fmt"
-	"github.com/RafalSalwa/interview-app-srv/pkg/http/auth"
-	"github.com/RafalSalwa/interview-app-srv/pkg/logger"
-	"github.com/spf13/viper"
 	"os"
+
+	"github.com/RafalSalwa/auth-api/pkg/http/auth"
+	"github.com/RafalSalwa/auth-api/pkg/logger"
+	"github.com/spf13/viper"
+)
+
+type (
+	Config struct {
+		ServiceName string         `mapstructure:"serviceName"`
+		App         App            `mapstructure:"app"`
+		Logger      *logger.Config `mapstructure:"logger"`
+		HTTP        HTTP           `mapstructure:"http"`
+		Auth        auth.Auth      `mapstructure:"auth"`
+	}
+	App struct {
+		Env   string `mapstructure:"env"`
+		Debug bool   `mapstructure:"debug"`
+	}
+	HTTP struct {
+		Addr                string `mapstructure:"addr"`
+		Development         bool   `mapstructure:"development"`
+		BasePath            string `mapstructure:"basePath"`
+		DebugHeaders        bool   `mapstructure:"debugHeaders"`
+		HTTPClientDebug     bool   `mapstructure:"httpClientDebug"`
+		DebugErrorsResponse bool   `mapstructure:"debugErrorsResponse"`
+	}
 )
 
 var configPath string
-
-type Config struct {
-	ServiceName string         `mapstructure:"serviceName"`
-	App         App            `mapstructure:"app"`
-	Logger      *logger.Config `mapstructure:"logger"`
-	HTTP        HTTP           `mapstructure:"http"`
-	Auth        auth.Auth      `mapstructure:"auth"`
-}
-
-type App struct {
-	Env   string `mapstructure:"env"`
-	Debug bool   `mapstructure:"debug"`
-}
-
-type HTTP struct {
-	Addr                string `mapstructure:"addr"`
-	Development         bool   `mapstructure:"development"`
-	BasePath            string `mapstructure:"basePath"`
-	DebugHeaders        bool   `mapstructure:"debugHeaders"`
-	HTTPClientDebug     bool   `mapstructure:"httpClientDebug"`
-	DebugErrorsResponse bool   `mapstructure:"debugErrorsResponse"`
-}
 
 func InitConfig() (*Config, error) {
 	cfg := &Config{}

@@ -3,10 +3,10 @@ package rpc
 import (
 	"context"
 	"errors"
-	"github.com/RafalSalwa/interview-app-srv/pkg/encdec"
-	"github.com/RafalSalwa/interview-app-srv/pkg/models"
-	"github.com/RafalSalwa/interview-app-srv/pkg/tracing"
-	pb "github.com/RafalSalwa/interview-app-srv/proto/grpc"
+
+	"github.com/RafalSalwa/auth-api/pkg/encdec"
+	"github.com/RafalSalwa/auth-api/pkg/models"
+	pb "github.com/RafalSalwa/auth-api/proto/grpc"
 	"go.opentelemetry.io/otel"
 	otelcodes "go.opentelemetry.io/otel/codes"
 	"google.golang.org/grpc/codes"
@@ -16,7 +16,7 @@ import (
 )
 
 func (a *Auth) SignInUser(ctx context.Context, req *pb.SignInUserInput) (*pb.SignInUserResponse, error) {
-	ctx, span := tracing.InitSpan(ctx, "auth_service-rpc", "GRPC SignInUser")
+	ctx, span := otel.GetTracerProvider().Tracer("auth_service-rpc").Start(ctx, "GRPC SignInUser")
 	defer span.End()
 
 	loginUser := &models.SignInUserRequest{
@@ -41,7 +41,7 @@ func (a *Auth) SignInUser(ctx context.Context, req *pb.SignInUserInput) (*pb.Sig
 	return res, nil
 }
 func (a *Auth) SignInByCode(ctx context.Context, req *pb.SignInByCodeUserInput) (*pb.SignInUserResponse, error) {
-	ctx, span := tracing.InitSpan(ctx, "auth_service-rpc", "GRPC SignInByCode")
+	ctx, span := otel.GetTracerProvider().Tracer("auth_service-rpc").Start(ctx, "GRPC SignInByCode")
 	defer span.End()
 
 	loginUser := &models.UserDBModel{
@@ -95,7 +95,7 @@ func (a *Auth) SignUpUser(ctx context.Context, req *pb.SignUpUserInput) (*pb.Sig
 func (a *Auth) GetVerificationKey(
 	ctx context.Context,
 	in *pb.VerificationCodeRequest) (*pb.VerificationCodeResponse, error) {
-	ur, err := a.authService.GetVerificationKey(ctx, in.Email)
+	ur, err := a.authService.GetVerificationKey(ctx, in.GetEmail())
 	if err != nil {
 		a.logger.Error().Err(err).Msg("rpc:service:getkey")
 		if err.Error() == "record not found" {

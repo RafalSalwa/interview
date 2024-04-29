@@ -5,11 +5,9 @@ import (
 	"errors"
 	"time"
 
+	"github.com/RafalSalwa/auth-api/pkg/hashing"
+	"github.com/RafalSalwa/auth-api/pkg/models"
 	"go.opentelemetry.io/otel"
-
-	"github.com/RafalSalwa/interview-app-srv/pkg/models"
-
-	"github.com/RafalSalwa/interview-app-srv/pkg/hashing"
 	"gorm.io/gorm"
 )
 
@@ -120,12 +118,6 @@ func (r *UserAdapter) UpdateLastLogin(ctx context.Context, u *models.UserDBModel
 	r.DB.Model(u).Update("LastLogin", now)
 	u.LastLogin = &now
 	return u, nil
-}
-func (r *UserAdapter) BeginTx() *gorm.DB {
-	return r.DB.Begin().Begin()
-}
-func (r *UserAdapter) GetConnection() *gorm.DB {
-	return r.DB
 }
 
 func (r *UserAdapter) FindUserByID(uid int64) (*models.UserDBModel, error) {

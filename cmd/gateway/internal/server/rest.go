@@ -4,12 +4,13 @@ import (
 	"context"
 	"crypto/tls"
 	"errors"
-	"github.com/RafalSalwa/interview-app-srv/cmd/gateway/config"
-	"github.com/RafalSalwa/interview-app-srv/pkg/logger"
-	"github.com/RafalSalwa/interview-app-srv/pkg/metrics"
-	"github.com/RafalSalwa/interview-app-srv/pkg/tracing"
-	"github.com/gorilla/mux"
 	"net/http"
+
+	"github.com/RafalSalwa/auth-api/cmd/gateway/config"
+	"github.com/RafalSalwa/auth-api/pkg/logger"
+	"github.com/RafalSalwa/auth-api/pkg/metrics"
+	"github.com/RafalSalwa/auth-api/pkg/tracing"
+	"github.com/gorilla/mux"
 )
 
 type Server struct {
@@ -54,10 +55,8 @@ func (srv *Server) ServeHTTP() {
 		}
 	}()
 
-	if srv.cfg.Jaeger.Enable {
-		if err := tracing.OTELGRPCProvider(srv.cfg.ServiceName, srv.cfg.Jaeger); err != nil {
-			srv.log.Error().Err(err).Msg("server:jaeger:register")
-		}
+	if err := tracing.OTELGRPCProvider(srv.cfg.ServiceName); err != nil {
+		srv.log.Error().Err(err).Msg("server:jaeger:register")
 	}
 }
 func (srv *Server) Shutdown() {

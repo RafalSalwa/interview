@@ -4,10 +4,11 @@ package generator
 
 import (
 	"errors"
-	"github.com/stretchr/testify/assert"
 	"io"
 	"regexp"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestVerificationCode(t *testing.T) {
@@ -20,11 +21,11 @@ func TestVerificationCode(t *testing.T) {
 			name: "len to small (0)",
 		},
 		{
-			len:  6,
+			len:  minLength,
 			name: "len good (6)",
 		},
 		{
-			len:  20,
+			len:  minLength + maxLength,
 			name: "len too big (20)",
 		},
 	}

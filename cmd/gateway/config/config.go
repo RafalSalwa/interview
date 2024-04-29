@@ -1,37 +1,35 @@
 package config
 
 import (
-	"github.com/RafalSalwa/interview-app-srv/pkg/csrf"
-	"github.com/RafalSalwa/interview-app-srv/pkg/env"
-	"github.com/RafalSalwa/interview-app-srv/pkg/http"
-	"github.com/RafalSalwa/interview-app-srv/pkg/http/auth"
-	"github.com/RafalSalwa/interview-app-srv/pkg/logger"
-	"github.com/RafalSalwa/interview-app-srv/pkg/probes"
-	"github.com/RafalSalwa/interview-app-srv/pkg/tracing"
+	"github.com/RafalSalwa/auth-api/pkg/csrf"
+	"github.com/RafalSalwa/auth-api/pkg/env"
+	"github.com/RafalSalwa/auth-api/pkg/http"
+	"github.com/RafalSalwa/auth-api/pkg/http/auth"
+	"github.com/RafalSalwa/auth-api/pkg/logger"
+	"github.com/RafalSalwa/auth-api/pkg/probes"
 	"github.com/spf13/viper"
 )
 
-type Config struct {
-	ServiceName string               `mapstructure:"serviceName"`
-	App         App                  `mapstructure:"app"`
-	Logger      *logger.Config       `mapstructure:"logger"`
-	HTTP        http.Config          `mapstructure:"http"`
-	Auth        auth.Auth            `mapstructure:"auth"`
-	Grpc        Grpc                 `mapstructure:"grpc"`
-	Probes      probes.Config        `mapstructure:"probes"`
-	Jaeger      tracing.JaegerConfig `mapstructure:"jaeger"`
-	CSRF        csrf.Config          `mapstructure:"csrf"`
-}
-
-type App struct {
-	Env   string `mapstructure:"env"`
-	Debug bool   `mapstructure:"debug"`
-}
-
-type Grpc struct {
-	AuthServicePort string `mapstructure:"authServicePort"`
-	UserServicePort string `mapstructure:"userServicePort"`
-}
+type (
+	Config struct {
+		ServiceName string         `mapstructure:"serviceName"`
+		App         App            `mapstructure:"app"`
+		Logger      *logger.Config `mapstructure:"logger"`
+		HTTP        http.Config    `mapstructure:"http"`
+		Auth        auth.Auth      `mapstructure:"auth"`
+		Grpc        Grpc           `mapstructure:"grpc"`
+		Probes      probes.Config  `mapstructure:"probes"`
+		CSRF        csrf.Config    `mapstructure:"csrf"`
+	}
+	App struct {
+		Env   string `mapstructure:"env"`
+		Debug bool   `mapstructure:"debug"`
+	}
+	Grpc struct {
+		AuthServicePort string `mapstructure:"authServicePort"`
+		UserServicePort string `mapstructure:"userServicePort"`
+	}
+)
 
 func InitConfig() (*Config, error) {
 	path, err := env.GetConfigPath("gateway")

@@ -3,9 +3,7 @@ package repository
 import (
 	"context"
 
-	"gorm.io/gorm"
-
-	"github.com/RafalSalwa/interview-app-srv/pkg/models"
+	"github.com/RafalSalwa/auth-api/pkg/models"
 )
 
 type UserRepository interface {
@@ -21,6 +19,4 @@ type UserRepository interface {
 	UpdateLastLogin(ctx context.Context, u *models.UserDBModel) (*models.UserDBModel, error)
 	FindUserByID(uid int64) (*models.UserDBModel, error)
 	ChangePassword(ctx context.Context, userid int64, password string) error
-	BeginTx() *gorm.DB
-	GetConnection() *gorm.DB
 }

@@ -3,7 +3,7 @@
 package config
 
 import (
-	"github.com/RafalSalwa/interview-app-srv/pkg/env"
+	"github.com/RafalSalwa/auth-api/pkg/env"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -19,7 +19,6 @@ func TestInitConfig(t *testing.T) {
 	assert.NoError(t, err)
 	assert.NotEmpty(t, c.App)
 	assert.NotEmpty(t, c.Logger)
-	assert.NotEmpty(t, c.Jaeger)
 	assert.NotEmpty(t, c.ServiceName)
 	assert.NotEmpty(t, c.Email)
 	assert.NotEmpty(t, c.JWTToken)

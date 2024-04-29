@@ -3,16 +3,18 @@ package query
 import (
 	"context"
 
-	"github.com/RafalSalwa/interview-app-srv/pkg/models"
-	intrvproto "github.com/RafalSalwa/interview-app-srv/proto/grpc"
+	"github.com/RafalSalwa/auth-api/pkg/models"
+	intrvproto "github.com/RafalSalwa/auth-api/proto/grpc"
 )
 
-type VerificationCodeHandler struct {
-	authClient intrvproto.AuthServiceClient
-}
-type VerificationCode struct {
-	Email string
-}
+type (
+	VerificationCodeHandler struct {
+		authClient intrvproto.AuthServiceClient
+	}
+	VerificationCode struct {
+		Email string
+	}
+)
 
 func NewVerificationCodeHandler(authClient intrvproto.AuthServiceClient) VerificationCodeHandler {
 	return VerificationCodeHandler{authClient: authClient}
@@ -27,7 +29,7 @@ func (h VerificationCodeHandler) Handle(ctx context.Context, email string) (mode
 		return models.UserResponse{}, err
 	}
 	u := models.UserResponse{
-		VerificationCode: resp.Code,
+		VerificationCode: resp.GetCode(),
 	}
 	return u, nil
 }

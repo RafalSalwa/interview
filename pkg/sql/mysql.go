@@ -5,15 +5,17 @@ import (
 	"fmt"
 )
 
-type MySQL struct {
-	Addr     string `mapstructure:"addr"`
-	Username string `mapstructure:"username"`
-	Password string `mapstructure:"password"`
-	DBName   string `mapstructure:"dbName"`
-}
-type DB struct {
-	*sql.DB
-}
+type (
+	MySQL struct {
+		Addr     string `mapstructure:"addr"`
+		Username string `mapstructure:"username"`
+		Password string `mapstructure:"password"`
+		DBName   string `mapstructure:"dbName"`
+	}
+	DB struct {
+		*sql.DB
+	}
+)
 
 const (
 	driver   = "mysql"

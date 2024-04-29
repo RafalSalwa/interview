@@ -4,15 +4,15 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/RafalSalwa/interview-app-srv/cmd/gateway/internal/cqrs"
-	"github.com/RafalSalwa/interview-app-srv/pkg/hashing"
-	"github.com/RafalSalwa/interview-app-srv/pkg/http/auth"
-	"github.com/RafalSalwa/interview-app-srv/pkg/http/middlewares"
-	"github.com/RafalSalwa/interview-app-srv/pkg/logger"
-	"github.com/RafalSalwa/interview-app-srv/pkg/models"
-	"github.com/RafalSalwa/interview-app-srv/pkg/responses"
-	"github.com/RafalSalwa/interview-app-srv/pkg/tracing"
-	"github.com/RafalSalwa/interview-app-srv/pkg/validate"
+	"github.com/RafalSalwa/auth-api/cmd/gateway/internal/cqrs"
+	"github.com/RafalSalwa/auth-api/pkg/hashing"
+	"github.com/RafalSalwa/auth-api/pkg/http/auth"
+	"github.com/RafalSalwa/auth-api/pkg/http/middlewares"
+	"github.com/RafalSalwa/auth-api/pkg/logger"
+	"github.com/RafalSalwa/auth-api/pkg/models"
+	"github.com/RafalSalwa/auth-api/pkg/responses"
+	"github.com/RafalSalwa/auth-api/pkg/tracing"
+	"github.com/RafalSalwa/auth-api/pkg/validate"
 	"github.com/gorilla/mux"
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/codes"
@@ -20,16 +20,17 @@ import (
 	"google.golang.org/grpc/status"
 )
 
-type UserHandler interface {
-	RouteRegisterer
-	GetUserByID() HandlerFunc
-	PasswordChange() HandlerFunc
-}
-
-type userHandler struct {
-	cqrs   *cqrs.Application
-	logger *logger.Logger
-}
+type (
+	UserHandler interface {
+		RouteRegisterer
+		GetUserByID() HandlerFunc
+		PasswordChange() HandlerFunc
+	}
+	userHandler struct {
+		cqrs   *cqrs.Application
+		logger *logger.Logger
+	}
+)
 
 func NewUserHandler(cqrs *cqrs.Application, l *logger.Logger) UserHandler {
 	return userHandler{cqrs, l}
@@ -38,7 +39,7 @@ func NewUserHandler(cqrs *cqrs.Application, l *logger.Logger) UserHandler {
 func (uh userHandler) RegisterRoutes(r *mux.Router, cfg interface{}) {
 	params := cfg.(auth.JWTConfig)
 	s := r.PathPrefix("/user").Subrouter()
-	s.Use(middlewares.ValidateJWTAccessToken(params))
+	s.Use(middlewares.ValidateJWTAccessToken(&params))
 
 	s.Methods(http.MethodGet).Path("").HandlerFunc(uh.GetUserByID())
 	s.Methods(http.MethodPost).Path("/change_password").HandlerFunc(uh.PasswordChange())
@@ -72,7 +73,7 @@ func (uh userHandler) GetUserByID() HandlerFunc {
 			responses.RespondBadRequest(w, err.Error())
 			return
 		}
-		responses.User(w, user)
+		responses.User(w, &user)
 	}
 }
 
