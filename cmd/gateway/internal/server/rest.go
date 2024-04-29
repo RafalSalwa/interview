@@ -55,10 +55,8 @@ func (srv *Server) ServeHTTP() {
 		}
 	}()
 
-	if srv.cfg.Jaeger.Enable {
-		if err := tracing.OTELGRPCProvider(srv.cfg.ServiceName, srv.cfg.Jaeger); err != nil {
-			srv.log.Error().Err(err).Msg("server:jaeger:register")
-		}
+	if err := tracing.OTELGRPCProvider(srv.cfg.ServiceName); err != nil {
+		srv.log.Error().Err(err).Msg("server:jaeger:register")
 	}
 }
 func (srv *Server) Shutdown() {

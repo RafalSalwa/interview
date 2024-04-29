@@ -7,13 +7,14 @@ import (
 	intrvproto "github.com/RafalSalwa/auth-api/proto/grpc"
 )
 
-type UserRequest struct {
-	UserID int64
-}
-
-type UserDetailsHandler struct {
-	grpcUser intrvproto.UserServiceClient
-}
+type (
+	UserRequest struct {
+		UserID int64
+	}
+	UserDetailsHandler struct {
+		grpcUser intrvproto.UserServiceClient
+	}
+)
 
 func NewUserDetailsHandler(userClient intrvproto.UserServiceClient) UserDetailsHandler {
 	return UserDetailsHandler{grpcUser: userClient}

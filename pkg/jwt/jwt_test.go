@@ -32,7 +32,7 @@ func TestGenerateTokenPair(t *testing.T) {
 
 	issuedAt := time.Now()
 
-	tp, err := GenerateTokenPair(c, 1)
+	tp, err := GenerateTokenPair(&c, 1)
 	assert.NoError(t, err)
 
 	at := tp.AccessToken

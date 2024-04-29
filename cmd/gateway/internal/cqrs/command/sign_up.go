@@ -9,13 +9,14 @@ import (
 	intrvproto "github.com/RafalSalwa/auth-api/proto/grpc"
 )
 
-type SignUpUser struct {
-	User models.SignUpUserRequest
-}
-
-type SignUpHandler struct {
-	authClient intrvproto.AuthServiceClient
-}
+type (
+	SignUpUser struct {
+		User models.SignUpUserRequest
+	}
+	SignUpHandler struct {
+		authClient intrvproto.AuthServiceClient
+	}
+)
 
 func NewSignUpHandler(authClient intrvproto.AuthServiceClient) SignUpHandler {
 	return SignUpHandler{authClient: authClient}

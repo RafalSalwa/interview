@@ -11,20 +11,6 @@ import (
 	"golang.org/x/crypto/argon2"
 )
 
-var (
-	ErrInvalidHash         = errors.New("argon2id: hash is not in the correct format")
-	ErrIncompatibleVariant = errors.New("argon2id: incompatible variant of argon2")
-	ErrIncompatibleVersion = errors.New("argon2id: incompatible version of argon2")
-)
-
-var DefaultParams = &Params{
-	Memory:      64 * 1024,
-	Iterations:  4,
-	Parallelism: 4,
-	SaltLength:  16,
-	KeyLength:   32,
-}
-
 type Params struct {
 	Memory      uint32
 	Iterations  uint32
@@ -33,15 +19,47 @@ type Params struct {
 	KeyLength   uint32
 }
 
+const (
+	memoryLimit       = 64 * 1024
+	passHashHeaderLen = 6
+	SaltLength        = 16
+)
+
+var (
+	ErrInvalidHash         = errors.New("argon2id: hash is not in the correct format")
+	ErrIncompatibleVariant = errors.New("argon2id: incompatible variant of argon2")
+	ErrIncompatibleVersion = errors.New("argon2id: incompatible version of argon2")
+	DefaultParams          = &Params{
+		Memory:      memoryLimit,
+		Iterations:  4,
+		Parallelism: 4,
+		SaltLength:  SaltLength,
+		KeyLength:   32,
+	}
+)
+
 func Argon2ID(password string) (hash string) {
 	salt := generateRandomBytes(DefaultParams.SaltLength)
 
-	key := argon2.IDKey([]byte(password), salt, DefaultParams.Iterations, DefaultParams.Memory, DefaultParams.Parallelism, DefaultParams.KeyLength)
+	key := argon2.IDKey(
+		[]byte(password),
+		salt,
+		DefaultParams.Iterations,
+		DefaultParams.Memory,
+		DefaultParams.Parallelism,
+		DefaultParams.KeyLength)
 
 	b64Salt := base64.RawStdEncoding.EncodeToString(salt)
 	b64Key := base64.RawStdEncoding.EncodeToString(key)
 
-	hash = fmt.Sprintf("$argon2id$v=%d$m=%d,t=%d,p=%d$%s$%s", argon2.Version, DefaultParams.Memory, DefaultParams.Iterations, DefaultParams.Parallelism, b64Salt, b64Key)
+	hash = fmt.Sprintf("$argon2id$v=%d$m=%d,t=%d,p=%d$%s$%s",
+		argon2.Version,
+		DefaultParams.Memory,
+		DefaultParams.Iterations,
+		DefaultParams.Parallelism,
+		b64Salt,
+		b64Key,
+	)
 	return hash
 }
 
@@ -56,7 +74,14 @@ func CheckHash(password, hash string) (match bool, params *Params, err error) {
 		return false, nil, err
 	}
 
-	otherKey := argon2.IDKey([]byte(password), salt, params.Iterations, params.Memory, params.Parallelism, params.KeyLength)
+	otherKey := argon2.IDKey(
+		[]byte(password),
+		salt,
+		params.Iterations,
+		params.Memory,
+		params.Parallelism,
+		params.KeyLength,
+	)
 
 	keyLen := int32(len(key))
 	otherKeyLen := int32(len(otherKey))
@@ -79,7 +104,7 @@ func generateRandomBytes(n uint32) []byte {
 
 func DecodeHash(hash string) (params *Params, salt, key []byte, err error) {
 	vals := strings.Split(hash, "$")
-	if len(vals) != 6 {
+	if len(vals) != passHashHeaderLen {
 		return nil, nil, nil, ErrInvalidHash
 	}
 

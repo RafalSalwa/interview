@@ -39,7 +39,7 @@ func newMySQLUserRepository(db *gorm.DB) UserRepository {
 }
 
 func (r *UserAdapter) FindOne(ctx context.Context, user *models.UserDBModel) (*models.UserDBModel, error) {
-	_, span := otel.GetTracerProvider().Tracer("auth-handler").Start(ctx, "Handler SignUpUser")
+	_, span := otel.GetTracerProvider().Tracer("auth-handler").Start(ctx, "MySQL FindOne")
 	defer span.End()
 
 	if err := r.DB.Where(&user).First(&user).Error; err != nil {
@@ -49,7 +49,7 @@ func (r *UserAdapter) FindOne(ctx context.Context, user *models.UserDBModel) (*m
 }
 
 func (r *UserAdapter) Save(ctx context.Context, user *models.UserDBModel) error {
-	_, span := otel.GetTracerProvider().Tracer("auth-handler").Start(ctx, "Handler SignUpUser")
+	_, span := otel.GetTracerProvider().Tracer("auth-handler").Start(ctx, "MySQL Save")
 	defer span.End()
 
 	res := r.DB.Save(&user)
@@ -60,11 +60,11 @@ func (r *UserAdapter) Save(ctx context.Context, user *models.UserDBModel) error 
 	return nil
 }
 
-func (r *UserAdapter) Update(ctx context.Context, user models.UserDBModel) error {
-	_, span := otel.GetTracerProvider().Tracer("auth-handler").Start(ctx, "Handler SignUpUser")
+func (r *UserAdapter) Update(ctx context.Context, user *models.UserDBModel) error {
+	_, span := otel.GetTracerProvider().Tracer("auth-handler").Start(ctx, "MySQL Update")
 	defer span.End()
 
-	res := r.DB.Updates(&user)
+	res := r.DB.Updates(user)
 	if res.Error != nil {
 		return res.Error
 	}
@@ -73,7 +73,7 @@ func (r *UserAdapter) Update(ctx context.Context, user models.UserDBModel) error
 }
 
 func (r *UserAdapter) FindAll(ctx context.Context, user *models.UserDBModel) ([]models.UserDBModel, error) {
-	_, span := otel.GetTracerProvider().Tracer("auth-handler").Start(ctx, "Handler SignUpUser")
+	_, span := otel.GetTracerProvider().Tracer("auth-handler").Start(ctx, "MySQL FindAll")
 	defer span.End()
 
 	var all []models.UserDBModel
@@ -86,7 +86,7 @@ func (r *UserAdapter) FindAll(ctx context.Context, user *models.UserDBModel) ([]
 }
 
 func (r *UserAdapter) Confirm(ctx context.Context, user *models.UserDBModel) error {
-	_, span := otel.GetTracerProvider().Tracer("auth_service-repository").Start(ctx, "Confirm")
+	_, span := otel.GetTracerProvider().Tracer("auth_service-repository").Start(ctx, "MySQL Confirm")
 	defer span.End()
 
 	return r.DB.Model(user).Updates(models.UserDBModel{
@@ -95,7 +95,7 @@ func (r *UserAdapter) Confirm(ctx context.Context, user *models.UserDBModel) err
 	}).Error
 }
 
-func (r *UserAdapter) SignUp(ctx context.Context, user models.UserDBModel) error {
+func (r *UserAdapter) SignUp(ctx context.Context, user *models.UserDBModel) error {
 	_, span := otel.GetTracerProvider().Tracer("auth_service-repository").Start(ctx, "MySQL Repository SignUp")
 	defer span.End()
 
@@ -108,7 +108,7 @@ func (r *UserAdapter) SignUp(ctx context.Context, user models.UserDBModel) error
 }
 
 func (r *UserAdapter) GetOrCreate(ctx context.Context, id int64) (*models.UserDBModel, error) {
-	_, span := otel.GetTracerProvider().Tracer("auth_service-repository").Start(ctx, "GetOrCreate")
+	_, span := otel.GetTracerProvider().Tracer("auth_service-repository").Start(ctx, "MySQL GetOrCreate")
 	defer span.End()
 	var user models.UserDBModel
 	r.DB.First(&user, "id = ?", id)
@@ -126,7 +126,7 @@ func (r *UserAdapter) ByLogin(ctx context.Context, user *models.SignInUserReques
 }
 
 func (r *UserAdapter) UpdateLastLogin(ctx context.Context, u *models.UserDBModel) error {
-	_, span := otel.GetTracerProvider().Tracer("auth_service-repository").Start(ctx, "UpdateLastLogin")
+	_, span := otel.GetTracerProvider().Tracer("auth_service-repository").Start(ctx, "MySQL UpdateLastLogin")
 	defer span.End()
 
 	now := time.Now()

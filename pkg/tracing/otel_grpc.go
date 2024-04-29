@@ -14,7 +14,7 @@ import (
 	"google.golang.org/grpc"
 )
 
-func OTELGRPCProvider(serviceName string, cfg JaegerConfig) error {
+func OTELGRPCProvider(serviceName string) error {
 	ctx := context.Background()
 
 	traceClient := otlptracegrpc.NewClient(

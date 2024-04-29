@@ -5,11 +5,12 @@ import (
 	"net/http"
 )
 
-type IAuthType interface {
-	Middleware(h http.HandlerFunc) http.HandlerFunc
-}
-
-type AuthType int
+type (
+	IAuthType interface {
+		Middleware(h http.HandlerFunc) http.HandlerFunc
+	}
+	AuthType int
+)
 
 const (
 	apiKey AuthType = 1 << iota
@@ -23,7 +24,7 @@ var types = map[string]interface{}{
 	"bearer_token": bearerToken,
 }
 
-func NewAuthMethod(cfg Auth) (IAuthType, error) {
+func NewAuthMethod(cfg *Auth) (IAuthType, error) {
 	val, ok := types[cfg.AuthMethod]
 	if !ok {
 		return nil, errors.New("wrong auth type")

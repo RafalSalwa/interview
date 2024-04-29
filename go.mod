@@ -1,8 +1,6 @@
 module github.com/RafalSalwa/auth-api
 
-go 1.22
-
-toolchain go1.22.2
+go 1.22.2
 
 require (
 	github.com/fatih/color v1.16.0

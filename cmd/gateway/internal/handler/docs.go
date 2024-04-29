@@ -7,14 +7,15 @@ import (
 	"github.com/gorilla/mux"
 )
 
-type DocsHandler interface {
-	RouteRegisterer
-	Documentation() HandlerFunc
-}
-
-type docsHandler struct {
-	logger *logger.Logger
-}
+type (
+	DocsHandler interface {
+		RouteRegisterer
+		Documentation() HandlerFunc
+	}
+	docsHandler struct {
+		logger *logger.Logger
+	}
+)
 
 func (d docsHandler) Documentation() HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {

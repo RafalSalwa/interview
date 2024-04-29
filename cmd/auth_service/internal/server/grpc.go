@@ -22,13 +22,6 @@ import (
 	"google.golang.org/grpc/reflection"
 )
 
-const (
-	maxConnectionIdle = 5
-	gRPCTimeout       = 1
-	maxConnectionAge  = 5
-	gRPCTime          = 10
-)
-
 type GRPC struct {
 	pb.UnimplementedAuthServiceServer
 	config      grpcconfig.Config
@@ -36,6 +29,13 @@ type GRPC struct {
 	logger      *logger.Logger
 	authService services.AuthService
 }
+
+const (
+	maxConnectionIdle = 5
+	gRPCTimeout       = 1
+	maxConnectionAge  = 5
+	gRPCTime          = 10
+)
 
 func NewGrpcServer(
 	config grpcconfig.Config,

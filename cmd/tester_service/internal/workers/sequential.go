@@ -6,9 +6,10 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"log"
 	"net/http"
 	"time"
+
+	"github.com/RafalSalwa/auth-api/pkg/logger"
 
 	"github.com/RafalSalwa/auth-api/cmd/tester_service/config"
 	"github.com/RafalSalwa/auth-api/pkg/generator"
@@ -17,22 +18,40 @@ import (
 )
 
 type Sequential struct {
-	ctx    context.Context
-	cfg    *config.Config
-	client *http.Client
+	ctx                context.Context
+	logger             *logger.Logger
+	cfg                *config.Config
+	client             *http.Client
+	endpoint           string
+	endpointSignUp     string
+	endpointSignIn     string
+	endpointAuthCode   string
+	endpointVerifyCode string
 }
 
-func NewSequential(ctx context.Context, cfg *config.Config) WorkerRunner {
-	return &Sequential{
+const (
+	usernameLen = 12
+)
+
+func NewSequential(ctx context.Context, cfg *config.Config, l *logger.Logger) WorkerRunner {
+	seq := &Sequential{
 		ctx:    ctx,
+		logger: l,
 		cfg:    cfg,
 		client: &http.Client{},
 	}
+	seq.endpoint = fmt.Sprintf("http://%s", cfg.HTTP.Addr)
+	seq.endpointSignUp = fmt.Sprintf("%s/auth/signup", seq.endpoint)
+	seq.endpointSignIn = fmt.Sprintf("%s/auth/signin", seq.endpoint)
+	seq.endpointAuthCode = fmt.Sprintf("%s/auth/code", seq.endpoint)
+	seq.endpointVerifyCode = fmt.Sprintf("%s/auth/verify", seq.endpoint)
+
+	return seq
 }
 
-func (s Sequential) Run() {
+func (s *Sequential) Run() {
 	for {
-		pUsername, _ := generator.RandomString(12)
+		pUsername, _ := generator.RandomString(usernameLen)
 		email := pUsername + emailDomain
 
 		user := &testUser{
@@ -46,11 +65,10 @@ func (s Sequential) Run() {
 		s.signIn(user)
 
 		time.Sleep(10 * time.Second)
-		fmt.Println()
 	}
 }
 
-func (s Sequential) signUp(user *testUser) {
+func (s *Sequential) signUp(user *testUser) {
 	newUser := &models.SignUpUserRequest{
 		Email:           user.Email,
 		Password:        user.Password,
@@ -59,69 +77,63 @@ func (s Sequential) signUp(user *testUser) {
 
 	marshaled, err := json.Marshal(newUser)
 	if err != nil {
-		log.Printf("impossible to marshall: %+v\n", err)
+		s.logger.Error().Err(err).Msg("impossible to marshall")
 	}
 
 	client := &http.Client{}
-	URL := fmt.Sprintf("http://%s/auth/signup", s.cfg.HTTP.Addr)
-	req, err := http.NewRequest("POST", URL, bytes.NewReader(marshaled))
+	req, err := http.NewRequestWithContext(s.ctx, "POST", s.endpointSignUp, bytes.NewReader(marshaled))
 	if err != nil {
-		fmt.Printf("impossible to read all body of response: %s", err)
+		s.logger.Error().Err(err).Msgf("impossible to read all body of response: %s", err)
 	}
 
 	req.SetBasicAuth(s.cfg.Auth.BasicAuth.Username, s.cfg.Auth.BasicAuth.Password)
 	resp, err := client.Do(req)
 	if err != nil {
-		fmt.Println("req do err: ", err)
+		s.logger.Error().Err(err).Msg("req do err: ")
 	}
 	if resp.StatusCode != http.StatusCreated {
-		fmt.Println("Err.")
-
-		fmt.Printf("    %s req body: %s\n", URL, string(marshaled))
-		bodyBytes, err := io.ReadAll(resp.Body)
-		if err != nil {
-			fmt.Printf("impossible to marshall: %s\n", err)
+		s.logger.Error().Err(err).Msgf("    %s req body: %s\n", s.endpointSignUp, string(marshaled))
+		bodyBytes, errIo := io.ReadAll(resp.Body)
+		if errIo != nil {
+			s.logger.Error().Err(errIo).Msgf("impossible to marshall: %s\n", err)
 		}
 		bodyString := string(bodyBytes)
-		fmt.Printf("    %s body: %s", URL, bodyString)
+		s.logger.Error().Err(err).Msgf("    %s body: %s", s.endpointSignUp, bodyString)
 	} else {
-		fmt.Println(color.GreenString("OK"))
+		s.logger.Info().Msgf(color.GreenString("OK"))
 	}
 	err = resp.Body.Close()
 	if err != nil {
-		fmt.Println("req do err: ", err)
+		s.logger.Error().Err(err).Msg("req do err: ")
 	}
 }
 
-func (s Sequential) getVerificationCode(user *testUser) {
+func (s *Sequential) getVerificationCode(user *testUser) {
 	reqUser := &models.SignInUserRequest{Email: user.Email, Password: user.Password}
 
 	marshaled, err := json.Marshal(reqUser)
 	if err != nil {
-		fmt.Printf("impossible to marshall: %s\n", err)
+		s.logger.Error().Err(err).Msgf("impossible to marshall: %s\n", err)
 	}
-	URL := "http://" + s.cfg.HTTP.Addr + "/auth/code"
-	req, err := http.NewRequestWithContext(s.ctx, "POST", URL, bytes.NewReader(marshaled))
+	req, err := http.NewRequestWithContext(s.ctx, "POST", s.endpointAuthCode, bytes.NewReader(marshaled))
 	if err != nil {
-		fmt.Printf("impossible to read all body of response: %s\n", err)
+		s.logger.Error().Err(err).Msgf("impossible to read all body of response: %s\n", err)
 	}
 	req.SetBasicAuth(s.cfg.Auth.BasicAuth.Username, s.cfg.Auth.BasicAuth.Password)
-	fmt.Print("Fetching vCode: ")
 	resp, err := s.client.Do(req)
 	if err != nil {
-		fmt.Printf("impossible to marshall: %s\n", err)
+		s.logger.Error().Err(err).Msgf("impossible to marshall: %s\n", err)
 	}
-	if resp.StatusCode != 200 {
-		fmt.Println("Err")
-		fmt.Printf("%s req body: %s\n", URL, string(marshaled))
-		bodyBytes, err := io.ReadAll(resp.Body)
-		if err != nil {
-			fmt.Printf("impossible to marshall: %s\n", err)
+	if resp.StatusCode != http.StatusOK {
+		s.logger.Error().Msgf("%s req body: %s\n", s.endpointAuthCode, string(marshaled))
+		bodyBytes, errIo := io.ReadAll(resp.Body)
+		if errIo != nil {
+			s.logger.Error().Err(errIo).Msgf("Incorrect response: %s", errIo)
 		}
 		bodyString := string(bodyBytes)
-		fmt.Printf("%s body: %s", URL, bodyString)
+		s.logger.Error().Msgf("%s body: %s", s.endpointAuthCode, bodyString)
 	} else {
-		fmt.Print(color.GreenString("OK "))
+		s.logger.Info().Msgf(color.GreenString("OK "))
 	}
 
 	type vCode struct {
@@ -133,93 +145,82 @@ func (s Sequential) getVerificationCode(user *testUser) {
 	tgt := target{}
 	err = json.NewDecoder(resp.Body).Decode(&tgt)
 	if err != nil {
-		fmt.Println(err)
+		s.logger.Error().Err(err).Msg("impossible to unmarshall")
 		return
 	}
 	user.ValidationCode = tgt.User.Token
-	fmt.Println(tgt.User.Token)
 	err = resp.Body.Close()
 	if err != nil {
-		fmt.Println(err)
+		s.logger.Error().Err(err).Msg("impossible to unmarshall")
 		return
 	}
 }
 
-func (s Sequential) activateUser(user *testUser) {
-	URL := "http://" + s.cfg.HTTP.Addr + "/auth/verify/" + user.ValidationCode
-	req, err := http.NewRequest("GET", URL, nil)
+func (s *Sequential) activateUser(user *testUser) {
+	req, err := http.NewRequestWithContext(s.ctx, "GET", s.endpointVerifyCode+user.ValidationCode, nil)
 	if err != nil {
-		fmt.Printf("impossible to read all body of response: %s", err)
+		s.logger.Error().Err(err).Msgf("impossible to read all body of response: %s", err)
 	}
 	req.SetBasicAuth(s.cfg.Auth.BasicAuth.Username, s.cfg.Auth.BasicAuth.Password)
 
-	fmt.Print("Veryfing: ")
 	resp, err := s.client.Do(req)
 	if err != nil {
-		fmt.Println("/auth/verify/", err)
+		s.logger.Error().Err(err).Msg("/auth/verify/")
 		return
 	}
 
-	if resp.StatusCode != 200 {
-		fmt.Println("Err ")
-		fmt.Printf("%s req :\n", URL)
+	if resp.StatusCode != http.StatusOK {
+		s.logger.Error().Msgf("%s req :\n", s.endpointVerifyCode+user.ValidationCode)
 		bodyBytes, _ := io.ReadAll(resp.Body)
 		bodyString := string(bodyBytes)
-		fmt.Printf("%s body: %s", URL, bodyString)
+		s.logger.Error().Msgf("%s body: %s", s.endpointVerifyCode+user.ValidationCode, bodyString)
 	} else {
-		fmt.Println(color.GreenString("OK "))
-	}
-	if err != nil {
-		fmt.Println("verify err:", err)
-		return
+		s.logger.Info().Msgf(color.GreenString("OK "))
 	}
 	err = resp.Body.Close()
 	if err != nil {
-		fmt.Println(err)
+		s.logger.Error().Err(err).Msg("Cannot close response body")
 		return
 	}
 }
 
-func (s Sequential) signIn(user *testUser) {
+func (s *Sequential) signIn(user *testUser) {
 	credentials := &models.SignInUserRequest{
 		Email:    user.Email,
 		Password: user.Password,
 	}
 	marshaled, err := json.Marshal(credentials)
 	if err != nil {
-		fmt.Printf("impossible to marshall: %s\n", err)
+		s.logger.Error().Err(err).Msgf("marshall: %s\n", err)
 	}
-	URL := "http://" + s.cfg.HTTP.Addr + "/auth/signin"
-	req, err := http.NewRequest("POST", URL, bytes.NewReader(marshaled))
+	req, err := http.NewRequestWithContext(s.ctx, "POST", s.endpointSignIn, bytes.NewReader(marshaled))
 	if err != nil {
-		fmt.Printf("impossible to read all body of response: %s", err)
+		s.logger.Error().Err(err).Msgf("impossible to read all body of response: %s", err)
 	}
 
 	req.SetBasicAuth(s.cfg.Auth.BasicAuth.Username, s.cfg.Auth.BasicAuth.Password)
-	fmt.Print("Logging In: ")
 	resp, err := s.client.Do(req)
 	if err != nil {
-		fmt.Println("Do err: ", err)
+		s.logger.Error().Err(err).Msg("Do err: ")
 	}
 
-	if resp.StatusCode != 200 {
-		fmt.Println("Err ")
-		fmt.Printf("%s req body: %s\n", URL, string(marshaled))
+	if resp.StatusCode != http.StatusOK {
+		s.logger.Error().Msgf("%s req body: %s\n", s.endpointSignIn, string(marshaled))
 		bodyBytes, _ := io.ReadAll(resp.Body)
 		bodyString := string(bodyBytes)
-		fmt.Printf("%s body: %s", URL, bodyString)
+		s.logger.Error().Msgf("%s body: %s", s.endpointSignIn, bodyString)
 	} else {
-		fmt.Println(color.GreenString("OK "))
+		s.logger.Info().Msgf(color.GreenString("OK "))
 	}
 
 	respBody, err := io.ReadAll(resp.Body)
 	if err != nil {
-		fmt.Println("ReadAll err: ", err)
+		s.logger.Error().Err(err).Msg("ReadAll err: ")
 	}
 	err = resp.Body.Close()
 	if err != nil {
-		fmt.Println(err)
+		s.logger.Error().Err(err).Msg("Cannot close response body")
 		return
 	}
-	fmt.Println("Token: ", string(respBody))
+	s.logger.Info().Msgf("Token: %s", string(respBody))
 }

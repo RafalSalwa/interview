@@ -11,7 +11,7 @@ import (
 	"github.com/gorilla/mux"
 )
 
-func ValidateJWTAccessToken(c auth.JWTConfig) mux.MiddlewareFunc {
+func ValidateJWTAccessToken(c *auth.JWTConfig) mux.MiddlewareFunc {
 	return func(h http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			authorizationHeader := r.Header.Get("Authorization")

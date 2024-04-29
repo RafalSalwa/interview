@@ -2,13 +2,14 @@ package main
 
 import (
 	"context"
-	"fmt"
 	"log"
 	"os"
 	"os/signal"
 	"sync"
 	"syscall"
 	"time"
+
+	"github.com/RafalSalwa/auth-api/pkg/logger"
 
 	"github.com/RafalSalwa/auth-api/cmd/consumer_service/config"
 	amqpHandlers "github.com/RafalSalwa/auth-api/cmd/consumer_service/internal/handlers"
@@ -21,6 +22,7 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
+	l := logger.NewConsole()
 
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*20)
 	defer cancel()
@@ -29,7 +31,7 @@ func main() {
 	defer con.Close(ctx)
 
 	ctx, rejectContext := context.WithCancel(NewContextCancellableByOsSignals(context.Background()))
-	var client rabbitmq.Client = rabbitmq.NewClient(con)
+	var client rabbitmq.Client = rabbitmq.NewClient(con, l)
 
 	client.SetHandler("customer_account_confirmation_requested", amqpHandlers.WrapHandleCustomerAccountRequestConfirmEmail)
 	client.SetHandler("customer_account_confirmed", amqpHandlers.WrapHandleCustomerAccountConfirmedEmail)
@@ -61,13 +63,10 @@ func NewContextCancellableByOsSignals(parent context.Context) context.Context {
 		sig := <-signalChannel
 		switch sig {
 		case os.Interrupt:
-			fmt.Println("Received Interrupt signal")
 			cancel()
 		case syscall.SIGTERM:
-			fmt.Println("Received SIGTERM signal")
 			cancel()
 		case syscall.SIGINT:
-			fmt.Println("Received SIGINT signal")
 			cancel()
 		}
 	}()

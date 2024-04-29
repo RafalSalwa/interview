@@ -6,7 +6,6 @@ import (
 
 	"github.com/RafalSalwa/auth-api/pkg/encdec"
 	"github.com/RafalSalwa/auth-api/pkg/models"
-	"github.com/RafalSalwa/auth-api/pkg/tracing"
 	pb "github.com/RafalSalwa/auth-api/proto/grpc"
 	"go.opentelemetry.io/otel"
 	otelcodes "go.opentelemetry.io/otel/codes"
@@ -17,7 +16,7 @@ import (
 )
 
 func (a *Auth) SignInUser(ctx context.Context, req *pb.SignInUserInput) (*pb.SignInUserResponse, error) {
-	ctx, span := tracing.InitSpan(ctx, "auth_service-rpc", "GRPC SignInUser")
+	ctx, span := otel.GetTracerProvider().Tracer("auth_service-rpc").Start(ctx, "GRPC SignInUser")
 	defer span.End()
 
 	loginUser := &models.SignInUserRequest{
@@ -42,7 +41,7 @@ func (a *Auth) SignInUser(ctx context.Context, req *pb.SignInUserInput) (*pb.Sig
 	return res, nil
 }
 func (a *Auth) SignInByCode(ctx context.Context, req *pb.SignInByCodeUserInput) (*pb.SignInUserResponse, error) {
-	ctx, span := tracing.InitSpan(ctx, "auth_service-rpc", "GRPC SignInByCode")
+	ctx, span := otel.GetTracerProvider().Tracer("auth_service-rpc").Start(ctx, "GRPC SignInByCode")
 	defer span.End()
 
 	loginUser := &models.UserDBModel{

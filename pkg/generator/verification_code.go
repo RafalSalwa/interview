@@ -31,3 +31,7 @@ func RandomString(length int) (string, error) {
 
 	return string(b), nil
 }
+
+func AccessCode() (string, error) {
+	return RandomString(maxLength)
+}

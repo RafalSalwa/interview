@@ -1,23 +1,33 @@
 package hashing
 
 import (
+	"fmt"
 	"regexp"
 
 	passwordvalidator "github.com/wagslane/go-password-validator"
 	"golang.org/x/crypto/bcrypt"
 )
 
-type MismatchError struct {
-	error string
-}
+type (
+	MismatchError struct {
+		error string
+	}
+	ValidationError struct {
+		Message string
+		Field   string
+	}
+)
+
+const (
+	PassField             = "password"
+	PassMinLength         = 8
+	PassMaxLength         = 32
+	EntropyMinForPassword = 70
+	BCryptCost            = 13
+)
 
 func (m MismatchError) Error() string {
 	return m.error
-}
-
-type ValidationError struct {
-	Message string
-	Field   string
 }
 
 func (ve *ValidationError) Error() string {
@@ -25,7 +35,7 @@ func (ve *ValidationError) Error() string {
 }
 
 func HashPassword(password string) (string, error) {
-	bytes, err := bcrypt.GenerateFromPassword([]byte(password), 13)
+	bytes, err := bcrypt.GenerateFromPassword([]byte(password), BCryptCost)
 	return string(bytes), err
 }
 
@@ -34,66 +44,38 @@ func CheckPasswordHash(password, hash string) bool {
 	return err == nil
 }
 
-func Validate(password string, PasswordConfirm string) error {
-	if password != PasswordConfirm {
-		return &ValidationError{
-			Message: "Passwords are not the same",
-			Field:   "passwordConfirm",
-		}
+func Validate(password, passwordConfirm string) error {
+	if password != passwordConfirm {
+		return &ValidationError{Message: "Passwords are not the same", Field: "passwordConfirm"}
 	}
 
-	if len(password) < 8 || len(password) > 32 {
-		return &ValidationError{
-			Message: "Password should be between 8 and 32 characters in length",
-			Field:   "password",
-		}
+	if len(password) < PassMinLength || len(password) > PassMaxLength {
+		return &ValidationError{Message: "Password should be between 8 and 32 characters in length", Field: PassField}
 	}
 
-	done, err := regexp.MatchString("([a-z])+", password)
+	r, err := regexp.Compile(`^(?=.*[[:lower:]])(?=.*[[:upper:]])(?=.*[[:digit:]]).+$`)
+	if err != nil {
+		return err
+	}
+
+	if !r.MatchString(password) {
+		msg := fmt.Sprintf("Password must contain at least: %s %s %s",
+			"one lower case character",
+			"one upper case character",
+			"one number",
+		)
+		return &ValidationError{Message: msg, Field: PassField}
+	}
+
+	done, err := regexp.MatchString("([!@#$%^&*.?-])+", password)
 	if err != nil {
 		return err
 	}
 	if !done {
-		return &ValidationError{
-			Message: "Password should contain at least one lower case character",
-			Field:   "password",
-		}
+		return &ValidationError{Message: "Password should contain at least one special character", Field: PassField}
 	}
 
-	done, err = regexp.MatchString("([A-Z])+", password)
-	if err != nil {
-		return err
-	}
-	if !done {
-		return &ValidationError{
-			Message: "Password should contain at least one upper case character",
-			Field:   "password",
-		}
-	}
-
-	done, err = regexp.MatchString("([0-9])+", password)
-	if err != nil {
-		return err
-	}
-	if !done {
-		return &ValidationError{
-			Message: "Password should contain at least one digit",
-			Field:   "password",
-		}
-	}
-
-	done, err = regexp.MatchString("([!@#$%^&*.?-])+", password)
-	if err != nil {
-		return err
-	}
-	if !done {
-		return &ValidationError{
-			Message: "Password should contain at least one special character",
-			Field:   "password",
-		}
-	}
-
-	err = passwordvalidator.Validate(password, 70)
+	err = passwordvalidator.Validate(password, EntropyMinForPassword)
 	if err != nil {
 		return err
 	}

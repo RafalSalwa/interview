@@ -13,9 +13,9 @@ type Config struct {
 	PoolSize int    `mapstructure:"poolSize"`
 }
 
-func NewUniversalRedisClient(ctx context.Context, cfg *Config) (redis.UniversalClient, error) {
-	universalClient := redis.NewUniversalClient(&redis.UniversalOptions{
-		Addrs:    []string{cfg.Addr},
+func NewUniversalRedisClient(ctx context.Context, cfg *Config) (*redis.Client, error) {
+	universalClient := redis.NewClient(&redis.Options{
+		Addr:     cfg.Addr,
 		Password: cfg.Password,
 		DB:       cfg.DB,
 		PoolSize: cfg.PoolSize,

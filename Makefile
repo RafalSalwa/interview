@@ -54,7 +54,7 @@ tester:
 	docker compose up -f docker-compose.tester.yml -d
 
 test_unit:
-	APP_ENV=staging go test -v -cover -coverprofile=coverage.out ./pkg/... ./cmd/... -tags=unit -json > coverage.json
+	APP_ENV=staging go test -race -covermode=atomic -cover -coverprofile=coverage.out ./pkg/... ./cmd/... -tags=unit -json > coverage.json
 	go tool cover -html=coverage.out -o coverage.html
 
 test_integration:
@@ -63,7 +63,7 @@ test_integration:
 vet:
 	go vet ./... -json go_vet.json
 lint:
-	golangci-lint run --out-format checkstyle > golangci-lint.xml
+	golangci-lint run
 
 check_sec:
 	gosec ./...

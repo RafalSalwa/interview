@@ -3,31 +3,30 @@ package services
 import (
 	"context"
 
-	"github.com/RafalSalwa/auth-api/pkg/encdec"
-	"github.com/RafalSalwa/auth-api/pkg/tracing"
-	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/status"
-
 	"github.com/RafalSalwa/auth-api/cmd/auth_service/config"
 	"github.com/RafalSalwa/auth-api/cmd/auth_service/internal/repository"
+	"github.com/RafalSalwa/auth-api/pkg/encdec"
 	"github.com/RafalSalwa/auth-api/pkg/generator"
 	"github.com/RafalSalwa/auth-api/pkg/hashing"
 	"github.com/RafalSalwa/auth-api/pkg/jwt"
 	"github.com/RafalSalwa/auth-api/pkg/logger"
 	"github.com/RafalSalwa/auth-api/pkg/models"
 	"github.com/RafalSalwa/auth-api/pkg/rabbitmq"
+	"github.com/RafalSalwa/auth-api/pkg/tracing"
 	"go.opentelemetry.io/otel"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 )
 
 type AuthServiceImpl struct {
 	repository      repository.UserRepository
 	rabbitPublisher *rabbitmq.Publisher
 	logger          *logger.Logger
-	config          jwt.JWTConfig
+	config          *jwt.JWTConfig
 }
 
 func NewAuthService(ctx context.Context, cfg *config.Config, log *logger.Logger) AuthService {
-	publisher, errP := rabbitmq.NewPublisher(cfg.Rabbit)
+	publisher, errP := rabbitmq.NewPublisher(ctx, cfg.Rabbit)
 	if errP != nil {
 		log.Error().Err(errP).Msg("auth:service:publisher")
 		return nil
@@ -43,7 +42,7 @@ func NewAuthService(ctx context.Context, cfg *config.Config, log *logger.Logger)
 		repository:      userRepository,
 		rabbitPublisher: publisher,
 		logger:          log,
-		config:          cfg.JWTToken,
+		config:          &cfg.JWTToken,
 	}
 }
 
@@ -66,7 +65,7 @@ func (a *AuthServiceImpl) SignUpUser(ctx context.Context, cur models.SignUpUserR
 		return nil, status.Errorf(codes.InvalidArgument, err.Error())
 	}
 	udb.Password = hashing.Argon2ID(udb.Password)
-	vcode, _ := generator.RandomString(64)
+	vcode, _ := generator.AccessCode()
 	udb.VerificationCode = vcode
 	udb.Roles = map[string]interface{}{
 		"Roles": struct {
@@ -87,8 +86,9 @@ func (a *AuthServiceImpl) SignUpUser(ctx context.Context, cur models.SignUpUserR
 	return ur, nil
 }
 
-func (a *AuthServiceImpl) SignInUser(ctx context.Context, reqUser *models.SignInUserRequest) (*models.UserResponse, error) {
-	ctx, span := tracing.InitSpan(ctx, "auth_service-rpc", "Service/SignInUser")
+func (a *AuthServiceImpl) SignInUser(
+	ctx context.Context, reqUser *models.SignInUserRequest) (*models.UserResponse, error) {
+	ctx, span := otel.GetTracerProvider().Tracer("auth_service-rpc").Start(ctx, "Service/SignInUser")
 	defer span.End()
 
 	udb := &models.UserDBModel{
@@ -127,8 +127,9 @@ func (a *AuthServiceImpl) SignInUser(ctx context.Context, reqUser *models.SignIn
 }
 
 func (a *AuthServiceImpl) GetVerificationKey(ctx context.Context, email string) (*models.UserResponse, error) {
-	ctx, span := tracing.InitSpan(ctx, "auth_service-rpc", "GetVerificationKey")
+	ctx, span := otel.GetTracerProvider().Tracer("auth_service-rpc").Start(ctx, "GetVerificationKey")
 	defer span.End()
+
 	user := &models.UserDBModel{
 		Email: encdec.Encrypt(email),
 	}
@@ -145,8 +146,9 @@ func (a *AuthServiceImpl) GetVerificationKey(ctx context.Context, email string) 
 }
 
 func (a *AuthServiceImpl) Find(ctx context.Context, user *models.UserDBModel) (*models.UserResponse, error) {
-	ctx, span := tracing.InitSpan(ctx, "auth_service-rpc", "FindAll")
+	ctx, span := otel.GetTracerProvider().Tracer("auth_service-rpc").Start(ctx, "FindAll")
 	defer span.End()
+
 	dbUser, err := a.repository.FindOne(ctx, user)
 	if err != nil {
 		return nil, err
@@ -165,7 +167,7 @@ func (a *AuthServiceImpl) Find(ctx context.Context, user *models.UserDBModel) (*
 }
 
 func (a *AuthServiceImpl) Load(ctx context.Context, user *models.UserDBModel) (*models.UserResponse, error) {
-	ctx, span := tracing.InitSpan(ctx, "auth_service-rpc", "Service/FindOne")
+	ctx, span := otel.GetTracerProvider().Tracer("auth_service-rpc").Start(ctx, "Service/FindOne")
 	defer span.End()
 
 	dbUser, err := a.repository.FindOne(ctx, user)
@@ -175,7 +177,7 @@ func (a *AuthServiceImpl) Load(ctx context.Context, user *models.UserDBModel) (*
 	if dbUser == nil {
 		return nil, nil
 	}
-	err = a.repository.Update(ctx, *dbUser)
+	err = a.repository.Update(ctx, dbUser)
 	if err != nil {
 		return nil, err
 	}
@@ -198,7 +200,7 @@ func (a *AuthServiceImpl) Load(ctx context.Context, user *models.UserDBModel) (*
 }
 
 func (a *AuthServiceImpl) Verify(ctx context.Context, vCode string) error {
-	ctx, span := tracing.InitSpan(ctx, "auth_service-rpc", "Verify")
+	ctx, span := otel.GetTracerProvider().Tracer("auth_service-rpc").Start(ctx, "Verify")
 	defer span.End()
 
 	udb := &models.UserDBModel{

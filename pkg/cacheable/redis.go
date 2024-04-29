@@ -8,7 +8,7 @@ type cache struct {
 	client redis.Cmdable
 }
 
-func SetUpRedis(db int, Cluster int) {
+func SetUpRedis(db, cluster int) {
 
 }
 

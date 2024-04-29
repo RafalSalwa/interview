@@ -119,12 +119,6 @@ func (r *UserAdapter) UpdateLastLogin(ctx context.Context, u *models.UserDBModel
 	u.LastLogin = &now
 	return u, nil
 }
-func (r *UserAdapter) BeginTx() *gorm.DB {
-	return r.DB.Begin().Begin()
-}
-func (r *UserAdapter) GetConnection() *gorm.DB {
-	return r.DB
-}
 
 func (r *UserAdapter) FindUserByID(uid int64) (*models.UserDBModel, error) {
 	return nil, nil

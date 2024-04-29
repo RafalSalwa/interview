@@ -37,7 +37,7 @@ func NewUserRepository(ctx context.Context, dbType string, params *config.Config
 			return nil, err
 		}
 
-		return newRedisUserRepository(&universalRedisClient), nil
+		return newRedisUserRepository(universalRedisClient), nil
 	default:
 		panic("Unsupported database type")
 	}

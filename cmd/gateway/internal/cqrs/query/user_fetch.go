@@ -7,12 +7,14 @@ import (
 	intrvproto "github.com/RafalSalwa/auth-api/proto/grpc"
 )
 
-type FetchUserHandler struct {
-	userClient intrvproto.UserServiceClient
-}
-type FetchUser struct {
-	models.SignInUserRequest
-}
+type (
+	FetchUserHandler struct {
+		userClient intrvproto.UserServiceClient
+	}
+	FetchUser struct {
+		models.SignInUserRequest
+	}
+)
 
 func NewFetchUserHandler(userClient intrvproto.UserServiceClient) FetchUserHandler {
 	return FetchUserHandler{userClient: userClient}

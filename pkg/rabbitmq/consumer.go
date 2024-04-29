@@ -7,29 +7,32 @@ import (
 	amqp "github.com/rabbitmq/amqp091-go"
 )
 
-type Consumer struct {
-	name     string
-	channel  *amqp.Channel
-	delivery <-chan amqp.Delivery
-	handler  ConsumerHandler
-}
+type (
+	Consumer struct {
+		name     string
+		channel  *amqp.Channel
+		delivery <-chan amqp.Delivery
+		handler  ConsumerHandler
+	}
+	ConsumerHandler func(data []byte) (success bool)
+)
 
-type ConsumerHandler func(data []byte) (success bool)
-
-var ConsumerCanceledByContextError = fmt.Errorf("consumer canceled by context")
-var ConsumerMessageNotInitialized = fmt.Errorf("consumer received empty message")
+var (
+	ErrConsumerCanceledByContextError = fmt.Errorf("consumer canceled by context")
+	ErrConsumerMessageNotInitialized  = fmt.Errorf("consumer received empty message")
+)
 
 func (l *Consumer) HandleSingleMessage(ctx context.Context) error {
 	for {
 		select {
 		case <-ctx.Done():
 			{
-				return ConsumerCanceledByContextError
+				return ErrConsumerCanceledByContextError
 			}
 		case d := <-l.delivery:
 			{
 				if d.Acknowledger == nil {
-					return ConsumerMessageNotInitialized
+					return ErrConsumerMessageNotInitialized
 				}
 
 				if l.handler(d.Body) {
@@ -48,27 +51,36 @@ func (l *Consumer) Handle(ctx context.Context) error {
 		}
 	}
 }
+func (l *Connection) initChannel(channelName string, args amqp.Table) (*amqp.Channel, *amqp.Queue, error) {
+	amqpChannel, err := l.Connection.Channel()
+	if err != nil {
+		return nil, nil, err
+	}
+	queue, err := amqpChannel.QueueDeclare(channelName, true, false, false, false, args)
+	if err != nil {
+		_ = amqpChannel.Close()
+		return nil, nil, err
+	}
+	err = amqpChannel.Qos(1, 0, false)
+	if err != nil {
+		_ = amqpChannel.Close()
+		return nil, nil, err
+	}
+	return amqpChannel, &queue, nil
+}
 
 func (l *Consumer) Close() error {
 	return l.channel.Close()
 }
 
-func (l *Connection) CreateConsumer(channelName string, consumerName string, handler ConsumerHandler, args amqp.Table) (*Consumer, error) {
-	amqpChannel, err := l.Connection.Channel()
+func (l *Connection) CreateConsumer(
+	channelName, consumerName string,
+	handler ConsumerHandler,
+	args amqp.Table) (*Consumer, error) {
+	amqpChannel, queue, err := l.initChannel(channelName, args)
 	if err != nil {
 		return nil, err
 	}
-	queue, err := amqpChannel.QueueDeclare(channelName, true, false, false, false, args)
-	if err != nil {
-		_ = amqpChannel.Close()
-		return nil, err
-	}
-	err = amqpChannel.Qos(1, 0, false)
-	if err != nil {
-		_ = amqpChannel.Close()
-		return nil, err
-	}
-
 	delivery, err := amqpChannel.Consume(
 		queue.Name,
 		consumerName,

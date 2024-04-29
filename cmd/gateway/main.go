@@ -81,16 +81,16 @@ func checkFlags(l *logger.Logger) {
 			case profFlag:
 				switch args[1] {
 				case cpuProf:
-					l.Println("cpu profiling enabled.\n")
+					l.Info().Msg("cpu profiling enabled.\n")
 					defer profile.Start(profile.CPUProfile, profile.NoShutdownHook).Stop()
 				case memProf:
-					l.Println("mem profiling enabled.\n")
+					l.Info().Msg("mem profiling enabled.\n")
 					defer profile.Start(profile.MemProfile, profile.NoShutdownHook).Stop()
 				case blockingProf:
-					l.Println("block profiling enabled\n")
+					l.Info().Msg("block profiling enabled\n")
 					defer profile.Start(profile.BlockProfile, profile.NoShutdownHook).Stop()
 				case traceProf:
-					l.Println("trace profiling enabled\n")
+					l.Info().Msg("trace profiling enabled\n")
 					defer profile.Start(profile.TraceProfile, profile.NoShutdownHook).Stop()
 				default:
 					panic("Unexpected prof flag: " + args[1])
@@ -101,8 +101,8 @@ func checkFlags(l *logger.Logger) {
 				// serve the pprof endpoints setup in the init function run when "net/http/pprof" is imported
 				go func() {
 					cyanStar := color.CyanString("*")
-					l.Print(cyanStar, "Starting pprof server on port 6060.")
-					l.Print("Go to", "http://localhost:6060/debug/pprof in a browser to see supported endpoints.")
+					l.Info().Msgf(cyanStar, "Starting pprof server on port 6060.")
+					l.Info().Msg("Go to http://localhost:6060/debug/pprof in a browser to see supported endpoints.")
 
 					srv := &http.Server{
 						Addr:         "0.0.0.0:6060",
