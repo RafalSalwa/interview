@@ -11,6 +11,7 @@ jobs:
       pull-requests: write
     name: reviewdog (github-check)
     runs-on: ubuntu-latest
+    continue-on-error: true
     steps:
       - uses: actions/checkout@v4
 

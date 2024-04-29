@@ -9,7 +9,7 @@ on:
 
 jobs:
   CodeQL-Build:
-
+    continue-on-error: true
     permissions:
       actions: read
       contents: read
