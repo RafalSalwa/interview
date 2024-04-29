@@ -29,12 +29,11 @@ jobs:
     runs-on: ubuntu-latest
     name: "Unit tests"
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
-      - name: Set up Go
-        uses: actions/setup-go@v4
+      - uses: WillAbides/setup-go-faster@v1.14.0
         with:
-          go-version: '1.22'
+          go-version: "1.22.x"
 
       - name: Install dependencies
         run: go mod download
