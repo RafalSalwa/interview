@@ -55,7 +55,7 @@ func NewGrpcServer(config grpc_config.Config,
 	return srv, nil
 }
 
-func (s GRPC) Run(l *logger.Logger) {
+func (s *GRPC) Run(l *logger.Logger) {
 	logEntry := logger.NewGRPCLogger()
 	grpclogrus.ReplaceGrpcLogger(logEntry)
 

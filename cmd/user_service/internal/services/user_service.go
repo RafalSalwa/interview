@@ -47,7 +47,7 @@ func NewUserService(ctx context.Context, cfg *config.Config, log *logger.Logger)
 		log.Error().Err(errR).Msg("user:service:new")
 	}
 
-	publisher, errP := rabbitmq.NewPublisher(cfg.Rabbit)
+	publisher, errP := rabbitmq.NewPublisher(ctx, cfg.Rabbit)
 	if errP != nil {
 		log.Error().Err(errP).Msg("rabbitmq")
 	}

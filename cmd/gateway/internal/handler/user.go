@@ -20,16 +20,17 @@ import (
 	"google.golang.org/grpc/status"
 )
 
-type UserHandler interface {
-	RouteRegisterer
-	GetUserByID() HandlerFunc
-	PasswordChange() HandlerFunc
-}
-
-type userHandler struct {
-	cqrs   *cqrs.Application
-	logger *logger.Logger
-}
+type (
+	UserHandler interface {
+		RouteRegisterer
+		GetUserByID() HandlerFunc
+		PasswordChange() HandlerFunc
+	}
+	userHandler struct {
+		cqrs   *cqrs.Application
+		logger *logger.Logger
+	}
+)
 
 func NewUserHandler(cqrs *cqrs.Application, l *logger.Logger) UserHandler {
 	return userHandler{cqrs, l}

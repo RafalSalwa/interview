@@ -7,12 +7,14 @@ import (
 	intrvproto "github.com/RafalSalwa/auth-api/proto/grpc"
 )
 
-type VerificationCodeHandler struct {
-	authClient intrvproto.AuthServiceClient
-}
-type VerificationCode struct {
-	Email string
-}
+type (
+	VerificationCodeHandler struct {
+		authClient intrvproto.AuthServiceClient
+	}
+	VerificationCode struct {
+		Email string
+	}
+)
 
 func NewVerificationCodeHandler(authClient intrvproto.AuthServiceClient) VerificationCodeHandler {
 	return VerificationCodeHandler{authClient: authClient}

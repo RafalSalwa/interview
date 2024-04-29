@@ -2,16 +2,14 @@ package server
 
 import (
 	"context"
-	"fmt"
 	"os"
 	"os/signal"
 	"syscall"
 
-	"github.com/RafalSalwa/auth-api/pkg/tracing"
-
 	"github.com/RafalSalwa/auth-api/cmd/auth_service/config"
 	"github.com/RafalSalwa/auth-api/cmd/auth_service/internal/services"
 	"github.com/RafalSalwa/auth-api/pkg/logger"
+	"github.com/RafalSalwa/auth-api/pkg/tracing"
 )
 
 type Server struct {
@@ -36,10 +34,8 @@ func (srv *Server) Run() error {
 		s.Run()
 	}()
 
-	if srv.cfg.Jaeger.Enable {
-		if err := tracing.OTELGRPCProvider(srv.cfg.ServiceName, srv.cfg.Jaeger); err != nil {
-			srv.log.Error().Err(err).Msg("server:jaeger:register")
-		}
+	if err := tracing.OTELGRPCProvider(srv.cfg.ServiceName); err != nil {
+		srv.log.Error().Err(err).Msg("server:jaeger:register")
 	}
 
 	<-shutdown
@@ -56,10 +52,8 @@ func NewContextCancellableByOsSignals(parent context.Context) context.Context {
 		sig := <-signalChannel
 		switch sig {
 		case os.Interrupt:
-			fmt.Println("Received Interrupt signal")
 			cancel()
 		case syscall.SIGTERM:
-			fmt.Println("Received sigterm signal")
 			cancel()
 		}
 	}()

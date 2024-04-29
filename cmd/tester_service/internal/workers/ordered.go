@@ -17,13 +17,15 @@ import (
 )
 
 type Ordered struct {
-	ctx            context.Context
-	cfg            *config.Config
-	client         *http.Client
-	logger         *logger.Logger
-	endpoint       string
-	endpointSignUp string
-	endpointCode   string
+	ctx                context.Context
+	cfg                *config.Config
+	client             *http.Client
+	logger             *logger.Logger
+	endpoint           string
+	endpointSignUp     string
+	endpointSignIn     string
+	endpointAuthCode   string
+	endpointVerifyCode string
 }
 
 const (
@@ -45,12 +47,14 @@ func NewOrdered(ctx context.Context, cfg *config.Config, l *logger.Logger) Worke
 	}
 	ordered.endpoint = fmt.Sprintf("http://%s", cfg.HTTP.Addr)
 	ordered.endpointSignUp = fmt.Sprintf("%s/auth/signup", ordered.endpoint)
-	ordered.endpointCode = fmt.Sprintf("%s/auth/code", ordered.endpoint)
+	ordered.endpointSignIn = fmt.Sprintf("%s/auth/signin", ordered.endpoint)
+	ordered.endpointAuthCode = fmt.Sprintf("%s/auth/code", ordered.endpoint)
+	ordered.endpointVerifyCode = fmt.Sprintf("%s/auth/verify", ordered.endpoint)
 
 	return ordered
 }
 
-func (o Ordered) Run() {
+func (o *Ordered) Run() {
 	qCreatedUsers := make(chan testUser, numUsers)
 	qActivatedUsers := make(chan testUser, numUsers)
 	qFailedUsers := make(chan testUser, numUsers)
@@ -69,7 +73,9 @@ func (o Ordered) Run() {
 
 	go func() {
 		for {
-			o.logger.Info().Msgf("Concurrent queue len: | %6d | testUser creation queue:  %6d | testUser activation queue: %6d \n", len(concurrentGoroutines), len(qCreatedUsers), len(qActivatedUsers))
+			o.logger.Info().Msgf(
+				"Concurrent queue len: | %6d | testUser creation queue:  %6d | testUser activation queue: %6d \n",
+				len(concurrentGoroutines), len(qCreatedUsers), len(qActivatedUsers))
 			if len(concurrentGoroutines) == 0 {
 				done <- true
 				o.logger.Info().Msg("Queues depleted, closing")
@@ -82,10 +88,10 @@ func (o Ordered) Run() {
 	<-done
 }
 
-func (o Ordered) createUser(ctx context.Context, cfg *config.Config, created chan testUser) {
+func (o *Ordered) createUser(ctx context.Context, cfg *config.Config, created chan testUser) {
 	concurrentGoroutines <- struct{}{}
 
-	pUsername, _ := generator.RandomString(12)
+	pUsername, _ := generator.RandomString(usernameLen)
 	email := pUsername + "@interview.com"
 
 	newUser := &models.SignUpUserRequest{
@@ -98,24 +104,23 @@ func (o Ordered) createUser(ctx context.Context, cfg *config.Config, created cha
 		o.logger.Info().Msgf("impossible to marshall: %+v\n", err)
 	}
 	client := &http.Client{}
-	req, err := http.NewRequestWithContext(ctx, "POST", endpointSignUp, bytes.NewReader(marshaled))
+	req, err := http.NewRequestWithContext(ctx, "POST", o.endpointSignUp, bytes.NewReader(marshaled))
 	if err != nil {
 		o.logger.Error().Err(err).Msgf("impossible to create request: %s", err)
 	}
 	req.SetBasicAuth(cfg.Auth.BasicAuth.Username, cfg.Auth.BasicAuth.Password)
 	resp, err := client.Do(req)
-	if err != nil {
-		o.logger.Error().Err(err).Msg("Do err")
-		<-concurrentGoroutines
-		return
-	}
-
 	defer func(Body io.ReadCloser) {
 		errC := Body.Close()
 		if errC != nil {
 			o.logger.Error().Err(errC).Msg("ReadAll errC")
 		}
 	}(resp.Body)
+	if err != nil {
+		o.logger.Error().Err(err).Msg("Do err")
+		<-concurrentGoroutines
+		return
+	}
 
 	created <- testUser{
 		Username: pUsername,
@@ -125,7 +130,7 @@ func (o Ordered) createUser(ctx context.Context, cfg *config.Config, created cha
 	<-concurrentGoroutines
 }
 
-func (o Ordered) activateUser(ctx context.Context, cfg *config.Config, created chan testUser, activated chan testUser, failed chan testUser) {
+func (o *Ordered) activateUser(ctx context.Context, cfg *config.Config, created chan testUser, activated chan testUser, failed chan testUser) {
 	concurrentGoroutines <- struct{}{}
 	user := <-created
 	reqUser := &models.SignInUserRequest{Email: user.Email, Password: user.Password}
@@ -135,24 +140,29 @@ func (o Ordered) activateUser(ctx context.Context, cfg *config.Config, created c
 		o.logger.Error().Err(err).Msgf("impossible to marshall: %s", err)
 	}
 	client := &http.Client{}
-	URL := "http://" + cfg.HTTP.Addr + "/auth/code"
-	req, err := http.NewRequestWithContext(ctx, "POST", URL, bytes.NewReader(marshaled))
+	req, err := http.NewRequestWithContext(ctx, "POST", o.endpointAuthCode, bytes.NewReader(marshaled))
 	if err != nil {
 		log.Fatalf("impossible to read all body of response: %s", err)
 	}
 	req.SetBasicAuth(cfg.Auth.BasicAuth.Username, cfg.Auth.BasicAuth.Password)
 	resp, err := client.Do(req)
+	defer func(Body io.ReadCloser) {
+		errC := Body.Close()
+		if errC != nil {
+			o.logger.Error().Err(errC).Msg("ReadAll errC")
+		}
+	}(resp.Body)
 	if err != nil {
-		log.Fatal(err)
+		o.logger.Error().Err(err).Msg("client Do")
 	}
 	if resp.StatusCode != http.StatusOK {
-		o.logger.Info().Msgf("%s req body: %s\n", URL, string(marshaled))
+		o.logger.Info().Msgf("%s req body: %s\n", o.endpointAuthCode, string(marshaled))
 		bodyBytes, errIo := io.ReadAll(resp.Body)
 		if errIo != nil {
 			o.logger.Error().Err(errIo).Msg("ReadAll errIo")
 		}
 		bodyString := string(bodyBytes)
-		o.logger.Info().Msgf("%s body: %s", URL, bodyString)
+		o.logger.Info().Msgf("%s body: %s", o.endpointAuthCode, bodyString)
 	}
 
 	type vCode struct {
@@ -174,14 +184,14 @@ func (o Ordered) activateUser(ctx context.Context, cfg *config.Config, created c
 			o.logger.Error().Err(errC).Msg("ReadAll errC")
 		}
 	}(resp.Body)
-	if err != nil {
-		<-concurrentGoroutines
-		return
-	}
 
 	client = &http.Client{}
-	URL = "http://" + cfg.HTTP.Addr + "/auth/verify/" + tgt.User.Token
-	req, err = http.NewRequestWithContext(ctx, "GET", URL, bytes.NewReader(marshaled))
+	req, err = http.NewRequestWithContext(
+		ctx,
+		"GET",
+		o.endpointVerifyCode+tgt.User.Token,
+		bytes.NewReader(marshaled),
+	)
 	if err != nil {
 		o.logger.Error().Err(err).Msgf("impossible to read all body of response: %s", err)
 	}
@@ -200,13 +210,13 @@ func (o Ordered) activateUser(ctx context.Context, cfg *config.Config, created c
 		}
 	}(resp.Body)
 	if resp.StatusCode != http.StatusOK {
-		o.logger.Info().Msgf("%s req body: %s\n", URL, string(marshaled))
+		o.logger.Info().Msgf("%s req body: %s\n", o.endpointVerifyCode, string(marshaled))
 		bodyBytes, errIo := io.ReadAll(resp.Body)
 		if errIo != nil {
 			o.logger.Error().Err(errIo).Msg("ReadAll err")
 		}
 		bodyString := string(bodyBytes)
-		o.logger.Info().Msgf("%s body: %s", URL, bodyString)
+		o.logger.Info().Msgf("%s body: %s", o.endpointVerifyCode, bodyString)
 	}
 	if err != nil {
 		o.logger.Error().Err(err).Msg("verify err")
@@ -228,7 +238,7 @@ func (o Ordered) activateUser(ctx context.Context, cfg *config.Config, created c
 	<-concurrentGoroutines
 }
 
-func (o Ordered) tokenUser(ctx context.Context, cfg *config.Config, activated chan testUser) {
+func (o *Ordered) tokenUser(ctx context.Context, cfg *config.Config, activated chan testUser) {
 	concurrentGoroutines <- struct{}{}
 
 	user := <-activated
@@ -241,8 +251,7 @@ func (o Ordered) tokenUser(ctx context.Context, cfg *config.Config, activated ch
 		o.logger.Error().Err(err).Msgf("impossible to marshall: %s", err)
 	}
 	client := &http.Client{}
-	URL := "http://" + cfg.HTTP.Addr + "/auth/signin"
-	req, err := http.NewRequestWithContext(ctx, "POST", URL, bytes.NewReader(marshaled))
+	req, err := http.NewRequestWithContext(ctx, "POST", o.endpointSignIn, bytes.NewReader(marshaled))
 	if err != nil {
 		o.logger.Error().Err(err).Msgf("req creation err: %s", err)
 	}

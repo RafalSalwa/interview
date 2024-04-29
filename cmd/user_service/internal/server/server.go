@@ -2,7 +2,6 @@ package server
 
 import (
 	"context"
-	"fmt"
 	"os"
 	"os/signal"
 	"syscall"
@@ -40,10 +39,8 @@ func (srv *Server) Run() error {
 		grpcServer.Run(srv.log)
 	}()
 
-	if srv.cfg.Jaeger.Enable {
-		if err := tracing.OTELGRPCProvider(srv.cfg.ServiceName, srv.cfg.Jaeger); err != nil {
-			srv.log.Error().Err(err).Msg("server:jaeger:register")
-		}
+	if err = tracing.OTELGRPCProvider(srv.cfg.ServiceName); err != nil {
+		srv.log.Error().Err(err).Msg("server:jaeger:register")
 	}
 	<-shutdown
 	rejectContext()
@@ -59,10 +56,8 @@ func NewContextCancellableByOsSignals(parent context.Context) context.Context {
 		sig := <-signalChannel
 		switch sig {
 		case os.Interrupt:
-			fmt.Println("Received Interrupt signal")
 			cancel()
 		case syscall.SIGTERM:
-			fmt.Println("Received sigterm signal")
 			cancel()
 		}
 	}()

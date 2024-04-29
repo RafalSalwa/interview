@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"fmt"
 	"log"
 	"os"
 	"os/signal"
@@ -64,13 +63,10 @@ func NewContextCancellableByOsSignals(parent context.Context) context.Context {
 		sig := <-signalChannel
 		switch sig {
 		case os.Interrupt:
-			fmt.Println("Received Interrupt signal")
 			cancel()
 		case syscall.SIGTERM:
-			fmt.Println("Received SIGTERM signal")
 			cancel()
 		case syscall.SIGINT:
-			fmt.Println("Received SIGINT signal")
 			cancel()
 		}
 	}()

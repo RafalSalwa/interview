@@ -1,6 +1,7 @@
 package hashing
 
 import (
+	"fmt"
 	"regexp"
 
 	passwordvalidator "github.com/wagslane/go-password-validator"
@@ -52,31 +53,21 @@ func Validate(password, passwordConfirm string) error {
 		return &ValidationError{Message: "Password should be between 8 and 32 characters in length", Field: PassField}
 	}
 
-	done, err := regexp.MatchString("([a-z])+", password)
+	r, err := regexp.Compile(`^(?=.*[[:lower:]])(?=.*[[:upper:]])(?=.*[[:digit:]]).+$`)
 	if err != nil {
 		return err
 	}
-	if !done {
-		return &ValidationError{Message: "Password should contain at least one lower case character", Field: PassField}
+
+	if !r.MatchString(password) {
+		msg := fmt.Sprintf("Password must contain at least: %s %s %s",
+			"one lower case character",
+			"one upper case character",
+			"one number",
+		)
+		return &ValidationError{Message: msg, Field: PassField}
 	}
 
-	done, err = regexp.MatchString("([A-Z])+", password)
-	if err != nil {
-		return err
-	}
-	if !done {
-		return &ValidationError{Message: "Password should contain at least one upper case character", Field: PassField}
-	}
-
-	done, err = regexp.MatchString("([0-9])+", password)
-	if err != nil {
-		return err
-	}
-	if !done {
-		return &ValidationError{Message: "Password should contain at least one digit", Field: PassField}
-	}
-
-	done, err = regexp.MatchString("([!@#$%^&*.?-])+", password)
+	done, err := regexp.MatchString("([!@#$%^&*.?-])+", password)
 	if err != nil {
 		return err
 	}

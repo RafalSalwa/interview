@@ -24,7 +24,6 @@ func TestInitConfig(t *testing.T) {
 	assert.NotEmpty(t, c.GRPC)
 	assert.NotEmpty(t, c.Mongo)
 	assert.NotEmpty(t, c.JWTToken)
-	assert.NotEmpty(t, c.Jaeger)
 	assert.NotEmpty(t, c.Logger)
 	assert.Equal(t, "user_service", c.ServiceName)
 }

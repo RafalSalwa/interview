@@ -19,7 +19,6 @@ func TestInitConfig(t *testing.T) {
 	assert.NoError(t, err)
 	assert.NotEmpty(t, c.App)
 	assert.NotEmpty(t, c.Logger)
-	assert.NotEmpty(t, c.Jaeger)
 	assert.NotEmpty(t, c.ServiceName)
 	assert.NotEmpty(t, c.Email)
 	assert.NotEmpty(t, c.JWTToken)

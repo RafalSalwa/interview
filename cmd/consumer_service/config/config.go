@@ -7,7 +7,6 @@ import (
 
 	"github.com/RafalSalwa/auth-api/pkg/email"
 	"github.com/RafalSalwa/auth-api/pkg/rabbitmq"
-	"github.com/pkg/errors"
 	"github.com/spf13/viper"
 )
 
@@ -27,11 +26,11 @@ func InitConfig() (*Config, error) {
 	viper.SetConfigFile(path)
 
 	if err := viper.ReadInConfig(); err != nil {
-		return nil, errors.Wrap(err, "viper.ReadInConfig")
+		return nil, fmt.Errorf(" viper read condig %w", err)
 	}
 
 	if err := viper.Unmarshal(cfg); err != nil {
-		return nil, errors.Wrap(err, "viper.Unmarshal")
+		return nil, fmt.Errorf(" viper.Unmarshal %w", err)
 	}
 	return cfg, nil
 }
@@ -39,7 +38,7 @@ func InitConfig() (*Config, error) {
 func getEnvPath() (string, error) {
 	getwd, err := os.Getwd()
 	if err != nil {
-		return "", errors.Wrap(err, "os.Getwd")
+		return "", fmt.Errorf(" os.getwd %w", err)
 	}
 	configPath := ""
 	if strings.Contains(getwd, "consumer_service") {

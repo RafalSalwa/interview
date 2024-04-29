@@ -16,7 +16,6 @@ func TestInitConfig(t *testing.T) {
 	assert.NotEmpty(t, c.Auth)
 	assert.NotEmpty(t, c.App)
 	assert.NotEmpty(t, c.Logger)
-	assert.NotEmpty(t, c.Jaeger)
 	assert.NotEmpty(t, c.ServiceName)
 	assert.Equal(t, c.ServiceName, "api_gateway_service")
 }

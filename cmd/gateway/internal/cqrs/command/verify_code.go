@@ -6,13 +6,14 @@ import (
 	intrvproto "github.com/RafalSalwa/auth-api/proto/grpc"
 )
 
-type VerifyCode struct {
-	VerificationCode string
-}
-
-type VerifyCodeHandler struct {
-	grpcUser intrvproto.UserServiceClient
-}
+type (
+	VerifyCode struct {
+		VerificationCode string
+	}
+	VerifyCodeHandler struct {
+		grpcUser intrvproto.UserServiceClient
+	}
+)
 
 func NewVerifyCodeHandler(grpcUser intrvproto.UserServiceClient) VerifyCodeHandler {
 	return VerifyCodeHandler{grpcUser: grpcUser}

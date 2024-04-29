@@ -3,20 +3,19 @@ package services
 import (
 	"context"
 
-	"github.com/RafalSalwa/auth-api/pkg/encdec"
-	"github.com/RafalSalwa/auth-api/pkg/tracing"
-	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/status"
-
 	"github.com/RafalSalwa/auth-api/cmd/auth_service/config"
 	"github.com/RafalSalwa/auth-api/cmd/auth_service/internal/repository"
+	"github.com/RafalSalwa/auth-api/pkg/encdec"
 	"github.com/RafalSalwa/auth-api/pkg/generator"
 	"github.com/RafalSalwa/auth-api/pkg/hashing"
 	"github.com/RafalSalwa/auth-api/pkg/jwt"
 	"github.com/RafalSalwa/auth-api/pkg/logger"
 	"github.com/RafalSalwa/auth-api/pkg/models"
 	"github.com/RafalSalwa/auth-api/pkg/rabbitmq"
+	"github.com/RafalSalwa/auth-api/pkg/tracing"
 	"go.opentelemetry.io/otel"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 )
 
 type AuthServiceImpl struct {
@@ -27,7 +26,7 @@ type AuthServiceImpl struct {
 }
 
 func NewAuthService(ctx context.Context, cfg *config.Config, log *logger.Logger) AuthService {
-	publisher, errP := rabbitmq.NewPublisher(cfg.Rabbit)
+	publisher, errP := rabbitmq.NewPublisher(ctx, cfg.Rabbit)
 	if errP != nil {
 		log.Error().Err(errP).Msg("auth:service:publisher")
 		return nil

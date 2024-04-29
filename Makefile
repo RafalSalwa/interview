@@ -63,7 +63,7 @@ test_integration:
 vet:
 	go vet ./... -json go_vet.json
 lint:
-	golangci-lint run --out-format checkstyle > golangci-lint.xml
+	golangci-lint run
 
 check_sec:
 	gosec ./...

@@ -9,10 +9,6 @@ import (
 	"time"
 )
 
-const KeyPrefix = "Cache"
-
-var EmptyCacheError = errors.New("Cachable: No results found")
-
 type (
 	Tags  []string
 	Cache struct {
@@ -32,6 +28,10 @@ type (
 		parent      ICacheable
 	}
 )
+
+const KeyPrefix = "Cache"
+
+var ErrEmptyCache = errors.New("cachable: No results found")
 
 func (tag Tags) key(key string) string {
 	return "redis_tags_" + key
@@ -56,7 +56,7 @@ func (c *Cacheable) Get(ctx context.Context) error {
 		}
 		return nil
 	}
-	return EmptyCacheError
+	return ErrEmptyCache
 }
 
 func (c *Cacheable) Set(expire time.Duration) error {
