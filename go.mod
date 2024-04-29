@@ -16,9 +16,7 @@ require (
 	github.com/grpc-ecosystem/go-grpc-middleware/v2 v2.1.0
 	github.com/grpc-ecosystem/go-grpc-prometheus v1.2.0
 	github.com/jinzhu/copier v0.4.0
-	github.com/mitchellh/mapstructure v1.5.0
 	github.com/newrelic/go-agent/v3 v3.32.0
-	github.com/pkg/errors v0.9.1
 	github.com/pkg/profile v1.7.0
 	github.com/prometheus/client_golang v1.19.0
 	github.com/rabbitmq/amqp091-go v1.9.0
@@ -34,7 +32,6 @@ require (
 	go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc v0.51.0
 	go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp v0.51.0
 	go.opentelemetry.io/otel v1.26.0
-	go.opentelemetry.io/otel/exporters/jaeger v1.17.0
 	go.opentelemetry.io/otel/exporters/otlp/otlptrace v1.26.0
 	go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracegrpc v1.26.0
 	go.opentelemetry.io/otel/sdk v1.26.0
@@ -44,7 +41,7 @@ require (
 	google.golang.org/protobuf v1.33.0
 	gorm.io/driver/mysql v1.5.6
 	gorm.io/gen v0.3.26
-	gorm.io/gorm v1.25.9
+	gorm.io/gorm v1.25.10
 	gorm.io/plugin/dbresolver v1.5.1
 )
 
@@ -84,6 +81,7 @@ require (
 	github.com/mailru/easyjson v0.7.7 // indirect
 	github.com/mattn/go-colorable v0.1.13 // indirect
 	github.com/mattn/go-isatty v0.0.20 // indirect
+	github.com/mitchellh/mapstructure v1.5.0 // indirect
 	github.com/montanaflynn/stats v0.7.1 // indirect
 	github.com/pelletier/go-toml/v2 v2.2.1 // indirect
 	github.com/pmezard/go-difflib v1.0.1-0.20181226105442-5d4384ee4fb2 // indirect
