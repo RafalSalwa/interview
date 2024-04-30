@@ -64,13 +64,13 @@ vet:
 	go vet ./...
 
 vet_with_json:
-	go vet ./... -json go_vet.json
+	go vet -json ./... > go_vet.json || true
 
 lint:
 	golangci-lint run
 
 lint_with_checkstyle:
-	golangci-lint run --out-format checkstyle > golangci-lint.xml
+	golangci-lint run --out-format checkstyle > golangci-lint.xml || true
 
 check_sec:
 	gosec ./...

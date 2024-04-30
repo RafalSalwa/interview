@@ -31,7 +31,7 @@ jobs:
           go mod download || true
           make test_unit || true
           make vet_with_json || true
-          make lint_with_xml || true
+          make lint_with_xml
       
       - name: Analyze with SonarCloud
         uses: sonarsource/sonarcloud-github-action@master
