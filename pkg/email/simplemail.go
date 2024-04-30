@@ -12,13 +12,15 @@ import (
 
 type (
 	Config struct {
-		Host string
-		Port int
-		From string
+		Host        string
+		Port        int
+		From        string
+		TemplateDir string
 	}
 	Client struct {
 		client      *mail.SMTPServer
 		DefaultFrom string
+		TemplateDir string
 	}
 	UserEmailData struct {
 		Username         string
@@ -34,6 +36,7 @@ func NewClient(cfg Config) Client {
 	email := Client{
 		client:      client,
 		DefaultFrom: cfg.From,
+		TemplateDir: cfg.TemplateDir,
 	}
 	return email
 }
@@ -60,7 +63,7 @@ func ParseTemplateDir(dir string) (*template.Template, error) {
 func (c *Client) SendVerificationEmail(data UserEmailData) error {
 	var body bytes.Buffer
 
-	tmpl, err := ParseTemplateDir("templates")
+	tmpl, err := ParseTemplateDir(c.TemplateDir)
 	if err != nil {
 		log.Fatal("Could not parse tmpl", err)
 	}
@@ -81,16 +84,9 @@ func (c *Client) SendVerificationEmail(data UserEmailData) error {
 	if err != nil {
 		return err
 	}
-	defer func(con *mail.SMTPClient) error {
-		err = con.Close()
-		if err != nil {
-			return err
-		}
-		return nil
+	defer func(con *mail.SMTPClient) {
+		_ = con.Close()
 	}(con)
-	if err != nil {
-		return err
-	}
 
 	err = m.Send(con)
 	if err != nil {
