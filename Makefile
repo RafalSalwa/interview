@@ -54,7 +54,7 @@ tester:
 	docker compose up -f docker-compose.tester.yml -d
 
 test_unit:
-	APP_ENV=staging gotestsum -- -race -covermode=atomic -cover -coverprofile=coverage.out ./pkg/... -tags=unit -json > coverage.json
+	APP_ENV=staging go test -race -covermode=atomic -cover -coverprofile=coverage.out ./pkg/... -tags=unit -json > coverage.json
 	go tool cover -html=coverage.out -o coverage.html
 
 test_unit_cli:
