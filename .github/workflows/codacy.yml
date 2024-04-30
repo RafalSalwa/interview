@@ -33,6 +33,15 @@ jobs:
           gh-code-scanning-compat: true
           max-allowed-issues: 2147483647
 
+      - name: Run Unit Tests
+        run: make test_unit
+
+      - name: Run codacy-coverage-reporter
+        uses: codacy/codacy-coverage-reporter-action@v1
+        with:
+          project-token: ${{ secrets.CODACY_PROJECT_TOKEN }}
+          coverage-reports: coverage.out
+
       - name: Upload SARIF results file
         uses: github/codeql-action/upload-sarif@v2
         with:
