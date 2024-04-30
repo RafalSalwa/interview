@@ -61,9 +61,16 @@ test_integration:
 	APP_ENV=staging go test -cover ./cmd/... -tags=integration
 
 vet:
-	go vet ./... -json go_vet.json
+	go vet ./...
+
+vet_with_json:
+	go vet -json ./... > go_vet.json || true
+
 lint:
 	golangci-lint run
+
+lint_with_checkstyle:
+	golangci-lint run --out-format checkstyle > golangci-lint.xml || true
 
 check_sec:
 	gosec ./...

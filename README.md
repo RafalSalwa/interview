@@ -2,14 +2,26 @@
 #### based on docker containers, docker compose, Makefile 
 
 [![Go Report Card](https://goreportcard.com/badge/github.com/RafalSalwa/auth-api)](https://goreportcard.com/report/github.com/RafalSalwa/auth-api)
-[![CII Best Practices](https://bestpractices.coreinfrastructure.org/projects/7285/badge)](https://bestpractices.coreinfrastructure.org/projects/7285)
-[![CircleCI](https://dl.circleci.com/status-badge/img/gh/RafalSalwa/interview-app-srv/tree/master.svg?style=svg)](https://dl.circleci.com/status-badge/redirect/gh/RafalSalwa/interview-app-srv/tree/master)
-[![Go](https://github.com/RafalSalwa/auth-api/actions/workflows/go.yml/badge.svg)](https://github.com/RafalSalwa/auth-api/actions/workflows/go.yml)
+[![Run Gosec](https://github.com/RafalSalwa/interview-srv-go/actions/workflows/gosec.yml/badge.svg)](https://github.com/RafalSalwa/interview-srv-go/actions/workflows/gosec.yml)
 
 [![codecov](https://codecov.io/gh/RafalSalwa/interview-srv-go/graph/badge.svg?token=T0DZIOYDR8)](https://codecov.io/gh/RafalSalwa/interview-srv-go)
-[![CircleCI](https://dl.circleci.com/status-badge/img/gh/RafalSalwa/interview-srv-go/tree/master.svg?style=svg)](https://dl.circleci.com/status-badge/redirect/gh/RafalSalwa/interview-srv-go/tree/master)
-[![Go package](https://github.com/RafalSalwa/interview-srv-go/actions/workflows/go.yml/badge.svg)](https://github.com/RafalSalwa/interview-srv-go/actions/workflows/go.yml)
-[![Run Gosec](https://github.com/RafalSalwa/interview-srv-go/actions/workflows/gosec.yml/badge.svg)](https://github.com/RafalSalwa/interview-srv-go/actions/workflows/gosec.yml)
+
+Codacy:
+[![Codacy Badge](https://app.codacy.com/project/badge/Grade/c0054f5a3f1343029e2a3acb76931ebc)](https://app.codacy.com/gh/RafalSalwa/auth-api/dashboard?utm_source=gh&utm_medium=referral&utm_content=&utm_campaign=Badge_grade)
+
+Code climate:
+[![Maintainability](https://api.codeclimate.com/v1/badges/a2df28f0afa241c0d07b/maintainability)](https://codeclimate.com/github/RafalSalwa/auth-api/maintainability)
+[![Test Coverage](https://api.codeclimate.com/v1/badges/a2df28f0afa241c0d07b/test_coverage)](https://codeclimate.com/github/RafalSalwa/auth-api/test_coverage)
+
+
+SonarQube:
+[![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=RafalSalwa_auth-api&metric=sqale_rating)](https://sonarcloud.io/summary/new_code?id=RafalSalwa_auth-api)
+[![Reliability Rating](https://sonarcloud.io/api/project_badges/measure?project=RafalSalwa_auth-api&metric=reliability_rating)](https://sonarcloud.io/summary/new_code?id=RafalSalwa_auth-api)
+[![Security Rating](https://sonarcloud.io/api/project_badges/measure?project=RafalSalwa_auth-api&metric=security_rating)](https://sonarcloud.io/summary/new_code?id=RafalSalwa_auth-api)
+[![Lines of Code](https://sonarcloud.io/api/project_badges/measure?project=RafalSalwa_auth-api&metric=ncloc)](https://sonarcloud.io/summary/new_code?id=RafalSalwa_auth-api)
+[![Duplicated Lines (%)](https://sonarcloud.io/api/project_badges/measure?project=RafalSalwa_auth-api&metric=duplicated_lines_density)](https://sonarcloud.io/summary/new_code?id=RafalSalwa_auth-api)
+[![Coverage](https://sonarcloud.io/api/project_badges/measure?project=RafalSalwa_auth-api&metric=coverage)](https://sonarcloud.io/summary/new_code?id=RafalSalwa_auth-api)
+
 
 ## Topics Covered
 - REST, gRPC, CQRS, Docker, distributed tracing (jaeger, otel, prometheus,grafana, NewRelics), testify

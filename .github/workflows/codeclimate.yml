@@ -1,0 +1,55 @@
+name: CodeClimate
+on:
+  push:
+    branches:
+      - master
+    tags:
+      - '!*' # Do not execute on tags
+    paths:
+      - src/*
+      - test/*
+      - '*.json'
+      - yarn.lock
+  pull_request:
+    paths:
+      - '!*.MD'
+jobs:
+  CodeClimate:
+    name: codeclimate 
+    runs-on: ubuntu-latest
+    steps:
+      - name: "Checkout"
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: WillAbides/setup-go-faster@v1.14.0
+        with:
+          go-version: "1.22.x"
+
+      - name: Prepare analysis
+        run: |
+          curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(go env GOPATH)/bin v1.57.2 || true
+          go mod download || true
+          make test_unit || true
+          make vet_with_json || true
+          make lint_with_checkstyle
+  coverage:
+    needs: [ test ]
+    name: coverage
+    runs-on: ubuntu-latest
+    steps:
+      - name: "Checkout"
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: WillAbides/setup-go-faster@v1.14.0
+        with:
+          go-version: "1.22.x"
+
+      - uses: paambaati/codeclimate-action@v5
+        env:
+          CC_TEST_REPORTER_ID: ${{ secrets.CC_TEST_REPORTER_ID }}
+        with:
+          coverageCommand: make test_unit
