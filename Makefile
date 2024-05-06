@@ -41,6 +41,12 @@ audit:
 ## build: build containers and services
 build:
 	docker compose up --build -d
+binaries:
+	go build -gcflags "all=-N -l" -o gateway ./cmd/gateway/main.go
+	go build -gcflags "all=-N -l" -o auth_service ./cmd/auth_service/main.go
+	go build -gcflags "all=-N -l" -o user_service ./cmd/user_service/main.go
+	go build -gcflags "all=-N -l" -o tester_service ./cmd/tester_service/main.go
+	go build -gcflags "all=-N -l" -o consumer_service ./cmd/consumer_service/main.go
 up:
 	docker compose up -d --force-recreate && docker compose logs -f gateway auth_service user_service consumer_service
 compose-down:
@@ -54,7 +60,12 @@ tester:
 	docker compose up -f docker-compose.tester.yml -d
 
 test_unit:
-	APP_ENV=staging go test -race -covermode=atomic -cover -coverprofile=coverage.out ./pkg/... ./cmd/... -tags=unit -json > coverage.json
+	APP_ENV=staging go test -race -covermode=atomic -cover -coverprofile=coverage.out ./pkg/... -tags=unit -json > coverage.json
+	go tool cover -html=coverage.out -o coverage.html
+
+test_unit_cli:
+	APP_ENV=staging gotestsum -- -race -covermode=atomic -cover -coverprofile=coverage.out ./pkg/... -tags=unit
+	go tool cover -func coverage.out
 	go tool cover -html=coverage.out -o coverage.html
 
 test_integration:

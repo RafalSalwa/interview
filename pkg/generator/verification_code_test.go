@@ -56,3 +56,8 @@ func TestVerificationCode(t *testing.T) {
 		})
 	}
 }
+
+func TestVerificationCode_GenerateCode(t *testing.T) {
+	code, _ := AccessCode()
+	assert.Len(t, code, maxLength)
+}

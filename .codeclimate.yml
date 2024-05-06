@@ -41,3 +41,5 @@ plugins:
     enabled: true
   markdownlint:
     enabled: true
+exclude_patterns:
+  - "proto/"

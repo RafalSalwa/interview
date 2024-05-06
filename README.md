@@ -3,16 +3,13 @@
 
 [![Go Report Card](https://goreportcard.com/badge/github.com/RafalSalwa/auth-api)](https://goreportcard.com/report/github.com/RafalSalwa/auth-api)
 [![Run Gosec](https://github.com/RafalSalwa/interview-srv-go/actions/workflows/gosec.yml/badge.svg)](https://github.com/RafalSalwa/interview-srv-go/actions/workflows/gosec.yml)
-
+[![golangci-lint](https://github.com/RafalSalwa/auth-api/actions/workflows/golangci-lint.yml/badge.svg)](https://github.com/RafalSalwa/auth-api/actions/workflows/golangci-lint.yml)
+[![Static check](https://github.com/RafalSalwa/auth-api/actions/workflows/staticcheck.yml/badge.svg)](https://github.com/RafalSalwa/auth-api/actions/workflows/staticcheck.yml)
 [![codecov](https://codecov.io/gh/RafalSalwa/interview-srv-go/graph/badge.svg?token=T0DZIOYDR8)](https://codecov.io/gh/RafalSalwa/interview-srv-go)
+[![Build Status](https://jenkins.salwa.com.pl/job/Auth-Api/badge/icon?subject=Jenkins)](https://jenkins.salwa.com.pl/job/Auth-Api/)
 
 Codacy:
-[![Codacy Badge](https://app.codacy.com/project/badge/Grade/c0054f5a3f1343029e2a3acb76931ebc)](https://app.codacy.com/gh/RafalSalwa/auth-api/dashboard?utm_source=gh&utm_medium=referral&utm_content=&utm_campaign=Badge_grade)
-
-Code climate:
-[![Maintainability](https://api.codeclimate.com/v1/badges/a2df28f0afa241c0d07b/maintainability)](https://codeclimate.com/github/RafalSalwa/auth-api/maintainability)
-[![Test Coverage](https://api.codeclimate.com/v1/badges/a2df28f0afa241c0d07b/test_coverage)](https://codeclimate.com/github/RafalSalwa/auth-api/test_coverage)
-
+[![codecov](https://codecov.io/gh/RafalSalwa/auth-api/graph/badge.svg?token=T0DZIOYDR8)](https://codecov.io/gh/RafalSalwa/auth-api)
 
 SonarQube:
 [![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=RafalSalwa_auth-api&metric=sqale_rating)](https://sonarcloud.io/summary/new_code?id=RafalSalwa_auth-api)

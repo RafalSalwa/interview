@@ -39,7 +39,7 @@ jobs:
         run: go mod download
 
       - name: Build
-        run: go build -o gateway ./cmd/gateway/main.go
+        run: make binaries
 
       - name: Test
         run: make test_unit
