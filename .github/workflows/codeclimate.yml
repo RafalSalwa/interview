@@ -30,20 +30,6 @@ jobs:
           make test_unit || true
           make vet_with_json || true
           make lint_with_checkstyle
-  coverage:
-    needs: [ test ]
-    name: coverage
-    runs-on: ubuntu-latest
-    steps:
-      - name: "Checkout"
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - uses: WillAbides/setup-go-faster@v1.14.0
-        with:
-          go-version: "1.22.x"
-
       - uses: paambaati/codeclimate-action@v5
         env:
           CC_TEST_REPORTER_ID: ${{ secrets.CC_TEST_REPORTER_ID }}
