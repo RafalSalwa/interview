@@ -5,7 +5,7 @@
 [![Run Gosec](https://github.com/RafalSalwa/interview-srv-go/actions/workflows/gosec.yml/badge.svg)](https://github.com/RafalSalwa/interview-srv-go/actions/workflows/gosec.yml)
 [![golangci-lint](https://github.com/RafalSalwa/auth-api/actions/workflows/golangci-lint.yml/badge.svg)](https://github.com/RafalSalwa/auth-api/actions/workflows/golangci-lint.yml)
 [![Static check](https://github.com/RafalSalwa/auth-api/actions/workflows/staticcheck.yml/badge.svg)](https://github.com/RafalSalwa/auth-api/actions/workflows/staticcheck.yml)
-[![codecov](https://codecov.io/gh/RafalSalwa/interview-srv-go/graph/badge.svg?token=T0DZIOYDR8)](https://codecov.io/gh/RafalSalwa/interview-srv-go)
+[![codecov](https://codecov.io/gh/RafalSalwa/auth-api/graph/badge.svg?token=T0DZIOYDR8)](https://codecov.io/gh/RafalSalwa/auth-api)
 [![Build Status](https://jenkins.salwa.com.pl/job/Auth-Api/badge/icon?subject=Jenkins)](https://jenkins.salwa.com.pl/job/Auth-Api/)
 
 Codacy:
