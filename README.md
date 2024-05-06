@@ -11,11 +11,6 @@
 Codacy:
 [![codecov](https://codecov.io/gh/RafalSalwa/auth-api/graph/badge.svg?token=T0DZIOYDR8)](https://codecov.io/gh/RafalSalwa/auth-api)
 
-Code climate:
-[![Maintainability](https://api.codeclimate.com/v1/badges/a2df28f0afa241c0d07b/maintainability)](https://codeclimate.com/github/RafalSalwa/auth-api/maintainability)
-[![Test Coverage](https://api.codeclimate.com/v1/badges/a2df28f0afa241c0d07b/test_coverage)](https://codeclimate.com/github/RafalSalwa/auth-api/test_coverage)
-
-
 SonarQube:
 [![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=RafalSalwa_auth-api&metric=sqale_rating)](https://sonarcloud.io/summary/new_code?id=RafalSalwa_auth-api)
 [![Reliability Rating](https://sonarcloud.io/api/project_badges/measure?project=RafalSalwa_auth-api&metric=reliability_rating)](https://sonarcloud.io/summary/new_code?id=RafalSalwa_auth-api)
