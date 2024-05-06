@@ -21,10 +21,12 @@ func WrapHandleCustomerAccountRequestConfirmEmail(event rabbitmq.Event) error {
 		return err
 	}
 	c, err := config.InitConfig()
-	mailer := email.NewClient(c.Email)
 	if err != nil {
 		log.Fatal(err)
 	}
+	c.Email.TemplateDir = "templates"
+	mailer := email.NewClient(c.Email)
+
 	return CustomerAccountRequestConfirmEmail(data, mailer)
 }
 
