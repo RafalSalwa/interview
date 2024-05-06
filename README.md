@@ -9,7 +9,7 @@
 [![Build Status](https://jenkins.salwa.com.pl/job/Auth-Api/badge/icon?subject=Jenkins)](https://jenkins.salwa.com.pl/job/Auth-Api/)
 
 Codacy:
-[![codecov](https://codecov.io/gh/RafalSalwa/auth-api/graph/badge.svg?token=T0DZIOYDR8)](https://codecov.io/gh/RafalSalwa/auth-api)
+[![Codacy Badge](https://app.codacy.com/project/badge/Grade/c0054f5a3f1343029e2a3acb76931ebc)](https://app.codacy.com/gh/RafalSalwa/auth-api/dashboard?utm_source=gh&utm_medium=referral&utm_content=&utm_campaign=Badge_grade)
 
 SonarQube:
 [![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=RafalSalwa_auth-api&metric=sqale_rating)](https://sonarcloud.io/summary/new_code?id=RafalSalwa_auth-api)
