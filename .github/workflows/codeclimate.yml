@@ -1,18 +1,14 @@
 name: CodeClimate
 on:
   push:
-    branches:
-      - master
+  pull_request:
+    branches: [ "1.x" ]
     tags:
       - '!*' # Do not execute on tags
     paths:
       - src/*
       - test/*
       - '*.json'
-      - yarn.lock
-  pull_request:
-    paths:
-      - '!*.MD'
 jobs:
   CodeClimate:
     name: codeclimate 

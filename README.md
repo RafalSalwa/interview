@@ -9,7 +9,7 @@
 [![Build Status](https://jenkins.salwa.com.pl/job/Auth-Api/badge/icon?subject=Jenkins)](https://jenkins.salwa.com.pl/job/Auth-Api/)
 
 Codacy:
-[![Codacy Badge](https://app.codacy.com/project/badge/Grade/c0054f5a3f1343029e2a3acb76931ebc)](https://app.codacy.com/gh/RafalSalwa/auth-api/dashboard?utm_source=gh&utm_medium=referral&utm_content=&utm_campaign=Badge_grade)
+[![codecov](https://codecov.io/gh/RafalSalwa/auth-api/graph/badge.svg?token=T0DZIOYDR8)](https://codecov.io/gh/RafalSalwa/auth-api)
 
 Code climate:
 [![Maintainability](https://api.codeclimate.com/v1/badges/a2df28f0afa241c0d07b/maintainability)](https://codeclimate.com/github/RafalSalwa/auth-api/maintainability)
