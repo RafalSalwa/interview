@@ -41,6 +41,8 @@ jobs:
         with:
           project-token: ${{ secrets.CODACY_PROJECT_TOKEN }}
           coverage-reports: coverage.out
+          force-coverage-parser: go
+          language: go
 
       - name: Upload SARIF results file
         uses: github/codeql-action/upload-sarif@v2
