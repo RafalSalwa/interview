@@ -4,12 +4,10 @@ import (
 	"net/http"
 
 	"github.com/RafalSalwa/auth-api/pkg/encdec"
-	"github.com/RafalSalwa/auth-api/pkg/responses"
-	"go.opentelemetry.io/otel"
-
-	"github.com/gorilla/mux"
-
 	"github.com/RafalSalwa/auth-api/pkg/logger"
+	"github.com/RafalSalwa/auth-api/pkg/responses"
+	"github.com/gorilla/mux"
+	"go.opentelemetry.io/otel"
 )
 
 type (
@@ -24,12 +22,16 @@ type (
 	}
 )
 
-func (c cryptonHandler) RegisterRoutes(r *mux.Router, cfg interface{}) {
-	r.Methods(http.MethodGet).Path("/encrypt/{message}").HandlerFunc(c.Encrypt())
-	r.Methods(http.MethodGet).Path("/decrypt/{message}").HandlerFunc(c.Decrypt())
+func NewCryptonHandler(l *logger.Logger) CryptonHandler {
+	return cryptonHandler{l}
 }
 
-func (c cryptonHandler) Encrypt() http.HandlerFunc {
+func (h cryptonHandler) RegisterRoutes(r *mux.Router, cfg interface{}) {
+	r.Methods(http.MethodGet).Path("/encrypt/{message}").HandlerFunc(h.Encrypt())
+	r.Methods(http.MethodGet).Path("/decrypt/{message}").HandlerFunc(h.Decrypt())
+}
+
+func (h cryptonHandler) Encrypt() http.HandlerFunc {
 	var message string
 	return func(w http.ResponseWriter, r *http.Request) {
 		_, span := otel.GetTracerProvider().Tracer("Encrypt").Start(r.Context(), "Encrypt Handler")
@@ -41,7 +43,7 @@ func (c cryptonHandler) Encrypt() http.HandlerFunc {
 	}
 }
 
-func (c cryptonHandler) Decrypt() http.HandlerFunc {
+func (h cryptonHandler) Decrypt() http.HandlerFunc {
 	var message string
 	return func(w http.ResponseWriter, r *http.Request) {
 		_, span := otel.GetTracerProvider().Tracer("Encrypt").Start(r.Context(), "Encrypt Handler")
@@ -51,8 +53,4 @@ func (c cryptonHandler) Decrypt() http.HandlerFunc {
 		encrypted, _ := encdec.Decrypt(message)
 		responses.RespondString(w, encrypted)
 	}
-}
-
-func NewCryptonHandler(l *logger.Logger) CryptonHandler {
-	return cryptonHandler{l}
 }

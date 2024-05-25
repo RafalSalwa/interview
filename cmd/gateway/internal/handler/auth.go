@@ -29,31 +29,33 @@ type (
 		GetVerificationCode() http.HandlerFunc
 	}
 	authHandler struct {
-		cqrs   *cqrs.Application
-		logger *logger.Logger
+		application *cqrs.Application
+		logger      *logger.Logger
 	}
 )
 
-func (a authHandler) RegisterRoutes(r *mux.Router, cfg interface{}) {
+const verificationCodeParam = "code"
+
+func (h authHandler) RegisterRoutes(r *mux.Router, cfg interface{}) {
 	params := cfg.(auth.Auth)
 	authorizer, _ := auth.NewAuthorizer(&params)
 
 	sr := r.PathPrefix("/auth/").Subrouter()
 
-	sr.Methods(http.MethodPost).Path("/signup").HandlerFunc(authorizer.Middleware(a.SignUpUser()))
-	sr.Methods(http.MethodPost).Path("/signin/{auth_code}").HandlerFunc(authorizer.Middleware(a.SignInUserByCode()))
-	sr.Methods(http.MethodPost).Path("/signin").HandlerFunc(authorizer.Middleware(a.SignInUser()))
+	sr.Methods(http.MethodPost).Path("/signup").HandlerFunc(authorizer.Middleware(h.SignUpUser()))
+	sr.Methods(http.MethodPost).Path("/signin/{auth_code}").HandlerFunc(authorizer.Middleware(h.SignInUserByCode()))
+	sr.Methods(http.MethodPost).Path("/signin").HandlerFunc(authorizer.Middleware(h.SignInUser()))
 
-	sr.Methods(http.MethodGet).Path("/verify/{code}").HandlerFunc(authorizer.Middleware(a.Verify()))
-	sr.Methods(http.MethodPost).Path("/code").HandlerFunc(authorizer.Middleware(a.GetVerificationCode()))
-	sr.Methods(http.MethodGet).Path("/code/{code}").HandlerFunc(authorizer.Middleware(a.GetUserByCode()))
+	sr.Methods(http.MethodGet).Path("/verify/{code}").HandlerFunc(authorizer.Middleware(h.Verify()))
+	sr.Methods(http.MethodPost).Path("/code").HandlerFunc(authorizer.Middleware(h.GetVerificationCode()))
+	sr.Methods(http.MethodGet).Path("/code/{code}").HandlerFunc(authorizer.Middleware(h.GetUserByCode()))
 }
 
-func NewAuthHandler(cqrs *cqrs.Application, l *logger.Logger) AuthHandler {
-	return authHandler{cqrs, l}
+func NewAuthHandler(application *cqrs.Application, l *logger.Logger) AuthHandler {
+	return authHandler{application, l}
 }
 
-func (a authHandler) SignInUser() http.HandlerFunc {
+func (h authHandler) SignInUser() http.HandlerFunc {
 	reqUser := models.SignInUserRequest{}
 
 	res := &models.UserResponse{}
@@ -62,17 +64,17 @@ func (a authHandler) SignInUser() http.HandlerFunc {
 		defer span.End()
 
 		if err := validate.UserInput(r, &reqUser); err != nil {
-			a.logger.Error().Err(err).Msg("SignInUser: validate")
+			h.logger.Error().Err(err).Msg("SignInUser: validate")
 
 			responses.RespondBadRequest(w, err.Error())
 			return
 		}
 
 		var errQuery error
-		res, errQuery = a.cqrs.SigninCommand(ctx, reqUser)
+		res, errQuery = h.application.SigninCommand(ctx, reqUser)
 
 		if errQuery != nil {
-			a.logger.Error().Err(errQuery).Msg("SignInUser: grpc signIn")
+			h.logger.Error().Err(errQuery).Msg("SignInUser: grpc signIn")
 
 			if e, ok := status.FromError(errQuery); ok {
 				responses.FromGRPCError(e, w)
@@ -85,7 +87,7 @@ func (a authHandler) SignInUser() http.HandlerFunc {
 	}
 }
 
-func (a authHandler) SignInUserByCode() http.HandlerFunc {
+func (h authHandler) SignInUserByCode() http.HandlerFunc {
 	var authCode string
 	reqSignIn := models.VerificationCodeRequest{}
 	res := &models.UserResponse{}
@@ -103,17 +105,17 @@ func (a authHandler) SignInUserByCode() http.HandlerFunc {
 		}
 		if err := validate.UserInput(r, &reqSignIn); err != nil {
 			tracing.RecordError(span, err)
-			a.logger.Error().Err(err).Msg("SignInUserByCode: decode")
+			h.logger.Error().Err(err).Msg("SignInUserByCode: decode")
 
 			responses.RespondBadRequest(w, err.Error())
 			return
 		}
 
 		var errQuery error
-		res, errQuery = a.cqrs.SigninByCodeCommand(ctx, reqSignIn.Email, authCode)
+		res, errQuery = h.application.SigninByCodeCommand(ctx, reqSignIn.Email, authCode)
 
 		if errQuery != nil {
-			a.logger.Error().Err(errQuery).Msg("SignInUser: grpc signIn")
+			h.logger.Error().Err(errQuery).Msg("SignInUser: grpc signIn")
 
 			if e, ok := status.FromError(errQuery); ok {
 				responses.FromGRPCError(e, w)
@@ -126,7 +128,7 @@ func (a authHandler) SignInUserByCode() http.HandlerFunc {
 	}
 }
 
-func (a authHandler) SignUpUser() http.HandlerFunc {
+func (h authHandler) SignUpUser() http.HandlerFunc {
 	var reqUser models.SignUpUserRequest
 
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -135,17 +137,17 @@ func (a authHandler) SignUpUser() http.HandlerFunc {
 
 		if err := validate.UserInput(r, &reqUser); err != nil {
 			tracing.RecordError(span, err)
-			a.logger.Error().Err(err).Msg("SignUpUser: validate")
+			h.logger.Error().Err(err).Msg("SignUpUser: validate")
 
 			responses.RespondBadRequest(w, err.Error())
 			return
 		}
 
-		err := a.cqrs.SignupUserCommand(ctx, reqUser)
+		err := h.application.SignupUserCommand(ctx, reqUser)
 
 		if err != nil {
 			tracing.RecordError(span, err)
-			a.logger.Error().Err(err).Msg("SignUpUser:create")
+			h.logger.Error().Err(err).Msg("SignUpUser:create")
 
 			if e, ok := status.FromError(err); ok {
 				responses.FromGRPCError(e, w)
@@ -158,7 +160,7 @@ func (a authHandler) SignUpUser() http.HandlerFunc {
 	}
 }
 
-func (a authHandler) GetVerificationCode() http.HandlerFunc {
+func (h authHandler) GetVerificationCode() http.HandlerFunc {
 	reqSignIn := models.VerificationCodeRequest{}
 	resp := models.UserResponse{}
 
@@ -168,17 +170,17 @@ func (a authHandler) GetVerificationCode() http.HandlerFunc {
 
 		if err := validate.UserInput(r, &reqSignIn); err != nil {
 			tracing.RecordError(span, err)
-			a.logger.Error().Err(err).Msg("GetVerificationCode: validate")
+			h.logger.Error().Err(err).Msg("GetVerificationCode: validate")
 
 			responses.RespondBadRequest(w, err.Error())
 			return
 		}
 
-		_, err := a.cqrs.GetUser(ctx, models.UserRequest{Email: reqSignIn.Email})
+		_, err := h.application.GetUser(ctx, models.UserRequest{Email: reqSignIn.Email})
 		if err != nil {
 			span.RecordError(err, trace.WithStackTrace(true))
 			span.SetStatus(codes.Error, err.Error())
-			a.logger.Error().Err(err).Msg("GetVerificationCode: fetchUser")
+			h.logger.Error().Err(err).Msg("GetVerificationCode: fetchUser")
 
 			if e, ok := status.FromError(err); ok {
 				responses.FromGRPCError(e, w)
@@ -188,11 +190,11 @@ func (a authHandler) GetVerificationCode() http.HandlerFunc {
 			return
 		}
 
-		resp, err = a.cqrs.GetVerificationCode(ctx, reqSignIn.Email)
+		resp, err = h.application.GetVerificationCode(ctx, reqSignIn.Email)
 		if err != nil {
 			span.RecordError(err, trace.WithStackTrace(true))
 			span.SetStatus(codes.Error, err.Error())
-			a.logger.Error().Err(err).Msg("GetVerificationCode: GetVerificationCode")
+			h.logger.Error().Err(err).Msg("GetVerificationCode: GetVerificationCode")
 
 			if e, ok := status.FromError(err); ok {
 				responses.FromGRPCError(e, w)
@@ -205,27 +207,27 @@ func (a authHandler) GetVerificationCode() http.HandlerFunc {
 	}
 }
 
-func (a authHandler) GetUserByCode() http.HandlerFunc {
+func (h authHandler) GetUserByCode() http.HandlerFunc {
 	var vCode string
 
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx, span := otel.GetTracerProvider().Tracer("user-handler").Start(r.Context(), "GetUserByCode")
 		defer span.End()
 
-		vCode = mux.Vars(r)["code"]
+		vCode = mux.Vars(r)[verificationCodeParam]
 		if vCode == "" {
-			vCode = r.URL.Query().Get("code")
+			vCode = r.URL.Query().Get(verificationCodeParam)
 			if vCode == "" {
 				responses.RespondBadRequest(w, "code param is missing")
 				return
 			}
 		}
 
-		user, err := a.cqrs.GetUserByCode(ctx, vCode)
+		user, err := h.application.GetUserByCode(ctx, vCode)
 		if err != nil {
 			span.RecordError(err, trace.WithStackTrace(true))
 			span.SetStatus(codes.Error, err.Error())
-			a.logger.Error().Err(err).Msg("GetUserByID:header:getId")
+			h.logger.Error().Err(err).Msg("GetUserByID:header:getId")
 			responses.RespondBadRequest(w, err.Error())
 			return
 		}
@@ -233,7 +235,7 @@ func (a authHandler) GetUserByCode() http.HandlerFunc {
 		if err != nil {
 			span.RecordError(err, trace.WithStackTrace(true))
 			span.SetStatus(codes.Error, err.Error())
-			a.logger.Error().Err(err).Msg("GetUserByID:grpc:getUser")
+			h.logger.Error().Err(err).Msg("GetUserByID:grpc:getUser")
 
 			if e, ok := status.FromError(err); ok {
 				responses.FromGRPCError(e, w)
@@ -246,29 +248,29 @@ func (a authHandler) GetUserByCode() http.HandlerFunc {
 	}
 }
 
-func (a authHandler) Verify() http.HandlerFunc {
+func (h authHandler) Verify() http.HandlerFunc {
 	var vCode string
 
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx, span := otel.GetTracerProvider().Tracer("auth-handler").Start(r.Context(), "Handler SignUpUser")
 		defer span.End()
 
-		vCode = mux.Vars(r)["code"]
+		vCode = mux.Vars(r)[verificationCodeParam]
 
 		if vCode == "" {
-			vCode = r.URL.Query().Get("code")
+			vCode = r.URL.Query().Get(verificationCodeParam)
 			if vCode == "" {
 				responses.RespondBadRequest(w, "code param is missing")
 				return
 			}
 		}
 
-		err := a.cqrs.Commands.VerifyUserByCode.Handle(ctx, command.VerifyCode{VerificationCode: vCode})
+		err := h.application.Commands.VerifyUserByCode.Handle(ctx, command.VerifyCode{VerificationCode: vCode})
 
 		if err != nil {
 			span.RecordError(err, trace.WithStackTrace(true))
 			span.SetStatus(codes.Error, err.Error())
-			a.logger.Error().Err(err).Msg("Verify")
+			h.logger.Error().Err(err).Msg("Verify")
 
 			if e, ok := status.FromError(err); ok {
 				responses.FromGRPCError(e, w)

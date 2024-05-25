@@ -27,25 +27,25 @@ type (
 		PasswordChange() HandlerFunc
 	}
 	userHandler struct {
-		cqrs   *cqrs.Application
-		logger *logger.Logger
+		application *cqrs.Application
+		logger      *logger.Logger
 	}
 )
 
-func NewUserHandler(cqrs *cqrs.Application, l *logger.Logger) UserHandler {
-	return userHandler{cqrs, l}
+func NewUserHandler(application *cqrs.Application, l *logger.Logger) UserHandler {
+	return userHandler{application, l}
 }
 
-func (uh userHandler) RegisterRoutes(r *mux.Router, cfg interface{}) {
+func (h userHandler) RegisterRoutes(r *mux.Router, cfg interface{}) {
 	params := cfg.(auth.JWTConfig)
 	s := r.PathPrefix("/user").Subrouter()
 	s.Use(middlewares.ValidateJWTAccessToken(&params))
 
-	s.Methods(http.MethodGet).Path("").HandlerFunc(uh.GetUserByID())
-	s.Methods(http.MethodPost).Path("/change_password").HandlerFunc(uh.PasswordChange())
+	s.Methods(http.MethodGet).Path("").HandlerFunc(h.GetUserByID())
+	s.Methods(http.MethodPost).Path("/change_password").HandlerFunc(h.PasswordChange())
 }
 
-func (uh userHandler) GetUserByID() HandlerFunc {
+func (h userHandler) GetUserByID() HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx, span := otel.GetTracerProvider().Tracer("user-handler").Start(r.Context(), "GetUserByID")
 		defer span.End()
@@ -55,16 +55,16 @@ func (uh userHandler) GetUserByID() HandlerFunc {
 		if err != nil {
 			span.RecordError(err, trace.WithStackTrace(true))
 			span.SetStatus(codes.Error, err.Error())
-			uh.logger.Error().Err(err).Msg("GetUserByID:header:getId")
+			h.logger.Error().Err(err).Msg("GetUserByID:header:getId")
 			responses.RespondBadRequest(w, err.Error())
 			return
 		}
 
-		user, err := uh.cqrs.GetUser(ctx, models.UserRequest{Id: userID})
+		user, err := h.application.GetUser(ctx, models.UserRequest{Id: userID})
 		if err != nil {
 			span.RecordError(err, trace.WithStackTrace(true))
 			span.SetStatus(codes.Error, err.Error())
-			uh.logger.Error().Err(err).Msg("GetUserByID:grpc:getUser")
+			h.logger.Error().Err(err).Msg("GetUserByID:grpc:getUser")
 
 			if e, ok := status.FromError(err); ok {
 				responses.FromGRPCError(e, w)
@@ -77,7 +77,7 @@ func (uh userHandler) GetUserByID() HandlerFunc {
 	}
 }
 
-func (uh userHandler) PasswordChange() HandlerFunc {
+func (h userHandler) PasswordChange() HandlerFunc {
 	req := &models.ChangePasswordRequest{}
 
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -87,38 +87,38 @@ func (uh userHandler) PasswordChange() HandlerFunc {
 		userID, err := strconv.ParseInt(r.Header.Get("x-user-id"), 10, 64)
 		if err != nil {
 			tracing.RecordError(span, err)
-			uh.logger.Error().Err(err).Msg("GetUserByID:header:getId")
+			h.logger.Error().Err(err).Msg("GetUserByID:header:getId")
 			responses.RespondBadRequest(w, err.Error())
 			return
 		}
 
 		if err = validate.UserInput(r, &req); err != nil {
 			tracing.RecordError(span, err)
-			uh.logger.Error().Err(err).Msg("PasswordChange: decode")
+			h.logger.Error().Err(err).Msg("PasswordChange: decode")
 			responses.RespondBadRequest(w, err.Error())
 			return
 		}
 
 		if err = hashing.Validate(req.Password, req.PasswordConfirm); err != nil {
 			tracing.RecordError(span, err)
-			uh.logger.Error().Err(err).Msg("PasswordChange:validateInputPasswords")
+			h.logger.Error().Err(err).Msg("PasswordChange:validateInputPasswords")
 			responses.RespondBadRequest(w, err.Error())
 			return
 		}
 
-		_, err = uh.cqrs.GetUser(ctx, models.UserRequest{Id: userID})
+		_, err = h.application.GetUser(ctx, models.UserRequest{Id: userID})
 		if err != nil {
 			tracing.RecordError(span, err)
-			uh.logger.Error().Err(err).Msg("PasswordChange:grpc:GetUserByID")
+			h.logger.Error().Err(err).Msg("PasswordChange:grpc:GetUserByID")
 			responses.RespondBadRequest(w, err.Error())
 			return
 		}
 
-		err = uh.cqrs.ChangePassword(ctx, req)
+		err = h.application.ChangePassword(ctx, req)
 		if err != nil {
 			span.RecordError(err, trace.WithStackTrace(true))
 			span.SetStatus(codes.Error, err.Error())
-			uh.logger.Error().Err(err).Msg("PasswordChange:grpc:ChangePassword")
+			h.logger.Error().Err(err).Msg("PasswordChange:grpc:ChangePassword")
 
 			if e, ok := status.FromError(err); ok {
 				responses.FromGRPCError(e, w)
