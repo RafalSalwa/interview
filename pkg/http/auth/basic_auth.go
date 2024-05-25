@@ -4,6 +4,8 @@ import (
 	"crypto/sha256"
 	"crypto/subtle"
 	"net/http"
+
+	"github.com/RafalSalwa/auth-api/pkg/responses"
 )
 
 type basicAuth struct {
@@ -30,6 +32,7 @@ func (a *basicAuth) Middleware(h http.HandlerFunc) http.HandlerFunc {
 				return
 			}
 		}
+		responses.RespondNotAuthorized(w, "Missing or invalid credentials")
 	}
 }
 

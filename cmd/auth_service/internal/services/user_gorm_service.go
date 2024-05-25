@@ -13,17 +13,17 @@ type (
 		Load(ctx context.Context, id string) (*models.UserDBModel, error)
 	}
 	userService struct {
-		repository repository.UserRepository
+		repo repository.UserRepository
 	}
 )
 
-func NewORMUserService(repository repository.UserRepository) UserService {
-	return &userService{repository: repository}
+func NewORMUserService(repo repository.UserRepository) UserService {
+	return &userService{repo: repo}
 }
 
 func (s *userService) Load(ctx context.Context, id string) (*models.UserDBModel, error) {
 	uid, _ := strconv.ParseInt(id, 10, 64)
-	res, err := s.repository.GetOrCreate(ctx, uid)
+	res, err := s.repo.GetOrCreate(ctx, uid)
 	if err != nil {
 		return nil, err
 	}

@@ -4,7 +4,7 @@
         "description": "Interview API with usage of REST,gRPC,MySQL,Redis,mongo,AMQP. <br/> <br/> Current authorize settings is: <strong>Basic Auth</strong> with <strong>interview/interview</strong> parameters",
         "title": "Go Interview REST API",
         "contact": {
-            "name": "RafalSalwa",
+            "name": "RafalSalwa Repo",
             "url": "https://github.com/RafalSalwa"
         },
         "version": "1.0"
@@ -12,7 +12,7 @@
     "paths": {
         "/auth/signup": {
             "post": {
-                "description": "Create account",
+                "description": "Create account with given credentials, in next step we need to obtain verification code for DOI process",
                 "tags": [
                     "Auth"
                 ],
@@ -60,13 +60,117 @@
                                 }
                             }
                         }
+                    },
+                    "500": {
+                        "description": "For every other action, we do not want to explicitly show any other flow details"
+                    }
+                }
+            }
+        },
+        "/auth/code": {
+            "post": {
+                "description": "get code for user created in previous step",
+                "tags": [
+                    "Auth"
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/LogInRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "example": {
+                                    "status": "ok"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "example": {
+                                    "code": 404,
+                                    "message": "Not found"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "For every other action, we do not want to explicitly show any other flow details"
+                    }
+                }
+            }
+        },
+        "/auth/verify/{code}": {
+            "get": {
+                "description": "Verification for account used in DOI process. This code can be obtained from email or auth/verify endpoint.",
+                "tags": [
+                    "Auth"
+                ],
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "code",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "description": "verification code obtained from email."
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "example": {
+                                    "status": "ok"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "example": {
+                                    "code": 404,
+                                    "message": "Not found"
+                                }
+                            }
+                        }
+                    },
+                    "409": {
+                        "description": "Conflict",
+                        "content": {
+                            "application/json": {
+                                "example": {
+                                    "code": 409,
+                                    "reason": "Conflict",
+                                    "message": "user already activated"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "For every other action, we do not want to explicitly show any other flow details"
                     }
                 }
             }
         },
         "/auth/signin": {
             "post": {
-                "description": "Log In account",
+                "description": "Log In account, remember to activate account (get verification code and authorize this code) in previous endpoints.",
                 "tags": [
                     "Auth"
                 ],
@@ -121,114 +225,22 @@
                                 }
                             }
                         }
-                    }
-                }
-            }
-        },
-        "/auth/verify/{code}": {
-            "get": {
-                "description": "Verification for account used in DOI process. This code can be obtained from email. \n <br/> psst... check mailhog at this server and port :8025 :)",
-                "tags": [
-                    "Auth"
-                ],
-                "parameters": [
-                    {
-                        "in": "path",
-                        "name": "code",
-                        "required": true,
-                        "schema": {
-                            "type": "string",
-                            "description": "verification code obtained from email."
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "content": {
-                            "application/json": {
-                                "example": {
-                                    "status": "ok"
-                                }
-                            }
-                        }
                     },
-                    "404": {
-                        "description": "OK",
-                        "content": {
-                            "application/json": {
-                                "example": {
-                                    "code": 404,
-                                    "message": "Not found"
-                                }
-                            }
-                        }
-                    },
-                    "409": {
-                        "description": "Conflict",
-                        "content": {
-                            "application/json": {
-                                "example": {
-                                    "code": 409,
-                                    "reason": "Conflict",
-                                    "message": "user already activated"
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/auth/code": {
-            "post": {
-                "description": "get code for created user <br/>(workaround in case mailhog wont be working)",
-                "tags": [
-                    "Auth"
-                ],
-                "requestBody": {
-                    "required": true,
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "$ref": "#/components/schemas/LogInRequest"
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "content": {
-                            "application/json": {
-                                "example": {
-                                    "status": "ok"
-                                }
-                            }
-                        }
-                    },
-                    "404": {
-                        "description": "OK",
-                        "content": {
-                            "application/json": {
-                                "example": {
-                                    "code": 404,
-                                    "message": "Not found"
-                                }
-                            }
-                        }
+                    "500": {
+                        "description": "For every other action, we do not want to explicitly show any other flow details"
                     }
                 }
             }
         },
         "/user": {
             "get": {
-                "description": "Log In account via jwt token from previous endpoints",
+                "description": "Log In account via jwt token from SignIn endpoint",
                 "tags": [
                     "User"
                 ],
                 "security": [
                     {
-                        "BearerAuth":[]
+                        "BearerAuth": []
                     }
                 ],
                 "responses": {
@@ -240,10 +252,24 @@
                                     "user": {
                                         "id": 256,
                                         "username": "rafal@interview.com"
-                                      }
+                                    }
                                 }
                             }
                         }
+                    },
+                    "400": {
+                        "description": "When token header or auth method is missing",
+                        "content": {
+                            "application/json": {
+                                "example": {
+                                    "code": 400,
+                                    "reason": "bad request"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "For every other action, we do not want to explicitly show any other flow details"
                     }
                 }
             }
@@ -293,7 +319,7 @@
             },
             "SignInRequest": {
                 "properties": {
-                    "username": {
+                    "email": {
                         "type": "string",
                         "example": "rafal@interview.com"
                     },

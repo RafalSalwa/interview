@@ -130,12 +130,12 @@ func (a authHandler) SignUpUser() http.HandlerFunc {
 	var reqUser models.SignUpUserRequest
 
 	return func(w http.ResponseWriter, r *http.Request) {
-		ctx, span := otel.GetTracerProvider().Tracer("Handler").Start(r.Context(), "Handler/SignUpUser")
+		ctx, span := otel.GetTracerProvider().Tracer("Handler").Start(r.Context(), "AuthHandler/SignUpUser")
 		defer span.End()
 
 		if err := validate.UserInput(r, &reqUser); err != nil {
 			tracing.RecordError(span, err)
-			a.logger.Error().Err(err).Msg("SignUpUser: decode")
+			a.logger.Error().Err(err).Msg("SignUpUser: validate")
 
 			responses.RespondBadRequest(w, err.Error())
 			return
@@ -144,8 +144,7 @@ func (a authHandler) SignUpUser() http.HandlerFunc {
 		err := a.cqrs.SignupUserCommand(ctx, reqUser)
 
 		if err != nil {
-			span.RecordError(err, trace.WithStackTrace(true))
-			span.SetStatus(codes.Error, err.Error())
+			tracing.RecordError(span, err)
 			a.logger.Error().Err(err).Msg("SignUpUser:create")
 
 			if e, ok := status.FromError(err); ok {

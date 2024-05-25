@@ -70,7 +70,7 @@ type (
 	SignUpUserRequest struct {
 		Email           string `json:"email" validate:"required,email"`
 		Password        string `json:"password" validate:"required,min=8,max=32"`
-		PasswordConfirm string `json:"passwordConfirm" validate:"required,min=8,max=32"`
+		PasswordConfirm string `json:"passwordConfirm" validate:"required,min=8,max=32,eqfield=Password"`
 	}
 	SignInUserRequest struct {
 		Username string `json:"username" validate:"required_without=Email"`
