@@ -1,6 +1,7 @@
 package auth
 
 import (
+	"context"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -15,13 +16,14 @@ func TestAPIKeyMiddleware(t *testing.T) {
 
 	// Create a test server with the middleware applied
 	apiKey := "my-api-key"
+	ctx := context.Background()
 	middleware := newAPIKeyMiddleware(apiKey)
 	handler := middleware.Middleware(mockHandler)
 	server := httptest.NewServer(handler)
 	defer server.Close()
 
 	// Test case 1: Valid API key
-	req, err := http.NewRequest("GET", server.URL, nil)
+	req, err := http.NewRequestWithContext(ctx, "GET", server.URL, nil)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -36,7 +38,7 @@ func TestAPIKeyMiddleware(t *testing.T) {
 	}
 
 	// Test case 2: Missing API key
-	req, err = http.NewRequest("GET", server.URL, nil)
+	req, err = http.NewRequestWithContext(ctx, "GET", server.URL, nil)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -50,7 +52,7 @@ func TestAPIKeyMiddleware(t *testing.T) {
 	}
 
 	// Test case 3: Wrong API key
-	req, err = http.NewRequest("GET", server.URL, nil)
+	req, err = http.NewRequestWithContext(ctx, "GET", server.URL, nil)
 	if err != nil {
 		t.Fatal(err)
 	}

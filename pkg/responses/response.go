@@ -59,6 +59,9 @@ func RespondBadRequest(w http.ResponseWriter, msg string) {
 	responseBody := marshalErrorResponse(errorResponse)
 	Respond(w, http.StatusBadRequest, responseBody)
 }
+func RespondInternalServerError(w http.ResponseWriter) {
+	Respond(w, http.StatusInternalServerError, []byte(""))
+}
 
 func RespondString(w http.ResponseWriter, msg string) {
 	Respond(w, http.StatusOK, []byte(msg))
